@@ -32,6 +32,9 @@ defmodule Revelo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ash, "~> 3.4"},
+      {:ash_phoenix, "~> 2.1.13"},
+      {:ash_sqlite, "~> 0.2.1"},
       {:phoenix, "~> 1.7.18"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.10"},
