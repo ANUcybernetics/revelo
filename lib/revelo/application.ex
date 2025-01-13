@@ -11,8 +11,7 @@ defmodule Revelo.Application do
       ReveloWeb.Telemetry,
       Revelo.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:revelo, :ecto_repos),
-        skip: skip_migrations?()},
+       repos: Application.fetch_env!(:revelo, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:revelo, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Revelo.PubSub},
       # Start the Finch HTTP client for sending emails
