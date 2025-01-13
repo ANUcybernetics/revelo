@@ -7,17 +7,37 @@
 # General application configuration
 import Config
 
-config :revelo, :ash_domains, [Revelo.Diagram]
+config :ash, :policies, no_filter_static_forbidden_reads?: false
 
 config :ash,
   include_embedded_source_by_default?: false,
   default_page_type: :keyset
 
-config :ash, :policies, no_filter_static_forbidden_reads?: false
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.17.11",
+  revelo: [
+    args: ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
 
-config :revelo,
-  ecto_repos: [Revelo.Repo],
-  generators: [timestamp_type: :utc_datetime]
+# Configures Elixir's Logger
+config :logger, :console,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id]
+
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
+
+# Configures the mailer
+#
+# By default it uses the "Local" adapter which stores the emails
+# locally. You can see the emails in your browser, at "/dev/mailbox".
+#
+# For production it's recommended to configure a different adapter
+# at the `config/runtime.exs`.
+config :revelo, Revelo.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configures the endpoint
 config :revelo, ReveloWeb.Endpoint,
@@ -30,24 +50,11 @@ config :revelo, ReveloWeb.Endpoint,
   pubsub_server: Revelo.PubSub,
   live_view: [signing_salt: "fEvquwTM"]
 
-# Configures the mailer
-#
-# By default it uses the "Local" adapter which stores the emails
-# locally. You can see the emails in your browser, at "/dev/mailbox".
-#
-# For production it's recommended to configure a different adapter
-# at the `config/runtime.exs`.
-config :revelo, Revelo.Mailer, adapter: Swoosh.Adapters.Local
+config :revelo, :ash_domains, [Revelo.Diagram]
 
-# Configure esbuild (the version is required)
-config :esbuild,
-  version: "0.17.11",
-  revelo: [
-    args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
+config :revelo,
+  ecto_repos: [Revelo.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # Configure tailwind (the version is required)
 config :tailwind,
@@ -60,14 +67,6 @@ config :tailwind,
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
-
-# Configures Elixir's Logger
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
-
-# Use Jason for JSON parsing in Phoenix
-config :phoenix, :json_library, Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

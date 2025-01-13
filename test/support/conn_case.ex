@@ -19,15 +19,14 @@ defmodule ReveloWeb.ConnCase do
 
   using do
     quote do
+      use ReveloWeb, :verified_routes
+      import Phoenix.ConnTest
+      import Plug.Conn
+      import ReveloWeb.ConnCase
       # The default endpoint for testing
       @endpoint ReveloWeb.Endpoint
 
-      use ReveloWeb, :verified_routes
-
       # Import conveniences for testing with connections
-      import Plug.Conn
-      import Phoenix.ConnTest
-      import ReveloWeb.ConnCase
     end
   end
 
