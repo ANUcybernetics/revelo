@@ -1,18 +1,17 @@
 # Revelo
 
-To start your Phoenix server:
+**Revelo** is a tool for better understanding the social, technical and
+environmental systems you care about and participate in, and for finding the
+hidden feedback loops which drive the system's behaviour.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+This isn't a hands-off "computer, tell me the answer" thing---it's a tool for
+having meaningful conversations (and disagreements) about the difference between
+how things are _supposed_ to work and how things _actually_ work.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Support
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+Contact [Ben](mailto:ben.swift@anu.edu.au).
 
-## Learn more
+## Licence
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+MIT
