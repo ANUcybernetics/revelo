@@ -1,8 +1,8 @@
-defmodule Revelo.Diagram do
+defmodule Revelo.Diagrams do
   @moduledoc false
   use Ash.Domain
 
   resources do
-    # resource Revelo.Diagram.Variable
+    # resource Revelo.Diagrams.Variable
   end
 end

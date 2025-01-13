@@ -50,7 +50,7 @@ config :revelo, ReveloWeb.Endpoint,
   pubsub_server: Revelo.PubSub,
   live_view: [signing_salt: "fEvquwTM"]
 
-config :revelo, :ash_domains, [Revelo.Diagram]
+config :revelo, :ash_domains, [Revelo.Diagrams]
 
 config :revelo,
   ecto_repos: [Revelo.Repo],
