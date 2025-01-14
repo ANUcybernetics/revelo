@@ -5,8 +5,10 @@ we're building it out & exploring the problem space).
 
 ## Libraries we'll use
 
-- SaladUI
+- Phoenix LiveView (for web stuff)
+- Ash & AshPhoenix (for data modelling)
 - StreamData for property-based testing
+- SaladUI
 - PhoenixTest (and hopefully PhoenixTestPlaywright) for front-end testing
 - mermaid.js (in a phoenix hook) for rendering the diagrams
 - AshAuthentication (with passwords, maybe even magic links?) for auth
