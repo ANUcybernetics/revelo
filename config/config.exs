@@ -56,6 +56,20 @@ config :revelo,
   ecto_repos: [Revelo.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :spark, :formatter,
+  remove_parens?: true,
+  "Ash.Domain": [],
+  "Ash.Resource": [
+    section_order: [
+      # any section not in this list is left where it is
+      # but these sections will always appear in this order in a resource
+      :actions,
+      :attributes,
+      :relationships,
+      :identities
+    ]
+  ]
+
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "3.4.3",
