@@ -20,6 +20,7 @@ defmodule ReveloWeb.ConnCase do
   using do
     quote do
       use ReveloWeb, :verified_routes
+
       import Phoenix.ConnTest
       import Plug.Conn
       import ReveloWeb.ConnCase
