@@ -10,8 +10,8 @@
         "table": "loops",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -30,7 +30,22 @@
       "size": null,
       "type": "uuid",
       "source": "voter_id",
-      "references": null,
+      "references": {
+        "name": "loop_votes_voter_id_fkey",
+        "table": "users",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "on_update": null
+      },
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": true
@@ -57,7 +72,7 @@
     }
   ],
   "table": "loop_votes",
-  "hash": "00461E22A48A48EBD40D652882A7B65E52DBF5A48E1C2A43FF3E5A07550A9CC1",
+  "hash": "70058E93B570390F6D607544684C4B6C419BE91A983C3387340A12062B3DF3C0",
   "identities": [
     {
       "name": "unique_vote",
@@ -72,8 +87,8 @@
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "custom_indexes": [],

@@ -19,6 +19,27 @@ defmodule Revelo.SessionTest do
         Session |> Ash.Changeset.for_create(:create, input) |> Ash.create!()
       end
     end
+
+    test "can create session with participant" do
+      user = generate(user())
+      user2 = generate(user())
+      session = generate(session())
+
+      session =
+        session
+        |> Ash.Changeset.for_update(:add_participants, %{participants: [user]})
+        |> Ash.update!()
+
+      assert session.participants == [user]
+
+      # add a second user
+      session =
+        session
+        |> Ash.Changeset.for_update(:add_participants, %{participants: [user2]})
+        |> Ash.update!()
+
+      assert session.participants == [user, user2]
+    end
   end
 
   # describe "relationships" do

@@ -15,7 +15,7 @@ defmodule Revelo.Diagrams.Variable do
   end
 
   attributes do
-    uuid_v7_primary_key :id
+    uuid_primary_key :id
 
     attribute :name, :string do
       allow_nil? false
@@ -38,12 +38,10 @@ defmodule Revelo.Diagrams.Variable do
 
   relationships do
     belongs_to :session, Revelo.Sessions.Session do
-      attribute_type :uuid_v7
       allow_nil? false
     end
 
     belongs_to :creator, Revelo.Accounts.User do
-      attribute_type :uuid_v7
       allow_nil? false
     end
 

@@ -24,10 +24,22 @@ defmodule Revelo.Sessions.Session do
 
       accept [:description, :report]
     end
+
+    update :add_participants do
+      argument :participants, {:array, :map} do
+        allow_nil? false
+      end
+
+      change manage_relationship(:participants,
+               type: :append,
+               on_lookup: :relate,
+               on_no_match: :error
+             )
+    end
   end
 
   attributes do
-    uuid_v7_primary_key :id
+    uuid_primary_key :id
 
     attribute :name, :string do
       allow_nil? false

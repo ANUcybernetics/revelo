@@ -4,14 +4,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "loop_id",
+      "source": "session_id",
       "references": {
-        "name": "loop_relationships_loop_id_fkey",
-        "table": "loops",
+        "name": "session_participants_session_id_fkey",
+        "table": "sessions",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -29,14 +29,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "relationship_id",
+      "source": "user_id",
       "references": {
-        "name": "loop_relationships_relationship_id_fkey",
-        "table": "loops",
+        "name": "session_participants_user_id_fkey",
+        "table": "users",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -51,14 +51,14 @@
       "primary_key?": true
     }
   ],
-  "table": "loop_relationships",
-  "hash": "787A67B6099BB04E432E2025400076DEBA2FABE5F075E3ACB0E789AD1D9A4062",
+  "table": "session_participants",
+  "hash": "83DE523E0BA8BB1C320D0C6FDC31F43261598905B2AB53935159F6A69B01BE3A",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "custom_indexes": [],

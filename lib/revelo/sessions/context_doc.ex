@@ -15,7 +15,7 @@ defmodule Revelo.Sessions.ContextDoc do
   end
 
   attributes do
-    uuid_v7_primary_key :id
+    uuid_primary_key :id
 
     attribute :name, :string do
       allow_nil? false
@@ -34,7 +34,6 @@ defmodule Revelo.Sessions.ContextDoc do
 
   relationships do
     belongs_to :session, Revelo.Sessions.Session do
-      attribute_type :uuid_v7
       allow_nil? false
     end
   end

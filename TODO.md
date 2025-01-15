@@ -3,13 +3,14 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- tests
 - code interfaces where appropriate
 - UI stuff (including all liveviews)
 - seeding new users for dev/test
 
 - once things have settled down a bit, re-visit the use of default actions
   (maybe don't need a bunch of them)
+
+- add a "create uuid on device and send on initial load" hook
 
 ## Libraries we'll use
 

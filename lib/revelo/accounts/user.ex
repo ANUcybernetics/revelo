@@ -4,7 +4,8 @@ defmodule Revelo.Accounts.User do
     otp_app: :revelo,
     domain: Revelo.Accounts,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshAuthentication]
+    extensions: [AshAuthentication],
+    data_layer: AshSqlite.DataLayer
 
   alias AshAuthentication.Strategy.Password.HashPasswordChange
   alias AshAuthentication.Strategy.Password.PasswordConfirmationValidation
@@ -49,6 +50,11 @@ defmodule Revelo.Accounts.User do
         sender Revelo.Accounts.User.Senders.SendNewUserConfirmationEmail
       end
     end
+  end
+
+  sqlite do
+    table "users"
+    repo Revelo.Repo
   end
 
   actions do
@@ -223,7 +229,7 @@ defmodule Revelo.Accounts.User do
   end
 
   attributes do
-    uuid_v7_primary_key :id
+    uuid_primary_key :id
 
     attribute :email, :ci_string do
       allow_nil? false

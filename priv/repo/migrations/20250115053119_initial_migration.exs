@@ -9,7 +9,9 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
   def up do
     create table(:variables, primary_key: false) do
-      add :creator_id, :uuid, null: false
+      add :creator_id,
+          references(:users, column: :id, name: "variables_creator_id_fkey", type: :uuid),
+          null: false
 
       add :session_id,
           references(:sessions, column: :id, name: "variables_session_id_fkey", type: :uuid),
@@ -27,7 +29,11 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     create table(:variable_votes, primary_key: false) do
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
-      add :voter_id, :uuid, null: false, primary_key: true
+
+      add :voter_id,
+          references(:users, column: :id, name: "variable_votes_voter_id_fkey", type: :uuid),
+          primary_key: true,
+          null: false
 
       add :variable_id,
           references(:variables,
@@ -39,9 +45,18 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
           null: false
     end
 
+    create table(:users, primary_key: false) do
+      add :hashed_password, :text, null: false
+      add :email, :citext, null: false
+      add :id, :uuid, null: false, primary_key: true
+      add :confirmed_at, :utc_datetime_usec
+    end
+
     create unique_index(:variable_votes, [:variable_id, :voter_id],
              name: "variable_votes_unique_vote_index"
            )
+
+    create unique_index(:users, [:email], name: "users_unique_email_index")
 
     create table(:sessions, primary_key: false) do
       add :updated_at, :utc_datetime_usec, null: false
@@ -53,7 +68,10 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     end
 
     create table(:session_participants, primary_key: false) do
-      add :user_id, :uuid, null: false, primary_key: true
+      add :user_id,
+          references(:users, column: :id, name: "session_participants_user_id_fkey", type: :uuid),
+          primary_key: true,
+          null: false
 
       add :session_id,
           references(:sessions,
@@ -87,7 +105,11 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     create table(:relationship_votes, primary_key: false) do
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
-      add :voter_id, :uuid, null: false, primary_key: true
+
+      add :voter_id,
+          references(:users, column: :id, name: "relationship_votes_voter_id_fkey", type: :uuid),
+          primary_key: true,
+          null: false
 
       add :relationship_id,
           references(:relationships,
@@ -113,7 +135,11 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     create table(:loop_votes, primary_key: false) do
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
-      add :voter_id, :uuid, null: false, primary_key: true
+
+      add :voter_id,
+          references(:users, column: :id, name: "loop_votes_voter_id_fkey", type: :uuid),
+          primary_key: true,
+          null: false
 
       add :loop_id, references(:loops, column: :id, name: "loop_votes_loop_id_fkey", type: :uuid),
         primary_key: true,
@@ -169,6 +195,8 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
     drop constraint(:loop_votes, "loop_votes_loop_id_fkey")
 
+    drop constraint(:loop_votes, "loop_votes_voter_id_fkey")
+
     drop table(:loop_votes)
 
     drop table(:loops)
@@ -178,6 +206,8 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
                    )
 
     drop constraint(:relationship_votes, "relationship_votes_relationship_id_fkey")
+
+    drop constraint(:relationship_votes, "relationship_votes_voter_id_fkey")
 
     drop table(:relationship_votes)
 
@@ -191,19 +221,29 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
     drop constraint(:session_participants, "session_participants_session_id_fkey")
 
+    drop constraint(:session_participants, "session_participants_user_id_fkey")
+
     drop table(:session_participants)
 
     drop table(:sessions)
+
+    drop_if_exists unique_index(:users, [:email], name: "users_unique_email_index")
 
     drop_if_exists unique_index(:variable_votes, [:variable_id, :voter_id],
                      name: "variable_votes_unique_vote_index"
                    )
 
+    drop table(:users)
+
     drop constraint(:variable_votes, "variable_votes_variable_id_fkey")
+
+    drop constraint(:variable_votes, "variable_votes_voter_id_fkey")
 
     drop table(:variable_votes)
 
     drop constraint(:variables, "variables_session_id_fkey")
+
+    drop constraint(:variables, "variables_creator_id_fkey")
 
     drop table(:variables)
   end

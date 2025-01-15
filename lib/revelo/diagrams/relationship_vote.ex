@@ -11,21 +11,19 @@ defmodule Revelo.Diagrams.RelationshipVote do
   end
 
   attributes do
-    uuid_v7_primary_key :relationship_id
-    uuid_v7_primary_key :voter_id
+    uuid_primary_key :relationship_id
+    uuid_primary_key :voter_id
     timestamps()
   end
 
   relationships do
     belongs_to :relationship, Revelo.Diagrams.Relationship do
-      attribute_type :uuid_v7
       allow_nil? false
       primary_key? true
       attribute_writable? true
     end
 
     belongs_to :voter, Revelo.Accounts.User do
-      attribute_type :uuid_v7
       allow_nil? false
       primary_key? true
       attribute_writable? true

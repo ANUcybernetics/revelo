@@ -11,8 +11,8 @@ defmodule Revelo.Diagrams.VariableVote do
   end
 
   attributes do
-    uuid_v7_primary_key :variable_id
-    uuid_v7_primary_key :voter_id
+    uuid_primary_key :variable_id
+    uuid_primary_key :voter_id
     timestamps()
   end
 
@@ -25,7 +25,6 @@ defmodule Revelo.Diagrams.VariableVote do
     end
 
     belongs_to :voter, Revelo.Accounts.User do
-      attribute_type :uuid_v7
       allow_nil? false
       primary_key? true
       attribute_writable? true
