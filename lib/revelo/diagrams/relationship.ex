@@ -13,7 +13,7 @@ defmodule Revelo.Diagrams.Relationship do
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy, create: :*, update: :*]
   end
 
   attributes do

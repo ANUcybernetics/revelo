@@ -11,7 +11,19 @@ defmodule Revelo.Sessions.Session do
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy, update: :*]
+
+    create :create do
+      primary? true
+
+      argument :name, :string do
+        allow_nil? false
+      end
+
+      change set_attribute(:name, arg(:name))
+
+      accept [:description, :report]
+    end
   end
 
   attributes do

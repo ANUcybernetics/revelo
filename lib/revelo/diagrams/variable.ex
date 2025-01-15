@@ -11,7 +11,7 @@ defmodule Revelo.Diagrams.Variable do
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy, create: :*, update: :*]
   end
 
   attributes do
