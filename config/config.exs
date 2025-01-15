@@ -50,7 +50,7 @@ config :revelo, ReveloWeb.Endpoint,
   pubsub_server: Revelo.PubSub,
   live_view: [signing_salt: "fEvquwTM"]
 
-config :revelo, :ash_domains, [Revelo.Sessions, Revelo.Diagrams]
+config :revelo, :ash_domains, [Revelo.Accounts, Revelo.Sessions, Revelo.Diagrams]
 
 config :revelo,
   ecto_repos: [Revelo.Repo],
@@ -61,6 +61,8 @@ config :spark, :formatter,
   "Ash.Domain": [],
   "Ash.Resource": [
     section_order: [
+      :authentication,
+      :tokens,
       # any section not in this list is left where it is
       # but these sections will always appear in this order in a resource
       :actions,

@@ -77,7 +77,7 @@ config :revelo, ReveloWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 # different ports.
 
-config :revelo, dev_routes: true
+config :revelo, dev_routes: true, token_signing_secret: "Ssj516I0uX6JqBiR4n1YWXPnr2eKJQXK"
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false

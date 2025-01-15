@@ -31,5 +31,7 @@ config :revelo, ReveloWeb.Endpoint,
   secret_key_base: "xySmeWgkT9J2tZXefzLQgsBmKBtMiE8kv2sTFp+ugo/LB0yQvnm8WmC308xCXjI6",
   server: false
 
+config :revelo, token_signing_secret: "c2SpUivcNcq6oxn2VUfSIFKn6pZpHwpu"
+
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false

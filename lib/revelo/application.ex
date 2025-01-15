@@ -18,7 +18,8 @@ defmodule Revelo.Application do
       # Start a worker by calling: Revelo.Worker.start_link(arg)
       # {Revelo.Worker, arg},
       # Start to serve requests, typically the last entry
-      ReveloWeb.Endpoint
+      ReveloWeb.Endpoint,
+      {AshAuthentication.Supervisor, [otp_app: :revelo]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

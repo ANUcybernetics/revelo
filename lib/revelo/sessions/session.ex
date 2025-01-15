@@ -1,0 +1,38 @@
+defmodule Revelo.Sessions.Session do
+  @moduledoc false
+  use Ash.Resource,
+    otp_app: :revelo,
+    domain: Revelo.Sessions,
+    data_layer: AshSqlite.DataLayer
+
+  sqlite do
+    table "sessions"
+    repo Revelo.Repo
+  end
+
+  actions do
+    defaults [:read]
+  end
+
+  attributes do
+    uuid_v7_primary_key :id
+
+    attribute :name, :string do
+      allow_nil? false
+    end
+
+    attribute :description, :string
+    attribute :report, :string
+    timestamps()
+  end
+
+  relationships do
+    has_many :context_docs, Revelo.Sessions.ContextDoc
+
+    many_to_many :participants, Revelo.Accounts.User do
+      through Revelo.Sessions.SessionParticipants
+      source_attribute_on_join_resource :session_id
+      destination_attribute_on_join_resource :user_id
+    end
+  end
+end

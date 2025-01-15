@@ -61,6 +61,11 @@ if config_env() == :prod do
 
   config :revelo, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
+  config :revelo,
+    token_signing_secret:
+      System.get_env("TOKEN_SIGNING_SECRET") ||
+        raise("Missing environment variable `TOKEN_SIGNING_SECRET`!")
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
