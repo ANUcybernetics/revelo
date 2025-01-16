@@ -4,7 +4,9 @@ defmodule Revelo.SessionTest do
   import ExUnitProperties
   import ReveloTest.Generators
 
+  alias Revelo.Accounts.User
   alias Revelo.Sessions.Session
+  alias Revelo.Sessions.SessionParticipants
 
   describe "session actions" do
     property "accepts valid create input" do
@@ -25,10 +27,14 @@ defmodule Revelo.SessionTest do
       user2 = generate(user())
       session = generate(session())
 
+      Ash.get!(User, user.id, authorize?: false)
+
       session =
         session
         |> Ash.Changeset.for_update(:add_participants, %{participants: [user]})
         |> Ash.update!()
+
+      assert SessionParticipants |> Ash.read!() |> Enum.count() == 1
 
       assert session.participants == [user]
 
@@ -37,8 +43,11 @@ defmodule Revelo.SessionTest do
         session
         |> Ash.Changeset.for_update(:add_participants, %{participants: [user2]})
         |> Ash.update!()
+        |> Ash.load!(:participants, authorize?: false)
 
-      assert session.participants == [user, user2]
+      assert SessionParticipants |> Ash.read!() |> Enum.count() == 2
+      assert length(session.participants) == 2
+      assert Enum.map(session.participants, & &1.id) == [user.id, user2.id]
     end
   end
 
