@@ -22,7 +22,7 @@ defmodule Revelo.SessionTest do
       end
     end
 
-    test "can create session with participant" do
+    test "can create session with participants" do
       user = generate(user())
       user2 = generate(user())
       session = generate(session())
@@ -43,6 +43,7 @@ defmodule Revelo.SessionTest do
         session
         |> Ash.Changeset.for_update(:add_participants, %{participants: [user2]})
         |> Ash.update!()
+        # |> Ash.load!(:participants, actor: user)
         |> Ash.load!(:participants, authorize?: false)
 
       assert SessionParticipants |> Ash.read!() |> Enum.count() == 2
