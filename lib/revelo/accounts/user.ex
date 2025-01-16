@@ -20,6 +20,11 @@ defmodule Revelo.Accounts.User do
     end
   end
 
+  sqlite do
+    table "users"
+    repo Revelo.Repo
+  end
+
   authentication do
     tokens do
       enabled? true
@@ -50,11 +55,6 @@ defmodule Revelo.Accounts.User do
         sender Revelo.Accounts.User.Senders.SendNewUserConfirmationEmail
       end
     end
-  end
-
-  sqlite do
-    table "users"
-    repo Revelo.Repo
   end
 
   actions do

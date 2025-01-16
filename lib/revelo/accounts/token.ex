@@ -4,7 +4,8 @@ defmodule Revelo.Accounts.Token do
     otp_app: :revelo,
     domain: Revelo.Accounts,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshAuthentication.TokenResource]
+    extensions: [AshAuthentication.TokenResource],
+    data_layer: AshSqlite.DataLayer
 
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
@@ -16,6 +17,11 @@ defmodule Revelo.Accounts.Token do
       description "No one aside from AshAuthentication can interact with the tokens resource."
       forbid_if always()
     end
+  end
+
+  sqlite do
+    table "tokens"
+    repo Revelo.Repo
   end
 
   actions do

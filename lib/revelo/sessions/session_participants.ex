@@ -16,6 +16,6 @@ defmodule Revelo.Sessions.SessionParticipants do
 
   relationships do
     belongs_to :session, Revelo.Sessions.Session, primary_key?: true, allow_nil?: false
-    belongs_to :user, Revelo.Accounts.User, primary_key?: true, allow_nil?: false
+    belongs_to :participant, Revelo.Accounts.User, primary_key?: true, allow_nil?: false
   end
 end

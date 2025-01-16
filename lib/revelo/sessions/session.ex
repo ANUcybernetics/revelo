@@ -30,11 +30,7 @@ defmodule Revelo.Sessions.Session do
         allow_nil? false
       end
 
-      change manage_relationship(:participants,
-               type: :append,
-               on_lookup: :relate,
-               on_no_match: :error
-             )
+      change manage_relationship(:participants, type: :append, on_missing: :error)
     end
   end
 
@@ -56,7 +52,7 @@ defmodule Revelo.Sessions.Session do
     many_to_many :participants, Revelo.Accounts.User do
       through Revelo.Sessions.SessionParticipants
       source_attribute_on_join_resource :session_id
-      destination_attribute_on_join_resource :user_id
+      destination_attribute_on_join_resource :participant_id
     end
   end
 end

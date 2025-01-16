@@ -58,6 +58,18 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
     create unique_index(:users, [:email], name: "users_unique_email_index")
 
+    create table(:tokens, primary_key: false) do
+      add :updated_at, :utc_datetime_usec, null: false
+      add :inserted_at, :utc_datetime_usec, null: false
+      add :extra_data, :map
+      add :purpose, :text, null: false
+      add :expires_at, :utc_datetime, null: false
+      add :subject, :text, null: false
+      add :jti, :text, null: false, primary_key: true
+      add :id, :uuid, null: false, primary_key: true
+      add :created_at, :utc_datetime_usec, null: false
+    end
+
     create table(:sessions, primary_key: false) do
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
@@ -68,8 +80,12 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     end
 
     create table(:session_participants, primary_key: false) do
-      add :user_id,
-          references(:users, column: :id, name: "session_participants_user_id_fkey", type: :uuid),
+      add :participant_id,
+          references(:users,
+            column: :id,
+            name: "session_participants_participant_id_fkey",
+            type: :uuid
+          ),
           primary_key: true,
           null: false
 
@@ -221,11 +237,13 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
     drop constraint(:session_participants, "session_participants_session_id_fkey")
 
-    drop constraint(:session_participants, "session_participants_user_id_fkey")
+    drop constraint(:session_participants, "session_participants_participant_id_fkey")
 
     drop table(:session_participants)
 
     drop table(:sessions)
+
+    drop table(:tokens)
 
     drop_if_exists unique_index(:users, [:email], name: "users_unique_email_index")
 
