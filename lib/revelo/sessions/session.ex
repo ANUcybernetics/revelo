@@ -30,7 +30,7 @@ defmodule Revelo.Sessions.Session do
         allow_nil? false
       end
 
-      change manage_relationship(:participants, type: :append, on_missing: :error)
+      change manage_relationship(:participants, type: :append)
     end
   end
 
