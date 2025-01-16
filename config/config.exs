@@ -61,6 +61,7 @@ config :spark, :formatter,
   "Ash.Domain": [],
   "Ash.Resource": [
     section_order: [
+      :sqlite,
       :authentication,
       :tokens,
       # any section not in this list is left where it is
