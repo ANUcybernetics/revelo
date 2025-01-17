@@ -24,7 +24,6 @@ defmodule Revelo.Diagrams.Variable do
       end
 
       change relate_actor(:creator)
-      # change manage_relationship(:session, type: :append)
       change set_attribute(:name, arg(:name))
     end
 

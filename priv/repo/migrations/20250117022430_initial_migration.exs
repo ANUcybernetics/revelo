@@ -114,7 +114,8 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
-      add :description, :text, null: false
+      add :hidden?, :boolean
+      add :description, :text
       add :id, :uuid, null: false, primary_key: true
     end
 

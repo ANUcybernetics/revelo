@@ -17,38 +17,16 @@ defmodule Revelo.Diagrams.Relationship do
     defaults [:read, :destroy, update: :*]
 
     create :create do
-      accept [:description]
-
-      argument :src, :struct do
-        constraints instance_of: Variable
-        allow_nil? false
-      end
-
-      argument :dst, :struct do
-        constraints instance_of: Variable
-        allow_nil? false
-      end
-
-      #
-      # Define arguments for the actual resources
-      argument :session, :struct do
-        constraints instance_of: Session
-        allow_nil? false
-      end
-
-      # Set the relationships using the provided resources
-      change manage_relationship(:src, type: :append)
-      change manage_relationship(:dst, type: :append)
-      change manage_relationship(:session, type: :append)
+      accept [:description, :hidden?, :src_id, :dst_id, :session_id]
+      primary? true
     end
   end
 
   attributes do
     uuid_primary_key :id
 
-    attribute :description, :string do
-      allow_nil? false
-    end
+    attribute :description, :string
+    attribute :hidden?, :boolean, default: false
 
     timestamps()
   end

@@ -16,7 +16,17 @@
       "type": "text",
       "source": "description",
       "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "boolean",
+      "source": "hidden?",
+      "references": null,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -117,7 +127,7 @@
     }
   ],
   "table": "relationships",
-  "hash": "ADC60496A47CB6F85437C1DBE5E33BC1BFEC1A4EB9EF2192C578C799CB0FBF39",
+  "hash": "8FC08D3EB1546380936594B94035DFCA8D65D22CBC50F81A429BCB719B8B4AB9",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
