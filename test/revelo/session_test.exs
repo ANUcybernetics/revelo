@@ -50,6 +50,20 @@ defmodule Revelo.SessionTest do
       assert length(session.participants) == 2
       assert Enum.map(session.participants, & &1.id) == [user.id, user2.id]
     end
+
+    test "can create session with variables and relationships" do
+      user = generate(user())
+      session = generate(session())
+      var1 = generate(variable(user: user, session: session))
+      var2 = generate(variable(user: user, session: session))
+      relationship = generate(relationship(user: user, session: session, src: var1, dst: var2))
+
+      session = Ash.load!(session, [:variables, :influence_relationships])
+
+      assert length(session.variables) == 2
+      assert [rel] = session.influence_relationships
+      assert rel.id == relationship.id
+    end
   end
 
   # describe "relationships" do
