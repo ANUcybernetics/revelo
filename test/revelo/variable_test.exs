@@ -35,10 +35,11 @@ defmodule Revelo.VariableTest do
     end
 
     test "can create variable" do
-      # variable() |> pick() |> dbg()
       variable = generate(variable())
 
       assert variable
+      assert variable.session
+      assert variable.creator
     end
   end
 end
