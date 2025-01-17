@@ -48,6 +48,7 @@ defmodule Revelo.Sessions.Session do
   relationships do
     has_many :context_docs, Revelo.Sessions.ContextDoc
     has_many :variables, Revelo.Diagrams.Variable
+    has_many :influence_relationships, Revelo.Diagrams.Relationship
 
     many_to_many :participants, Revelo.Accounts.User do
       through Revelo.Sessions.SessionParticipants
