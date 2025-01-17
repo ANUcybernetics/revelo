@@ -76,16 +76,4 @@ defmodule Revelo.SessionTest do
                MapSet.new([relationship.id, relationship2.id])
     end
   end
-
-  # describe "relationships" do
-  #   test "can add participants to session" do
-  #     {:ok, session} = Ash.create(Session, %{name: "Test Session"})
-  #     {:ok, user} = Ash.create(Revelo.Accounts.User, %{name: "Test User", email: "test@test.com"})
-
-  #     {:ok, _} = Ash.update(session, include_participants: [user])
-
-  #     updated_session = Ash.load!(session, :participants)
-  #     assert length(updated_session.participants) == 1
-  #   end
-  # end
 end
