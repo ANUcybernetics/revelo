@@ -3,11 +3,9 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- find out why is_key? and included? aren't set to defaults (in the passing
-  tests using normal changeset -> Ash.create!)
-- find out why the changeset_generator isn't for variable isn't working (and why
-  the session arg isn't getting pulled through - perhaps :after_action can be
-  used to add the right arg to the changeset?)
+- get the VariableVote relationship working (possibly by manually creating a
+  variable vote first... not sure if I need to do something with the
+  :unique_vote identity?)
 
 - UI stuff (including all liveviews)
 - seeding new users for dev/test
