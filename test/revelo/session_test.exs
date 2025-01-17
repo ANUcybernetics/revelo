@@ -63,6 +63,17 @@ defmodule Revelo.SessionTest do
       assert length(session.variables) == 2
       assert [rel] = session.influence_relationships
       assert rel.id == relationship.id
+
+      var3 = generate(variable(user: user, session: session))
+      relationship2 = generate(relationship(user: user, session: session, src: var1, dst: var3))
+
+      session = Ash.load!(session, [:variables, :influence_relationships])
+
+      assert length(session.variables) == 3
+      assert length(session.influence_relationships) == 2
+
+      assert MapSet.new(session.influence_relationships, & &1.id) ==
+               MapSet.new([relationship.id, relationship2.id])
     end
   end
 
