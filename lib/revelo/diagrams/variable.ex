@@ -5,39 +5,51 @@ defmodule Revelo.Diagrams.Variable do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Sessions.Session
+
   sqlite do
     table "variables"
     repo Revelo.Repo
   end
 
   actions do
-    defaults [:read, :destroy, create: :*, update: :*]
+    defaults [:read]
+
+    create :create do
+      accept [:description, :is_key?, :included?, :session_id]
+      primary? true
+
+      argument :name, :string do
+        allow_nil? false
+      end
+
+      change relate_actor(:creator)
+      # change manage_relationship(:session, type: :append)
+      change set_attribute(:name, arg(:name))
+    end
+
+    update :rename do
+      argument :name, :string do
+        allow_nil? false
+      end
+
+      change set_attribute(:name, arg(:name))
+    end
   end
 
   attributes do
     uuid_primary_key :id
 
-    attribute :name, :string do
-      allow_nil? false
-    end
-
-    attribute :description, :string do
-      allow_nil? false
-    end
-
-    attribute :voi?, :boolean do
-      allow_nil? false
-    end
-
-    attribute :included?, :boolean do
-      allow_nil? false
-    end
+    attribute :name, :string, allow_nil?: false
+    attribute :description, :string, allow_nil?: false
+    attribute :is_key?, :boolean, default: false
+    attribute :included?, :boolean, default: false
 
     timestamps()
   end
 
   relationships do
-    belongs_to :session, Revelo.Sessions.Session do
+    belongs_to :session, Session do
       allow_nil? false
     end
 

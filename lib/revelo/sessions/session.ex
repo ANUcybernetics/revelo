@@ -14,6 +14,7 @@ defmodule Revelo.Sessions.Session do
     defaults [:read, :destroy, update: :*]
 
     create :create do
+      accept [:description, :report]
       primary? true
 
       argument :name, :string do
@@ -21,8 +22,6 @@ defmodule Revelo.Sessions.Session do
       end
 
       change set_attribute(:name, arg(:name))
-
-      accept [:description, :report]
     end
 
     update :add_participants do

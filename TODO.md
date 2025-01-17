@@ -3,11 +3,12 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- the Users aren't hitting the db, hence the relationship not working. need to
-  either get seed_generator actually creating the user, or to set up the
-  changeset version (changes in flight, will return to it tomorrow)
+- find out why is_key? and included? aren't set to defaults (in the passing
+  tests using normal changeset -> Ash.create!)
+- find out why the changeset_generator isn't for variable isn't working (and why
+  the session arg isn't getting pulled through - perhaps :after_action can be
+  used to add the right arg to the changeset?)
 
-- code interfaces where appropriate
 - UI stuff (including all liveviews)
 - seeding new users for dev/test
 

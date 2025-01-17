@@ -24,18 +24,18 @@ defmodule ReveloTest.Generators do
     )
   end
 
-  # using `changeset_generator`, calls the action when passed to `generate`
-  # def session_participant(opts \\ []) do
-  #   session_id =
-  #     opts[:session_id] || once(:default_session_id, fn -> generate(session()).id end)
+  def variable(opts \\ []) do
+    user = opts[:user] || generate(user())
+    session = opts[:session] || generate(session())
 
-  #   changeset_generator(
-  #     Revelo.Accounts.User,
-  #     :create,
-  #     defaults: [
-  #       session_id: session_id
-  #     ],
-  #     overrides: opts
-  #   )
-  # end
+    changeset_generator(Revelo.Diagrams.Variable, :create,
+      defaults: %{
+        name: sequence(:title, &"Variable #{&1}"),
+        description: sequence(:description, &"Description #{&1}"),
+        session_id: session.id
+      },
+      overrides: opts,
+      actor: user
+    )
+  end
 end

@@ -6,6 +6,7 @@ defmodule Revelo.Diagrams.Relationship do
     data_layer: AshSqlite.DataLayer
 
   alias Revelo.Diagrams.Variable
+  alias Revelo.Sessions.Session
 
   sqlite do
     table "relationships"
@@ -13,7 +14,33 @@ defmodule Revelo.Diagrams.Relationship do
   end
 
   actions do
-    defaults [:read, :destroy, create: :*, update: :*]
+    defaults [:read, :destroy, update: :*]
+
+    create :create do
+      accept [:description]
+
+      argument :src, :struct do
+        constraints instance_of: Variable
+        allow_nil? false
+      end
+
+      argument :dst, :struct do
+        constraints instance_of: Variable
+        allow_nil? false
+      end
+
+      #
+      # Define arguments for the actual resources
+      argument :session, :struct do
+        constraints instance_of: Session
+        allow_nil? false
+      end
+
+      # Set the relationships using the provided resources
+      change manage_relationship(:src, type: :append)
+      change manage_relationship(:dst, type: :append)
+      change manage_relationship(:session, type: :append)
+    end
   end
 
   attributes do
@@ -27,7 +54,7 @@ defmodule Revelo.Diagrams.Relationship do
   end
 
   relationships do
-    belongs_to :session, Revelo.Sessions.Session do
+    belongs_to :session, Session do
       allow_nil? false
     end
 
