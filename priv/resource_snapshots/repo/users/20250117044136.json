@@ -3,6 +3,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "confirmed_at",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "id",
       "references": null,
@@ -13,18 +23,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "description",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "inserted_at",
+      "type": "citext",
+      "source": "email",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -33,25 +33,34 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "updated_at",
+      "type": "text",
+      "source": "hashed_password",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     }
   ],
-  "table": "loops",
-  "hash": "C96ADD33AF9FCFFB9EED4D2A5C1417FBEF4F36711029FF3246BED7684FD036D1",
-  "identities": [],
+  "table": "users",
+  "hash": "FDE856A853FCAF76AAD78CE347955AA194A084877303E0998D5D6828D9C82118",
+  "identities": [
+    {
+      "name": "unique_email",
+      "keys": [
+        "email"
+      ],
+      "index_name": "users_unique_email_index",
+      "base_filter": null
+    }
+  ],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false
+  "has_create_action": true
 }

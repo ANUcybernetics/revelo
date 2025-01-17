@@ -14,27 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
       "source": "description",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "report",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -61,17 +41,17 @@
       "primary_key?": false
     }
   ],
-  "table": "sessions",
-  "hash": "409037C28EA0FFC4343C8DDA17D362196B4923943F3789D8ADFDC5814898F906",
+  "table": "loops",
+  "hash": "C82B0AEEA65E1974B1DE176AACF2E4A20AE1FF1F263D4E3811ACDFD7A9980098",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": true
+  "has_create_action": false
 }

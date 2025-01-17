@@ -3,6 +3,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "created_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "id",
       "references": null,
@@ -14,7 +24,27 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
+      "source": "jti",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "subject",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime",
+      "source": "expires_at",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -24,7 +54,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "text",
+      "source": "purpose",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -33,10 +63,10 @@
     {
       "default": "nil",
       "size": null,
-      "type": "boolean",
-      "source": "include?",
+      "type": "map",
+      "source": "extra_data",
       "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -59,44 +89,19 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "session_id",
-      "references": {
-        "name": "context_docs_session_id_fkey",
-        "table": "sessions",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "on_delete": null,
-        "destination_attribute": "id",
-        "deferrable": false,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "on_update": null
-      },
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
     }
   ],
-  "table": "context_docs",
-  "hash": "3FBD4DBE40600F52583B91E17D11237F521EAD1524B39BA11D3267DEBBBE1970",
+  "table": "tokens",
+  "hash": "E87049CFCD9FFAAF7985AD30516F1965772790BAA62533B678445BDB5C61386C",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false
+  "has_create_action": true
 }

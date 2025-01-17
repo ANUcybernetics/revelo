@@ -18,7 +18,6 @@ defmodule Revelo.Diagrams.VariableVote do
 
   relationships do
     belongs_to :variable, Revelo.Diagrams.Variable do
-      attribute_type :uuid_v7
       allow_nil? false
       primary_key? true
       attribute_writable? true
