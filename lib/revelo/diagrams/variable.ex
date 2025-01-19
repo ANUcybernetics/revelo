@@ -41,8 +41,8 @@ defmodule Revelo.Diagrams.Variable do
 
     attribute :name, :string, allow_nil?: false
     attribute :description, :string, allow_nil?: false
-    attribute :is_key?, :boolean, default: false
-    attribute :included?, :boolean, default: false
+    attribute :is_key?, :boolean, allow_nil?: false, default: false
+    attribute :included?, :boolean, allow_nil?: false, default: false
 
     timestamps()
   end

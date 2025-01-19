@@ -26,7 +26,7 @@ defmodule Revelo.Diagrams.Relationship do
     uuid_primary_key :id
 
     attribute :description, :string
-    attribute :hidden?, :boolean, default: false
+    attribute :hidden?, :boolean, allow_nil?: false, default: false
 
     timestamps()
   end
