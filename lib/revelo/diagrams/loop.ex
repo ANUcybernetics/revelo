@@ -16,8 +16,8 @@ defmodule Revelo.Diagrams.Loop do
 
   attributes do
     uuid_primary_key :id
-
     attribute :description, :string
+    attribute :display_order, :integer
     timestamps()
   end
 
