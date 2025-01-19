@@ -19,17 +19,14 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
-      add :included?, :boolean
-      add :is_key?, :boolean
+      add :included?, :boolean, null: false
+      add :is_key?, :boolean, null: false
       add :description, :text, null: false
       add :name, :text, null: false
       add :id, :uuid, null: false, primary_key: true
     end
 
     create table(:variable_votes, primary_key: false) do
-      add :updated_at, :utc_datetime_usec, null: false
-      add :inserted_at, :utc_datetime_usec, null: false
-
       add :voter_id,
           references(:users, column: :id, name: "variable_votes_voter_id_fkey", type: :uuid),
           primary_key: true,
@@ -43,6 +40,9 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
           ),
           primary_key: true,
           null: false
+
+      add :updated_at, :utc_datetime_usec, null: false
+      add :inserted_at, :utc_datetime_usec, null: false
     end
 
     create table(:users, primary_key: false) do
@@ -114,7 +114,7 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
-      add :hidden?, :boolean
+      add :hidden?, :boolean, null: false
       add :description, :text
       add :id, :uuid, null: false, primary_key: true
     end

@@ -14,19 +14,9 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
+      "source": "description",
       "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "text",
-      "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -34,7 +24,7 @@
       "default": "nil",
       "size": null,
       "type": "boolean",
-      "source": "include?",
+      "source": "hidden?",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -66,12 +56,62 @@
       "type": "uuid",
       "source": "session_id",
       "references": {
-        "name": "context_docs_session_id_fkey",
+        "name": "relationships_session_id_fkey",
         "table": "sessions",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "on_update": null
+      },
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "src_id",
+      "references": {
+        "name": "relationships_src_id_fkey",
+        "table": "variables",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "on_update": null
+      },
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "dst_id",
+      "references": {
+        "name": "relationships_dst_id_fkey",
+        "table": "variables",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -86,17 +126,17 @@
       "primary_key?": false
     }
   ],
-  "table": "context_docs",
-  "hash": "ED49612722B9C8FE79F943F5D55EC4E30234C89CB921A6330BE6DA4265B0BC19",
+  "table": "relationships",
+  "hash": "6399308DBAF3503EA1B2F494C733CDB4D979315B7A70EAD2803BEB830692B09D",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false
+  "has_create_action": true
 }

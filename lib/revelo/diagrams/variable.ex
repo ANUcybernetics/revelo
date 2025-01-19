@@ -5,6 +5,7 @@ defmodule Revelo.Diagrams.Variable do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Accounts.User
   alias Revelo.Sessions.Session
 
   sqlite do
@@ -52,10 +53,12 @@ defmodule Revelo.Diagrams.Variable do
       allow_nil? false
     end
 
-    belongs_to :creator, Revelo.Accounts.User do
+    belongs_to :creator, User do
       allow_nil? false
     end
 
-    has_many :votes, Revelo.Diagrams.VariableVote
+    has_many :votes, Revelo.Diagrams.VariableVote do
+      destination_attribute :variable_id
+    end
   end
 end
