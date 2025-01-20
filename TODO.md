@@ -3,15 +3,14 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- maybe we don't actually want a session -> participants relationship? could
-  just get that info from the list of variables (via their :creator attribute)
+- populate all the resource actions (and remove defaults afterwards if they're
+  not necessary)
 
-- UI stuff (including all liveviews)
+- add policies/authorizations
 
-- once things have settled down a bit, re-visit the use of default actions
-  (maybe don't need a bunch of them)
+- sketch out notifications architecture (what gets broadcast, and to whom?)
 
-- sort out authorization and policies in general (maybe even org tenancy?)
+- add UI views (via the ash_phoenix generator)
 
 - add a "create uuid on device and send on initial load" hook
 
@@ -41,3 +40,11 @@ mix ash.gen.resource \
   --attribute "name:string:required,description:string:required,voi?:boolean:required,included?:boolean:required" \
   --relationship "belongs_to:session:Revelo.Sessions.Session:required,has_many:votes:Revelo.Diagrams.VariableVote"
 ```
+
+## general dev thoughts
+
+- data model-wise, maybe we don't actually want a session -> participants (or
+  even session -> users) relationship? could just get that info from the list of
+  variables (via their :creator attribute)
+
+- should we add phoenix storybook?
