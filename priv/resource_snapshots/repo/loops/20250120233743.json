@@ -52,7 +52,7 @@
     }
   ],
   "table": "loops",
-  "hash": "C60D541147B01AEF7F003941721AC3ACEA8CDAEE2B6AF415C05E0B1F8F431DAD",
+  "hash": "A98FFC7D0F3F79A54FE2324412DD6A0502F98B87DF5A201593C77618A57C8440",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
@@ -63,5 +63,5 @@
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false
+  "has_create_action": true
 }

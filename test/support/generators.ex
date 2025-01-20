@@ -62,4 +62,35 @@ defmodule ReveloTest.Generators do
     |> Ash.Changeset.for_create(:create, input, actor: user)
     |> Ash.create!()
   end
+
+  def loop do
+    # a simple loop of length 3 (in future we might make this generator more sophisticated)
+    user = user()
+    session = session()
+    variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+    relationships =
+      variables
+      # add the first variable to the end to "close" the loop
+      |> List.insert_at(-1, List.first(variables))
+      |> Enum.chunk_every(2, 1, :discard)
+      |> Enum.map(fn [src, dst] ->
+        relationship(src: src, dst: dst, session: session, user: user)
+      end)
+
+    dbg(relationships)
+
+    input =
+      %{
+        relationships: StreamData.constant(relationships),
+        description: StreamData.repeatedly(fn -> Faker.Lorem.paragraph() end),
+        display_order: StreamData.positive_integer()
+      }
+      |> StreamData.fixed_map()
+      |> ExUnitProperties.pick()
+
+    Revelo.Diagrams.Loop
+    |> Ash.Changeset.for_create(:create, input, actor: user)
+    |> Ash.create!()
+  end
 end

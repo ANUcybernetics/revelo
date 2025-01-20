@@ -127,8 +127,18 @@
     }
   ],
   "table": "relationships",
-  "hash": "6399308DBAF3503EA1B2F494C733CDB4D979315B7A70EAD2803BEB830692B09D",
-  "identities": [],
+  "hash": "DCBAAFC7513FA73E11574547667DA9F50C4045F528C6C41509C0A015572B3531",
+  "identities": [
+    {
+      "name": "one_relationship_between_variables",
+      "keys": [
+        "src_id",
+        "dst_id"
+      ],
+      "index_name": "relationships_one_relationship_between_variables_index",
+      "base_filter": null
+    }
+  ],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,

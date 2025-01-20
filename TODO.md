@@ -10,6 +10,9 @@ we're building it out & exploring the problem space).
 
 - sketch out notifications architecture (what gets broadcast, and to whom?)
 
+- add a validation to the Loop resource such that the provided relationships do
+  actually constitue a cycle
+
 - add UI views (via the ash_phoenix generator)
 
 - add a "create uuid on device and send on initial load" hook

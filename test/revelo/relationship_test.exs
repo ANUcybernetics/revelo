@@ -8,27 +8,21 @@ defmodule Revelo.RelationshipTest do
   alias Revelo.Diagrams.RelationshipVote
 
   describe "relationship actions" do
-    property "succeeds on all valid create input" do
+    test "succeeds on valid create input" do
       user = user()
       session = session()
       src = variable(session: session, user: user)
       dst = variable(session: session, user: user)
 
-      check all(input <- Ash.Generator.action_input(Relationship, :create)) do
-        input =
-          input
-          |> Map.put(:session, session)
-          |> Map.put(:src, src)
-          |> Map.put(:dst, dst)
+      input = %{session: session, src: src, dst: dst}
 
-        rel =
-          Relationship
-          |> Ash.Changeset.for_create(:create, input, actor: user)
-          |> Ash.create!()
+      rel =
+        Relationship
+        |> Ash.Changeset.for_create(:create, input, actor: user)
+        |> Ash.create!()
 
-        assert rel.src_id == src.id
-        assert rel.dst_id == dst.id
-      end
+      assert rel.src_id == src.id
+      assert rel.dst_id == dst.id
     end
 
     test "can create relationship using generator" do
@@ -38,6 +32,19 @@ defmodule Revelo.RelationshipTest do
       assert relationship.session
       assert relationship.src
       assert relationship.dst
+    end
+
+    test "no duplicate relationships" do
+      user = user()
+      session = session()
+      src = variable(user: user, session: session)
+      dst = variable(user: user, session: session)
+
+      _r1 = relationship(user: user, session: session, src: src, dst: dst)
+
+      assert_raise Ash.Error.Invalid, fn ->
+        relationship(user: user, session: session, src: src, dst: dst)
+      end
     end
 
     test "can create relationship vote" do
@@ -87,6 +94,33 @@ defmodule Revelo.RelationshipTest do
       relationship2_id = relationship2.id
       assert [%{relationship_id: ^relationship1_id}] = relationship1.votes
       assert [%{relationship_id: ^relationship2_id}] = relationship2.votes
+    end
+
+    test "multiple users can vote on same relationship" do
+      user1 = generate(user())
+      user2 = generate(user())
+      session = session()
+      var1 = variable(user: user1, session: session)
+      var2 = variable(user: user1, session: session)
+      relationship = relationship(user: user1, session: session, src: var1, dst: var2)
+
+      vote1 =
+        RelationshipVote
+        |> Ash.Changeset.for_create(:create, %{relationship: relationship}, actor: user1)
+        |> Ash.create!()
+
+      vote2 =
+        RelationshipVote
+        |> Ash.Changeset.for_create(:create, %{relationship: relationship}, actor: user2)
+        |> Ash.create!()
+
+      assert vote1.voter_id == user1.id
+      assert vote2.voter_id == user2.id
+      assert vote1.relationship_id == relationship.id
+      assert vote2.relationship_id == relationship.id
+
+      relationship = Ash.load!(relationship, :votes)
+      assert length(relationship.votes) == 2
     end
   end
 end

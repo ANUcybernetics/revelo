@@ -79,6 +79,8 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
       add :id, :uuid, null: false, primary_key: true
     end
 
+    create unique_index(:variables, [:name, :session_id], name: "variables_unique_name_index")
+
     create table(:session_participants, primary_key: false) do
       add :participant_id,
           references(:users,
@@ -118,6 +120,10 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
       add :description, :text
       add :id, :uuid, null: false, primary_key: true
     end
+
+    create unique_index(:relationships, [:src_id, :dst_id],
+             name: "relationships_one_relationship_between_variables_index"
+           )
 
     create table(:relationship_votes, primary_key: false) do
       add :voter_id,
@@ -229,6 +235,10 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
     drop table(:relationship_votes)
 
+    drop_if_exists unique_index(:relationships, [:src_id, :dst_id],
+                     name: "relationships_one_relationship_between_variables_index"
+                   )
+
     drop constraint(:relationships, "relationships_session_id_fkey")
 
     drop constraint(:relationships, "relationships_src_id_fkey")
@@ -242,6 +252,10 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     drop constraint(:session_participants, "session_participants_participant_id_fkey")
 
     drop table(:session_participants)
+
+    drop_if_exists unique_index(:variables, [:name, :session_id],
+                     name: "variables_unique_name_index"
+                   )
 
     drop table(:sessions)
 

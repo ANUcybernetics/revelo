@@ -71,4 +71,8 @@ defmodule Revelo.Diagrams.Relationship do
       destination_attribute :relationship_id
     end
   end
+
+  identities do
+    identity :one_relationship_between_variables, [:src_id, :dst_id]
+  end
 end

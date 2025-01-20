@@ -67,4 +67,8 @@ defmodule Revelo.Diagrams.Variable do
       destination_attribute :variable_id
     end
   end
+
+  identities do
+    identity :unique_name, [:name, :session_id]
+  end
 end

@@ -5,6 +5,8 @@ defmodule Revelo.Diagrams.Loop do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Diagrams.Relationship
+
   sqlite do
     table "loops"
     repo Revelo.Repo
@@ -12,6 +14,17 @@ defmodule Revelo.Diagrams.Loop do
 
   actions do
     defaults [:read]
+
+    create :create do
+      accept [:description, :display_order]
+
+      argument :relationships, {:array, :struct} do
+        constraints items: [instance_of: Relationship]
+        allow_nil? false
+      end
+
+      change manage_relationship(:relationships, :influence_relationships, type: :append)
+    end
   end
 
   attributes do
@@ -22,7 +35,7 @@ defmodule Revelo.Diagrams.Loop do
   end
 
   relationships do
-    many_to_many :influence_relationships, Revelo.Diagrams.Relationship do
+    many_to_many :influence_relationships, Relationship do
       through Revelo.Diagrams.LoopRelationships
       source_attribute_on_join_resource :loop_id
       destination_attribute_on_join_resource :relationship_id

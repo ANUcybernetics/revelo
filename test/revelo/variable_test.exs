@@ -4,6 +4,7 @@ defmodule Revelo.VariableTest do
   import ExUnitProperties
   import ReveloTest.Generators
 
+  alias Ash.Error.Invalid
   alias Revelo.Diagrams.Variable
   alias Revelo.Diagrams.VariableVote
 
@@ -47,6 +48,24 @@ defmodule Revelo.VariableTest do
       assert variable
       assert variable.session
       assert variable.creator
+    end
+  end
+
+  test "enforces uniqueness of names within session" do
+    user = user()
+    session = session()
+
+    input = %{name: "test", description: "test", session: session}
+
+    _variable1 =
+      Variable
+      |> Ash.Changeset.for_create(:create, input, actor: user)
+      |> Ash.create!()
+
+    assert_raise Invalid, fn ->
+      Variable
+      |> Ash.Changeset.for_create(:create, input, actor: user)
+      |> Ash.create!()
     end
   end
 
@@ -97,7 +116,7 @@ defmodule Revelo.VariableTest do
         |> Ash.Changeset.for_create(:create, %{variable: variable}, actor: user)
         |> Ash.create!()
 
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         VariableVote
         |> Ash.Changeset.for_create(:create, %{variable: variable}, actor: user)
         |> Ash.create!()
