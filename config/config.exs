@@ -22,6 +22,8 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
+config :instructor_lite, :openai_api_key, System.fetch_env!("OPENAI_API_KEY")
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
