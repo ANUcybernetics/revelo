@@ -67,6 +67,8 @@ defmodule Revelo.Diagrams.Relationship do
       allow_nil? false
     end
 
-    has_many :votes, Revelo.Diagrams.RelationshipVote
+    has_many :votes, Revelo.Diagrams.RelationshipVote do
+      destination_attribute :relationship_id
+    end
   end
 end
