@@ -88,24 +88,25 @@ defmodule Revelo.VariableTest do
       assert length(variable.votes) == 2
     end
 
-    # test "cannot vote twice" do
-    #   user = generate(user())
-    #   variable = generate(variable(user: user))
+    test "cannot vote twice" do
+      user = user()
+      variable = variable(user: user)
 
-    #   vote_changeset = fn ->
-    #     VariableVote
-    #     |> Ash.Changeset.new()
-    #     |> Ash.Changeset.set_argument(:voter_id, user.id)
-    #     |> Ash.Changeset.set_argument(:variable_id, variable.id)
-    #   end
+      _vote =
+        VariableVote
+        |> Ash.Changeset.for_create(:create, %{variable: variable}, actor: user)
+        |> Ash.create!()
 
-    #   Ash.create!(vote_changeset.())
+      assert_raise Ash.Error.Invalid, fn ->
+        VariableVote
+        |> Ash.Changeset.for_create(:create, %{variable: variable}, actor: user)
+        |> Ash.create!()
+      end
 
-    #   assert_raise(
-    #     Ash.Error.Invalid,
-    #     ~r/unique_vote/,
-    #     fn -> Ash.create!(vote_changeset.()) end
-    #   )
-    # end
+      variable = Ash.load!(variable, :votes)
+      assert [%{voter_id: voter_id, variable_id: variable_id}] = variable.votes
+      assert voter_id == user.id
+      assert variable_id == variable.id
+    end
   end
 end
