@@ -30,7 +30,7 @@ defmodule Revelo.RelationshipTest do
       end
     end
 
-    test "can create relationship" do
+    test "can create relationship using generator" do
       relationship = Ash.load!(relationship(), [:src, :dst, :session])
 
       assert relationship
