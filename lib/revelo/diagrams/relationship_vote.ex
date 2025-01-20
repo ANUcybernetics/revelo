@@ -5,14 +5,28 @@ defmodule Revelo.Diagrams.RelationshipVote do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Diagrams.Relationship
+
   sqlite do
     table "relationship_votes"
     repo Revelo.Repo
   end
 
+  actions do
+    defaults [:read]
+
+    create :create do
+      argument :relationship, :struct do
+        constraints instance_of: Relationship
+        allow_nil? false
+      end
+
+      change relate_actor(:voter)
+      change manage_relationship(:relationship, type: :append)
+    end
+  end
+
   attributes do
-    uuid_primary_key :relationship_id
-    uuid_primary_key :voter_id
     timestamps()
   end
 
@@ -20,13 +34,11 @@ defmodule Revelo.Diagrams.RelationshipVote do
     belongs_to :relationship, Revelo.Diagrams.Relationship do
       allow_nil? false
       primary_key? true
-      attribute_writable? true
     end
 
     belongs_to :voter, Revelo.Accounts.User do
       allow_nil? false
       primary_key? true
-      attribute_writable? true
     end
   end
 

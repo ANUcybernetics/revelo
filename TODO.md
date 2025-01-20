@@ -3,12 +3,10 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- get the VariableVote relationship working (possibly by manually creating a
-  variable vote first... not sure if I need to do something with the
-  :unique_vote identity?)
+- maybe we don't actually want a session -> participants relationship? could
+  just get that info from the list of variables (via their :creator attribute)
 
 - UI stuff (including all liveviews)
-- seeding new users for dev/test
 
 - once things have settled down a bit, re-visit the use of default actions
   (maybe don't need a bunch of them)

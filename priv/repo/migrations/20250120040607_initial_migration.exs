@@ -120,9 +120,6 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     end
 
     create table(:relationship_votes, primary_key: false) do
-      add :updated_at, :utc_datetime_usec, null: false
-      add :inserted_at, :utc_datetime_usec, null: false
-
       add :voter_id,
           references(:users, column: :id, name: "relationship_votes_voter_id_fkey", type: :uuid),
           primary_key: true,
@@ -136,6 +133,9 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
           ),
           primary_key: true,
           null: false
+
+      add :updated_at, :utc_datetime_usec, null: false
+      add :inserted_at, :utc_datetime_usec, null: false
     end
 
     create unique_index(:relationship_votes, [:relationship_id, :voter_id],
@@ -145,14 +145,12 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     create table(:loops, primary_key: false) do
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
+      add :display_order, :bigint
       add :description, :text
       add :id, :uuid, null: false, primary_key: true
     end
 
     create table(:loop_votes, primary_key: false) do
-      add :updated_at, :utc_datetime_usec, null: false
-      add :inserted_at, :utc_datetime_usec, null: false
-
       add :voter_id,
           references(:users, column: :id, name: "loop_votes_voter_id_fkey", type: :uuid),
           primary_key: true,
@@ -161,6 +159,9 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
       add :loop_id, references(:loops, column: :id, name: "loop_votes_loop_id_fkey", type: :uuid),
         primary_key: true,
         null: false
+
+      add :updated_at, :utc_datetime_usec, null: false
+      add :inserted_at, :utc_datetime_usec, null: false
     end
 
     create unique_index(:loop_votes, [:loop_id, :voter_id], name: "loop_votes_unique_vote_index")

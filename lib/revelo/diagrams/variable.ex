@@ -17,14 +17,20 @@ defmodule Revelo.Diagrams.Variable do
     defaults [:read]
 
     create :create do
-      accept [:description, :is_key?, :included?, :session_id]
+      accept [:description, :is_key?, :included?]
       primary? true
 
       argument :name, :string do
         allow_nil? false
       end
 
+      argument :session, :struct do
+        constraints instance_of: Session
+        allow_nil? false
+      end
+
       change relate_actor(:creator)
+      change manage_relationship(:session, type: :append)
       change set_attribute(:name, arg(:name))
     end
 

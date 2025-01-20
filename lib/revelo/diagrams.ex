@@ -4,11 +4,11 @@ defmodule Revelo.Diagrams do
 
   resources do
     resource Revelo.Diagrams.Variable do
-      define :create_variable, args: [:name, :session_id], action: :create
+      define :create_variable, args: [:name, :session], action: :create
     end
 
     resource Revelo.Diagrams.Relationship do
-      define :create_relationship, args: [:src_id, :dst_id, :session_id], action: :create
+      define :create_relationship, args: [:src, :dst, :session], action: :create
     end
 
     resource Revelo.Diagrams.Loop

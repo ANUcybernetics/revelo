@@ -7,29 +7,18 @@ defmodule Revelo.RelationshipTest do
   alias Revelo.Diagrams.Relationship
 
   describe "relationship actions" do
-    property "accepts valid create input" do
-      user = generate(user())
-
-      check all(input <- Ash.Generator.action_input(Relationship, :create)) do
-        changeset =
-          Ash.Changeset.for_create(Relationship, :create, input, actor: user)
-
-        assert changeset.valid?
-      end
-    end
-
     property "succeeds on all valid create input" do
-      user = generate(user())
-      session = generate(session(user: user))
-      src = generate(variable(session: session, user: user))
-      dst = generate(variable(session: session, user: user))
+      user = user()
+      session = session()
+      src = variable(session: session, user: user)
+      dst = variable(session: session, user: user)
 
       check all(input <- Ash.Generator.action_input(Relationship, :create)) do
         input =
           input
-          |> Map.put(:session_id, session.id)
-          |> Map.put(:src_id, src.id)
-          |> Map.put(:dst_id, dst.id)
+          |> Map.put(:session, session)
+          |> Map.put(:src, src)
+          |> Map.put(:dst, dst)
 
         rel =
           Relationship
@@ -42,7 +31,7 @@ defmodule Revelo.RelationshipTest do
     end
 
     test "can create relationship" do
-      relationship = relationship() |> generate() |> Ash.load!([:src, :dst, :session])
+      relationship = Ash.load!(relationship(), [:src, :dst, :session])
 
       assert relationship
       assert relationship.session

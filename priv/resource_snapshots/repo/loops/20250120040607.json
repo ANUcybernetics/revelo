@@ -23,6 +23,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "bigint",
+      "source": "display_order",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "utc_datetime_usec",
       "source": "inserted_at",
       "references": null,
@@ -42,7 +52,7 @@
     }
   ],
   "table": "loops",
-  "hash": "C96ADD33AF9FCFFB9EED4D2A5C1417FBEF4F36711029FF3246BED7684FD036D1",
+  "hash": "C60D541147B01AEF7F003941721AC3ACEA8CDAEE2B6AF415C05E0B1F8F431DAD",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {

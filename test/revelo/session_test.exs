@@ -22,11 +22,20 @@ defmodule Revelo.SessionTest do
       end
     end
 
-    test "can create session with participants" do
-      user = generate(user())
-      user2 = generate(user())
-      session = generate(session())
+    test "overrides passed through to generator work properly" do
+      user = user()
+      session = session()
+      variable = variable(user: user, session: session)
+      assert variable.creator == user
+      assert variable.session == session
+    end
 
+    test "can create session with participants" do
+      session = session()
+      user = user()
+      user2 = user()
+
+      # TODO update this when the auth/policies stuff is in place
       Ash.get!(User, user.id, authorize?: false)
 
       session =
@@ -52,20 +61,25 @@ defmodule Revelo.SessionTest do
     end
 
     test "can create session with variables and relationships" do
-      user = generate(user())
-      session = generate(session())
-      var1 = generate(variable(user: user, session: session))
-      var2 = generate(variable(user: user, session: session))
-      relationship = generate(relationship(user: user, session: session, src: var1, dst: var2))
+      user = user()
+      session = session()
+      assert Ash.load!(session, :variables).variables == []
+      var1 = variable(user: user, session: session)
+      var2 = variable(user: user, session: session)
+      assert Enum.count(Ash.load!(session, :variables).variables) == 2
+
+      relationship = relationship(user: user, session: session, src: var1, dst: var2)
 
       session = Ash.load!(session, [:variables, :influence_relationships])
 
-      assert length(session.variables) == 2
+      assert session.variables |> Enum.map(& &1.id) |> Enum.sort() ==
+               Enum.sort([var1.id, var2.id])
+
       assert [rel] = session.influence_relationships
       assert rel.id == relationship.id
 
-      var3 = generate(variable(user: user, session: session))
-      relationship2 = generate(relationship(user: user, session: session, src: var1, dst: var3))
+      var3 = variable(user: user, session: session)
+      relationship2 = relationship(user: user, session: session, src: var1, dst: var3)
 
       session = Ash.load!(session, [:variables, :influence_relationships])
 

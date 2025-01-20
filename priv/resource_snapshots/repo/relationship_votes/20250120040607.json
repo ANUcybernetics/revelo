@@ -3,6 +3,26 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "relationship_id",
       "references": {
@@ -49,30 +69,10 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": true
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "inserted_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "updated_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
     }
   ],
   "table": "relationship_votes",
-  "hash": "999E1B811AAF56D74576AB1A43ABA5607D56FD8B7668CF5EA1FB0E6AB0B0E112",
+  "hash": "BBF811D307E04561E8C50D93566547D78D41A072A33FB7B645DDEA2FFA2F33DE",
   "identities": [
     {
       "name": "unique_vote",
@@ -93,5 +93,5 @@
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false
+  "has_create_action": true
 }

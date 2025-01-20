@@ -9,9 +9,15 @@ defmodule Revelo.VariableTest do
 
   describe "variable actions" do
     property "accepts valid create input" do
-      user = generate(user())
+      user = user()
+      session = session()
 
-      check all(input <- Ash.Generator.action_input(Variable, :create)) do
+      check all(
+              input <-
+                Ash.Generator.action_input(Variable, :create)
+            ) do
+        input = Map.put(input, :session, session)
+
         changeset =
           Ash.Changeset.for_create(Variable, :create, input, actor: user)
 
@@ -20,11 +26,11 @@ defmodule Revelo.VariableTest do
     end
 
     property "succeeds on all valid create input" do
-      user = generate(user())
-      session = generate(session())
+      user = user()
+      session = session()
 
       check all(input <- Ash.Generator.action_input(Variable, :create)) do
-        input = Map.put(input, :session_id, session.id)
+        input = Map.put(input, :session, session)
 
         var =
           Variable
@@ -36,27 +42,12 @@ defmodule Revelo.VariableTest do
     end
 
     test "can create variable" do
-      variable = generate(variable())
+      variable = variable()
 
       assert variable
       assert variable.session
       assert variable.creator
     end
-
-    # test "user can vote on variable" do
-    #   user = generate(user())
-    #   variable = generate(variable(user: user))
-
-    #   variable =
-    #     variable
-    #     |> Ash.Changeset.for_update(:vote, %{}, actor: user)
-    #     |> Ash.update!()
-    #     |> Ash.load!(:votes)
-
-    #   assert length(variable.votes) == 1
-    #   [vote] = variable.votes
-    #   assert vote.voter_id == user.id
-    # end
   end
 
   describe "variable vote actions" do

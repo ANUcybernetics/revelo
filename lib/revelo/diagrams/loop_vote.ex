@@ -5,14 +5,28 @@ defmodule Revelo.Diagrams.LoopVote do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Diagrams.Loop
+
   sqlite do
     table "loop_votes"
     repo Revelo.Repo
   end
 
+  actions do
+    defaults [:read]
+
+    create :create do
+      argument :loop, :struct do
+        constraints instance_of: Loop
+        allow_nil? false
+      end
+
+      change relate_actor(:voter)
+      change manage_relationship(:loop, type: :append)
+    end
+  end
+
   attributes do
-    uuid_primary_key :loop_id
-    uuid_primary_key :voter_id
     timestamps()
   end
 
@@ -20,13 +34,11 @@ defmodule Revelo.Diagrams.LoopVote do
     belongs_to :loop, Revelo.Diagrams.Loop do
       allow_nil? false
       primary_key? true
-      attribute_writable? true
     end
 
     belongs_to :voter, Revelo.Accounts.User do
       allow_nil? false
       primary_key? true
-      attribute_writable? true
     end
   end
 

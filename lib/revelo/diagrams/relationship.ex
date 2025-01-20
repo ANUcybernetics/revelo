@@ -20,8 +20,28 @@ defmodule Revelo.Diagrams.Relationship do
     # than just accepting the :session_id (from memory the issue was that the accept :session_id
     # approach was to get the generate_changeset approach to work, but we should revisit that)
     create :create do
-      accept [:description, :hidden?, :src_id, :dst_id, :session_id]
+      accept [:description, :hidden?]
+
+      argument :session, :struct do
+        constraints instance_of: Session
+        allow_nil? false
+      end
+
+      argument :src, :struct do
+        constraints instance_of: Variable
+        allow_nil? false
+      end
+
+      argument :dst, :struct do
+        constraints instance_of: Variable
+        allow_nil? false
+      end
+
       primary? true
+
+      change manage_relationship(:session, type: :append)
+      change manage_relationship(:src, type: :append)
+      change manage_relationship(:dst, type: :append)
     end
   end
 

@@ -3,6 +3,26 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "loop_id",
       "references": {
@@ -49,30 +69,10 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": true
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "inserted_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "updated_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
     }
   ],
   "table": "loop_votes",
-  "hash": "70058E93B570390F6D607544684C4B6C419BE91A983C3387340A12062B3DF3C0",
+  "hash": "3FF3CBFE7082E05F4CAF6A746F21F95263F779819FFFC6AAA9FA98B7577FEA9C",
   "identities": [
     {
       "name": "unique_vote",
@@ -93,5 +93,5 @@
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false
+  "has_create_action": true
 }
