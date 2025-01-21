@@ -12,7 +12,7 @@ end
 defmodule Revelo.LLM do
   @moduledoc false
 
-  def generate_variables(key_variable, count) do
+  def generate_variables(description, key_variable, count) do
     InstructorLite.instruct(
       %{
         messages: [
@@ -24,17 +24,21 @@ defmodule Revelo.LLM do
             1. Use nouns or noun phrases to name variables.
             2. Ensure that the name given to a variable makes it clear that the thing or characteristic referred to is capable of change.
             3. Avoid using surrogate variables (such as, for example, Level of trust in the community) unless it is necessary.
-            4. Begin the name of the variable with a phrase that signals quantity, such as amount, number, extent, area, size, level, degree of, etc.
-            5. Use the same rules for naming intangible variables, such as Happiness, as you would for tangible variables.
-            6. Avoid using variable names that refer to things that are not usually reported using numbers, such as Population, Cost, or Distance.
-            7. Check that the name of the variable can be thought about in terms of quantity, i.e., it can increase or decrease.
+            4. Use the same rules for naming intangible variables, such as Happiness, as you would for tangible variables.
+            5. Avoid using variable names that refer to things that are not usually reported using numbers, such as Population, Cost, or Distance.
+            6. Check that the name of the variable can be thought about in terms of quantity, i.e., it works in the sentence "As [variable] increases"
 
-            You will be provided with a key variable.
+            You will be a description of the system that should decide most of your variables.
 
-            You will also be provided with a number N, and you will generate N different variable names that follow all the rules above and have appropriate capitalisation)
+            A key variable will also be provided, which we are interested to track the influence of.
+
+            You will also be provided with a number N, and you will generate N different variable names that follow all the rules above.
             """
           },
-          %{role: "user", content: "key_variable: #{key_variable}, N: #{count}"}
+          %{
+            role: "user",
+            content: "System Description: #{description}, Key Variable: #{key_variable}, N: #{count}"
+          }
         ]
       },
       response_model: Revelo.LLM.VariableList,
