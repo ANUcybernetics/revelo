@@ -37,5 +37,12 @@ defmodule Revelo.LoopTest do
       assert MapSet.new(relationships, & &1.id) ==
                MapSet.new(loop.influence_relationships, & &1.id)
     end
+
+    test "can create non-empty loop using generator" do
+      loop = Ash.load!(loop(), :influence_relationships)
+
+      assert loop
+      assert length(loop.influence_relationships) > 0
+    end
   end
 end
