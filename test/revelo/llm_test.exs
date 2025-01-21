@@ -1,8 +1,6 @@
 defmodule Revelo.LLMTest do
   use Revelo.DataCase
 
-  alias Revelo.LLM
-
   describe "test real OpenAI API calls" do
     @describetag skip: "requires OpenAI API key and costs money"
 
