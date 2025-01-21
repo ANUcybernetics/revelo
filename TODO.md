@@ -21,14 +21,18 @@ we're building it out & exploring the problem space).
 
 - Phoenix LiveView (for web stuff)
 - Ash & AshPhoenix (for data modelling)
-- StreamData for property-based testing
 - SaladUI
-- PhoenixTest (and hopefully PhoenixTestPlaywright) for front-end testing
-- mermaid.js (in a phoenix hook) for rendering the diagrams
+- [PhoenixTest](https://hexdocs.pm/phoenix_test/PhoenixTest.html) (and hopefully
+  PhoenixTestPlaywright) for front-end testing
+- [cytoscape.js](https://js.cytoscape.org) (in a phoenix hook) for rendering the
+  diagrams
 - AshAuthentication (with passwords, maybe even magic links?) for auth
 - [InstructorLite](https://hexdocs.pm/instructor_lite/readme.html) for
   platform-agnostic API use
 - LiteFS for "hosted SQLite"
+- (maybe) use [this](https://docs.rs/graph-cycles/latest/graph_cycles/) for
+  cycle detection (via rustler) but honestly we might just hand-roll something
+  naive
 
 ## generator invocations
 
