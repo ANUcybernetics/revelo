@@ -9,8 +9,22 @@ defmodule Revelo.LLM.VariableList do
   end
 end
 
+defmodule Revelo.LLM.Story do
+  @moduledoc false
+  use Ecto.Schema
+  use InstructorLite.Instruction
+
+  @primary_key false
+  embedded_schema do
+    field(:story, :string)
+  end
+end
+
 defmodule Revelo.LLM do
   @moduledoc false
+
+  alias Revelo.LLM.Story
+  alias Revelo.LLM.VariableList
 
   def generate_variables(description, key_variable, count) do
     InstructorLite.instruct(
@@ -41,7 +55,33 @@ defmodule Revelo.LLM do
           }
         ]
       },
-      response_model: Revelo.LLM.VariableList,
+      response_model: VariableList,
+      adapter_context: [api_key: Application.fetch_env!(:instructor_lite, :openai_api_key)]
+    )
+  end
+
+  def generate_story(description, key_variable, loop, feedback_type) do
+    InstructorLite.instruct(
+      %{
+        messages: [
+          %{
+            role: "system",
+            content: ~S"""
+            You are a systems engineer skilled at crafting engaging, concise, and imaginative 1-2 sentence stories that illustrate the dynamics of feedback loops.
+            Using the relationships between the items in the system, explain whether the loop is balancing or reinforcing.
+            Ensure the story highlights the system's state as it evolves, staying true to the actual dynamics.
+
+            The context provided is for reference only and should not influence the content of the loop.
+            """
+          },
+          %{
+            role: "user",
+            content:
+              "Context: #{description}, Key Variable: #{key_variable}, loop: #{loop}, feedback type: #{feedback_type}"
+          }
+        ]
+      },
+      response_model: Story,
       adapter_context: [api_key: Application.fetch_env!(:instructor_lite, :openai_api_key)]
     )
   end
