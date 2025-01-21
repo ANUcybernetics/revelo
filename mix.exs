@@ -32,6 +32,7 @@ defmodule Revelo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:salad_ui, "~> 0.14"},
       {:bcrypt_elixir, "~> 3.0"},
       {:picosat_elixir, "~> 0.2"},
       {:ash_authentication, "~> 4.1"},
