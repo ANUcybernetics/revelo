@@ -6,12 +6,14 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = {
+  important: ".revelo-web",
   content: [
     "../deps/salad_ui/lib/**/*.ex",
     "./js/**/*.js",
     "../lib/revelo_web.ex",
     "../lib/revelo_web/**/*.*ex",
     "../deps/ash_authentication_phoenix/**/*.*ex",
+    "../storybook/**/*.*exs",
   ],
   theme: {
     extend: {

@@ -32,6 +32,7 @@ defmodule Revelo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:phoenix_storybook, "~> 0.8"},
       {:salad_ui, "~> 0.14"},
       {:bcrypt_elixir, "~> 3.0"},
       {:picosat_elixir, "~> 0.2"},
@@ -85,6 +86,7 @@ defmodule Revelo.MixProject do
       "assets.deploy": [
         "tailwind revelo --minify",
         "esbuild revelo --minify",
+        "tailwind storybook --minify",
         "phx.digest"
       ]
     ]

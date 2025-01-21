@@ -3,6 +3,7 @@ defmodule ReveloWeb.Router do
   use AshAuthentication.Phoenix.Router
 
   import AshAuthentication.Plug.Helpers
+  import PhoenixStorybook.Router
 
   alias AshAuthentication.Phoenix.Overrides.Default
 
@@ -20,6 +21,10 @@ defmodule ReveloWeb.Router do
     plug :accepts, ["json"]
     plug :load_from_bearer
     plug :set_actor, :user
+  end
+
+  scope "/" do
+    storybook_assets()
   end
 
   scope "/", ReveloWeb do
@@ -45,6 +50,7 @@ defmodule ReveloWeb.Router do
     get "/", PageController, :home
     auth_routes AuthController, Revelo.Accounts.User, path: "/auth"
     sign_out_route AuthController
+    live_storybook("/storybook", backend_module: ReveloWeb.Storybook)
 
     # Remove these if you'd like to use your own authentication views
     sign_in_route register_path: "/register",

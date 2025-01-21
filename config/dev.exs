@@ -51,7 +51,8 @@ config :revelo, ReveloWeb.Endpoint,
   secret_key_base: "hUfCOzwW+9gfeqUyZfc18dkFP0BHWrhxDRL8lNTAbKQQC01NP3M/PWHEVnd/z0f7",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:revelo, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:revelo, ~w(--watch)]}
+    tailwind: {Tailwind, :install_and_run, [:revelo, ~w(--watch)]},
+    storybook_tailwind: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
   ]
 
 # Watch static and templates for browser reloading.
@@ -70,7 +71,8 @@ config :revelo, ReveloWeb.Endpoint,
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/revelo_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/revelo_web/(controllers|live|components)/.*(ex|heex)$",
+      ~r"storybook/.*(exs)$"
     ]
   ]
 
