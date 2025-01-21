@@ -78,8 +78,6 @@ defmodule ReveloTest.Generators do
         relationship(src: src, dst: dst, session: session, user: user)
       end)
 
-    dbg(relationships)
-
     input =
       %{
         relationships: StreamData.constant(relationships),

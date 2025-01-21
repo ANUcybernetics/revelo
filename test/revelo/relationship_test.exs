@@ -1,7 +1,6 @@
 defmodule Revelo.RelationshipTest do
   use Revelo.DataCase
 
-  import ExUnitProperties
   import ReveloTest.Generators
 
   alias Revelo.Diagrams.Relationship

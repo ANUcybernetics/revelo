@@ -24,7 +24,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "text",
+      "source": "description",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -34,7 +34,17 @@
       "default": "nil",
       "size": null,
       "type": "boolean",
-      "source": "include?",
+      "source": "is_key?",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "boolean",
+      "source": "included?",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -66,12 +76,37 @@
       "type": "uuid",
       "source": "session_id",
       "references": {
-        "name": "context_docs_session_id_fkey",
+        "name": "variables_session_id_fkey",
         "table": "sessions",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
+        },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "on_update": null
+      },
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "creator_id",
+      "references": {
+        "name": "variables_creator_id_fkey",
+        "table": "users",
+        "multitenancy": {
+          "global": null,
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -86,17 +121,27 @@
       "primary_key?": false
     }
   ],
-  "table": "context_docs",
-  "hash": "3FBD4DBE40600F52583B91E17D11237F521EAD1524B39BA11D3267DEBBBE1970",
-  "identities": [],
+  "table": "variables",
+  "hash": "91B296883629E6FB3DD23C52E1A0DF8B96D2B8AF51419327712557B6703F8263",
+  "identities": [
+    {
+      "name": "unique_name",
+      "keys": [
+        "name",
+        "session_id"
+      ],
+      "index_name": "variables_unique_name_index",
+      "base_filter": null
+    }
+  ],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false
+  "has_create_action": true
 }

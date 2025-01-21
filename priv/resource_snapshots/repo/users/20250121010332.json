@@ -42,7 +42,7 @@
     }
   ],
   "table": "users",
-  "hash": "6D0D5F276A36762266E6F6DE9DB15F8C0E42C28FED9B1F3A4DA9C6F7B516421F",
+  "hash": "FDE856A853FCAF76AAD78CE347955AA194A084877303E0998D5D6828D9C82118",
   "identities": [
     {
       "name": "unique_email",
@@ -56,8 +56,8 @@
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],

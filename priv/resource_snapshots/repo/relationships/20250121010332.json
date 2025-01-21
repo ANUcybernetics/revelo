@@ -60,8 +60,8 @@
         "table": "sessions",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -85,8 +85,8 @@
         "table": "variables",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -110,8 +110,8 @@
         "table": "variables",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -127,7 +127,7 @@
     }
   ],
   "table": "relationships",
-  "hash": "DCBAAFC7513FA73E11574547667DA9F50C4045F528C6C41509C0A015572B3531",
+  "hash": "F24FCF9541B62F9CEB1AE40D61FCAE54133C34CFF879FE89647464B90400C16E",
   "identities": [
     {
       "name": "one_relationship_between_variables",
@@ -142,8 +142,8 @@
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],

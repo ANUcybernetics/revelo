@@ -5,6 +5,7 @@ defmodule Revelo.Diagrams.Loop do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Diagrams.LoopRelationships
   alias Revelo.Diagrams.Relationship
 
   sqlite do
@@ -23,7 +24,15 @@ defmodule Revelo.Diagrams.Loop do
         allow_nil? false
       end
 
-      change manage_relationship(:relationships, :influence_relationships, type: :append)
+      change after_action(fn changeset, record, _context ->
+               Enum.each(changeset.arguments.relationships, fn relationship ->
+                 LoopRelationships
+                 |> Ash.Changeset.for_create(:create, %{loop: record, relationship: relationship})
+                 |> Ash.create!()
+               end)
+
+               {:ok, record}
+             end)
     end
   end
 
@@ -36,9 +45,31 @@ defmodule Revelo.Diagrams.Loop do
 
   relationships do
     many_to_many :influence_relationships, Relationship do
-      through Revelo.Diagrams.LoopRelationships
+      through LoopRelationships
       source_attribute_on_join_resource :loop_id
       destination_attribute_on_join_resource :relationship_id
     end
+  end
+
+  # this is necessary as an :after_action because in the loop's create action there's no loop ID yet,
+  # so it can't be set in the join table
+  def create_loop_relationships(result, %{arguments: %{relationships: relationships}}) do
+    # TODO update the LoopRelationship :create action to use manage_relationship
+    relationships_data =
+      Enum.map(relationships, fn relationship ->
+        %{
+          loop_id: result.id,
+          relationship_id: relationship.id
+        }
+      end)
+
+    results =
+      Enum.map(relationships_data, fn data ->
+        LoopRelationships
+        |> Ash.Changeset.for_create(:create, data)
+        |> Ash.create!()
+      end)
+
+    {:ok, results}
   end
 end

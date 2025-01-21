@@ -3,22 +3,27 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "inserted_at",
-      "references": null,
+      "type": "uuid",
+      "source": "loop_id",
+      "references": {
+        "name": "loop_relationships_loop_id_fkey",
+        "table": "loops",
+        "multitenancy": {
+          "global": null,
+          "strategy": null,
+          "attribute": null
+        },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "on_update": null
+      },
       "allow_nil?": false,
       "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "updated_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
+      "primary_key?": true
     },
     {
       "default": "nil",
@@ -26,37 +31,12 @@
       "type": "uuid",
       "source": "relationship_id",
       "references": {
-        "name": "relationship_votes_relationship_id_fkey",
+        "name": "loop_relationships_relationship_id_fkey",
         "table": "relationships",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "on_delete": null,
-        "destination_attribute": "id",
-        "deferrable": false,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "on_update": null
-      },
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": true
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "voter_id",
-      "references": {
-        "name": "relationship_votes_voter_id_fkey",
-        "table": "users",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -71,24 +51,14 @@
       "primary_key?": true
     }
   ],
-  "table": "relationship_votes",
-  "hash": "BBF811D307E04561E8C50D93566547D78D41A072A33FB7B645DDEA2FFA2F33DE",
-  "identities": [
-    {
-      "name": "unique_vote",
-      "keys": [
-        "relationship_id",
-        "voter_id"
-      ],
-      "index_name": "relationship_votes_unique_vote_index",
-      "base_filter": null
-    }
-  ],
+  "table": "loop_relationships",
+  "hash": "4695D3367E63DFC7ED703F4F0FC5934E2201D9D67B1BD39AD4FB011021D059F5",
+  "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],

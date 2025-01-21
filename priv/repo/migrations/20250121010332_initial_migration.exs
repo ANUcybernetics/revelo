@@ -174,7 +174,7 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
     create table(:loop_relationships, primary_key: false) do
       add :relationship_id,
-          references(:loops,
+          references(:relationships,
             column: :id,
             name: "loop_relationships_relationship_id_fkey",
             type: :uuid

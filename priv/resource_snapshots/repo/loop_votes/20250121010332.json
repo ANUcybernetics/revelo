@@ -3,15 +3,35 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "loop_id",
       "references": {
-        "name": "loop_relationships_loop_id_fkey",
+        "name": "loop_votes_loop_id_fkey",
         "table": "loops",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -29,14 +49,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "relationship_id",
+      "source": "voter_id",
       "references": {
-        "name": "loop_relationships_relationship_id_fkey",
-        "table": "loops",
+        "name": "loop_votes_voter_id_fkey",
+        "table": "users",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -51,14 +71,24 @@
       "primary_key?": true
     }
   ],
-  "table": "loop_relationships",
-  "hash": "D7945D4C3C276638669A95861809E69640694ADE9EF48BA30B458AD0421A149D",
-  "identities": [],
+  "table": "loop_votes",
+  "hash": "EA53102FCB9A400DC0C3FDA0DCA0E50B2971E39BD9E1890108ED1A225F870C85",
+  "identities": [
+    {
+      "name": "unique_vote",
+      "keys": [
+        "loop_id",
+        "voter_id"
+      ],
+      "index_name": "loop_votes_unique_vote_index",
+      "base_filter": null
+    }
+  ],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],

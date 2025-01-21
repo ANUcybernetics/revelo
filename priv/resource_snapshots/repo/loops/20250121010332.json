@@ -3,16 +3,6 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "created_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "uuid",
       "source": "id",
       "references": null,
@@ -24,47 +14,17 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "jti",
+      "source": "description",
       "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": true
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "subject",
-      "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime",
-      "source": "expires_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "purpose",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "map",
-      "source": "extra_data",
+      "type": "bigint",
+      "source": "display_order",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -91,14 +51,14 @@
       "primary_key?": false
     }
   ],
-  "table": "tokens",
-  "hash": "2646F8216AA89D193843D1DFA9BAF2ECB93C88DD5DD6EBBB68D4FE1086733957",
+  "table": "loops",
+  "hash": "54A6D4621DDF89F58DD3C65B4E76CB4ED004E3C853E48B4FF7F159AA02FF1C30",
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "custom_indexes": [],

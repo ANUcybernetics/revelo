@@ -1,23 +1,41 @@
 defmodule Revelo.LoopTest do
   use Revelo.DataCase
 
-  import ExUnitProperties
   import ReveloTest.Generators
 
-  alias Revelo.Diagrams.Loop
-  alias Revelo.Diagrams.Relationship
-  alias Revelo.Diagrams.Variable
+  # alias Revelo.Diagrams.Loop
+  # alias Revelo.Diagrams.Relationship
+  # alias Revelo.Diagrams.Variable
 
   describe "loop actions" do
-    @describetag skip: "currently not working"
     test "can create loop" do
-      loop = loop()
+      user = user()
+      session = session()
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
 
-      assert loop
-      assert is_list(loop.influence_relationships)
-    end
+      relationships =
+        variables
+        # add the first variable to the end to "close" the loop
+        |> List.insert_at(-1, List.first(variables))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship(src: src, dst: dst, session: session, user: user)
+        end)
 
-    test "can add variables to loop" do
+      input =
+        %{
+          relationships: relationships,
+          description: Faker.Lorem.paragraph()
+        }
+
+      loop =
+        Revelo.Diagrams.Loop
+        |> Ash.Changeset.for_create(:create, input, actor: user)
+        |> Ash.create!()
+        |> Ash.load!(:influence_relationships)
+
+      assert MapSet.new(relationships, & &1.id) ==
+               MapSet.new(loop.influence_relationships, & &1.id)
     end
   end
 end
