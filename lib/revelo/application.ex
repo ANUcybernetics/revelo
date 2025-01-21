@@ -15,6 +15,7 @@ defmodule Revelo.Application do
       {Phoenix.PubSub, name: Revelo.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Revelo.Finch},
+      TwMerge.Cache,
       # Start a worker by calling: Revelo.Worker.start_link(arg)
       # {Revelo.Worker, arg},
       # Start to serve requests, typically the last entry
