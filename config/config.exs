@@ -11,7 +11,9 @@ config :ash, :policies, no_filter_static_forbidden_reads?: false
 
 config :ash,
   include_embedded_source_by_default?: false,
-  default_page_type: :keyset
+  default_page_type: :keyset,
+  allow_forbidden_field_for_relationships_by_default?: true,
+  show_keysets_for_all_actions?: false
 
 # Configure esbuild (the version is required)
 config :esbuild,
@@ -60,9 +62,19 @@ config :revelo,
 
 config :spark, :formatter,
   remove_parens?: true,
-  "Ash.Domain": [],
+  "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]],
   "Ash.Resource": [
     section_order: [
+      :resource,
+      :code_interface,
+      :policies,
+      :pub_sub,
+      :preparations,
+      :changes,
+      :validations,
+      :multitenancy,
+      :calculations,
+      :aggregates,
       :sqlite,
       :authentication,
       :tokens,
