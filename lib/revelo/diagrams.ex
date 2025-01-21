@@ -17,6 +17,5 @@ defmodule Revelo.Diagrams do
     # "vote" resources
     resource Revelo.Diagrams.VariableVote
     resource Revelo.Diagrams.RelationshipVote
-    resource Revelo.Diagrams.LoopVote
   end
 end

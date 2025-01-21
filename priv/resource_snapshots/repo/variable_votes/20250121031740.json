@@ -30,8 +30,8 @@
         "table": "variables",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -55,8 +55,8 @@
         "table": "users",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -72,7 +72,7 @@
     }
   ],
   "table": "variable_votes",
-  "hash": "53ECB4063A5F6727579C976A44FFC15754AE52EDCE0409B281E106891CBE6A11",
+  "hash": "C0784716D12E62082DE05584521CB75B1DC8C722E668350F89C5A83C89EC78E0",
   "identities": [
     {
       "name": "unique_vote",
@@ -87,8 +87,8 @@
   "repo": "Elixir.Revelo.Repo",
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "custom_indexes": [],
