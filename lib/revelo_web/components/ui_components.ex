@@ -1,0 +1,214 @@
+defmodule ReveloWeb.UIComponents do
+  @moduledoc """
+  Provides Revelo UI building blocks.
+  """
+  use Phoenix.Component
+  use Gettext, backend: ReveloWeb.Gettext
+
+  import ReveloWeb.Component.DropdownMenu
+  import ReveloWeb.Component.Menu
+  import ReveloWeb.Component.Tooltip
+  import ReveloWeb.CoreComponents
+
+  alias Phoenix.LiveView.JS
+
+  @doc """
+  Renders the sidebar.
+
+  """
+
+  def sidebar(assigns) do
+    ~H"""
+    <aside class="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-white sm:flex">
+      <nav class="flex flex-col items-center gap-4 px-2 sm:py-5">
+        <.dropdown_menu>
+          <.dropdown_menu_trigger class="cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base">
+            <.icon name="hero-window-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
+            <span class="sr-only">Sessions</span>
+          </.dropdown_menu_trigger>
+
+          <.dropdown_menu_content side="right">
+            <.menu class="w-56">
+              <.menu_group>
+                <.menu_item>
+                  <.icon name="hero-plus" class="mr-2 h-4 w-4" />
+                  <span>Add Session</span>
+                </.menu_item>
+                <.menu_item>
+                  <.icon name="hero-eye" class="mr-2 h-4 w-4" />
+                  <span>View All Sessions</span>
+                </.menu_item>
+              </.menu_group>
+            </.menu>
+          </.dropdown_menu_content>
+        </.dropdown_menu>
+
+        <.tooltip>
+          <tooltip_trigger>
+            <.link
+              href="#"
+              class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            >
+              <.icon
+                name="hero-adjustments-horizontal-mini"
+                class="h-4 w-4 transition-all group-hover:scale-110"
+              />
+              <span class="sr-only">
+                Variables
+              </span>
+            </.link>
+          </tooltip_trigger>
+          <.tooltip_content side="right">
+            Variables
+          </.tooltip_content>
+        </.tooltip>
+        <.tooltip>
+          <tooltip_trigger>
+            <.link
+              href="#"
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            >
+              <.icon name="hero-queue-list-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
+              <span class="sr-only">
+                Variable Ranking
+              </span>
+            </.link>
+          </tooltip_trigger>
+          <.tooltip_content side="right">
+            Variable Ranking
+          </.tooltip_content>
+        </.tooltip>
+        <.tooltip>
+          <tooltip_trigger>
+            <.link
+              href="#"
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            >
+              <.icon
+                name="hero-arrows-right-left-mini"
+                class="h-4 w-4 transition-all group-hover:scale-110"
+              />
+              <span class="sr-only">
+                Relationships
+              </span>
+            </.link>
+          </tooltip_trigger>
+          <.tooltip_content side="right">
+            Relationships
+          </.tooltip_content>
+        </.tooltip>
+        <.tooltip>
+          <tooltip_trigger>
+            <.link
+              href="#"
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            >
+              <.icon
+                name="hero-arrow-path-rounded-square-mini"
+                class="h-4 w-4 transition-all group-hover:scale-110"
+              />
+              <span class="sr-only">
+                Feedback Loops
+              </span>
+            </.link>
+          </tooltip_trigger>
+          <.tooltip_content side="right">
+            Feedback Loops
+          </.tooltip_content>
+        </.tooltip>
+      </nav>
+      <nav class="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+        <.tooltip>
+          <tooltip_trigger>
+            <.link
+              href="#"
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            >
+              <.icon
+                name="hero-user-circle-mini"
+                class="h-4 w-4 transition-all group-hover:scale-110"
+              />
+              <span class="sr-only">
+                User
+              </span>
+            </.link>
+          </tooltip_trigger>
+          <.tooltip_content side="right">
+            User
+          </.tooltip_content>
+        </.tooltip>
+      </nav>
+    </aside>
+    """
+  end
+
+  @doc """
+  Renders a modal.
+
+  ## Examples
+
+      <.modal id="confirm-modal">
+        This is a modal.
+      </.modal>
+
+  JS commands may be passed to the `:on_cancel` to configure
+  the closing/cancel event, for example:
+
+      <.modal id="confirm" on_cancel={JS.navigate(~p"/posts")}>
+        This is another modal.
+      </.modal>
+
+  """
+  attr :id, :string, required: true
+  attr :show, :boolean, default: false
+  attr :on_cancel, JS, default: %JS{}
+  slot :inner_block, required: true
+
+  def modal(assigns) do
+    ~H"""
+    <div
+      id={@id}
+      phx-mounted={@show && show_modal(@id)}
+      phx-remove={hide_modal(@id)}
+      data-cancel={JS.exec(@on_cancel, "phx-remove")}
+      class="relative z-50 hidden"
+    >
+      <div id={"#{@id}-bg"} class="bg-zinc-50/90 fixed inset-0 transition-opacity" aria-hidden="true" />
+      <div
+        class="fixed inset-0 overflow-y-auto"
+        aria-labelledby={"#{@id}-title"}
+        aria-describedby={"#{@id}-description"}
+        role="dialog"
+        aria-modal="true"
+        tabindex="0"
+      >
+        <div class="flex min-h-full items-center justify-center">
+          <div class="w-full max-w-3xl p-4 sm:p-6 lg:py-8">
+            <.focus_wrap
+              id={"#{@id}-container"}
+              phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
+              phx-key="escape"
+              phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
+              class="shadow-zinc-700/10 ring-zinc-700/10 relative hidden rounded-2xl bg-white p-14 shadow-lg ring-1 transition"
+            >
+              <div class="absolute top-6 right-5">
+                <button
+                  phx-click={JS.exec("data-cancel", to: "##{@id}")}
+                  type="button"
+                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
+                  aria-label={gettext("close")}
+                >
+                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                </button>
+              </div>
+              <div id={"#{@id}-content"}>
+                {render_slot(@inner_block)}
+              </div>
+            </.focus_wrap>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+end
