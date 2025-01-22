@@ -4,12 +4,16 @@
 @import "tailwindcss/utilities";
 
 /*
- * Put your component styling within the Tailwind utilities layer. 
+ * Put your component styling within the Tailwind utilities layer.
  * See the https://hexdocs.pm/phoenix_storybook/sandboxing.html guide for more info.
  */
 
 @layer utilities {
-  * {
-    font-family: system-ui;
-  }
+    * {
+        font-family: system-ui;
+    }
+
+    [type="checkbox"] {
+        color: black;
+    }
 }

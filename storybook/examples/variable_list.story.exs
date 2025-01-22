@@ -2,12 +2,14 @@ defmodule Storybook.Examples.VariableList do
   @moduledoc false
   use PhoenixStorybook.Story, :example
 
-  import SaladUI.Button
-  import SaladUI.Form
+  import ReveloWeb.Component.Button
+  import ReveloWeb.Component.Checkbox
+  import ReveloWeb.Component.Form
+  import ReveloWeb.Component.Input
+  import ReveloWeb.Component.Label
 
   # import ReveloWeb.CoreComponents
-  import SaladUI.Input
-  import SaladUI.Table
+  import ReveloWeb.Component.Table
 
   alias Phoenix.LiveView.JS
 
@@ -67,8 +69,10 @@ defmodule Storybook.Examples.VariableList do
         <.input field={f[:description]} type="text" />
       </.form_item>
       <.form_item>
-        <.form_label>Is Key?</.form_label>
-        <.input field={f[:is_key?]} type="checkbox" />
+        <div class="flex items-center space-x-2">
+          <.checkbox id="key" field={f[:is_key?]} />
+          <.label for="key">Is Key?</.label>
+        </div>
       </.form_item>
       <.button type="submit">Save variable</.button>
     </.form>

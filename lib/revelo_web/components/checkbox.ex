@@ -20,7 +20,9 @@ defmodule ReveloWeb.Component.Checkbox do
       prepare_assign(assigns)
 
     assigns =
-      assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", assigns.value) end)
+      assign_new(assigns, :checked, fn ->
+        Phoenix.HTML.Form.normalize_value("checkbox", assigns.value)
+      end)
 
     ~H"""
     <input type="hidden" name={@name} value="false" />
@@ -28,7 +30,7 @@ defmodule ReveloWeb.Component.Checkbox do
       type="checkbox"
       class={
         classes([
-          "peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 checked:bg-primary checked:focus:bg-primary checked:hover:bg-primary checked:text-primary-foreground",
+          "peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:focus:bg-primary data-[state=checked]:hover:bg-primary data-[state=checked]:text-primary-foreground",
           @class
         ])
       }
