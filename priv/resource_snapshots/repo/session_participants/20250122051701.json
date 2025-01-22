@@ -3,31 +3,11 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "inserted_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "updated_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "uuid",
-      "source": "variable_id",
+      "source": "session_id",
       "references": {
-        "name": "variable_votes_variable_id_fkey",
-        "table": "variables",
+        "name": "session_participants_session_id_fkey",
+        "table": "sessions",
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -49,9 +29,9 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "voter_id",
+      "source": "participant_id",
       "references": {
-        "name": "variable_votes_voter_id_fkey",
+        "name": "session_participants_participant_id_fkey",
         "table": "users",
         "multitenancy": {
           "global": null,
@@ -71,25 +51,15 @@
       "primary_key?": true
     }
   ],
-  "table": "variable_votes",
-  "hash": "C0784716D12E62082DE05584521CB75B1DC8C722E668350F89C5A83C89EC78E0",
-  "identities": [
-    {
-      "name": "unique_vote",
-      "keys": [
-        "variable_id",
-        "voter_id"
-      ],
-      "index_name": "variable_votes_unique_vote_index",
-      "base_filter": null
-    }
-  ],
-  "repo": "Elixir.Revelo.Repo",
+  "table": "session_participants",
+  "hash": "D90E82364D7AD5C59E37A19357AC35EE6B61873DA65DB13FE16BDDF470126856",
   "multitenancy": {
     "global": null,
     "attribute": null,
     "strategy": null
   },
+  "identities": [],
+  "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],

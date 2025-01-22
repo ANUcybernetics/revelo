@@ -32,7 +32,6 @@ defmodule ReveloTest.Generators do
     input =
       %{
         name: sequence(:variable_name, &"Variable #{&1}"),
-        description: StreamData.repeatedly(fn -> Faker.Lorem.paragraph() end),
         session: StreamData.constant(session)
       }
       |> StreamData.fixed_map()

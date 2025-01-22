@@ -3,6 +3,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "created_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "id",
       "references": null,
@@ -14,17 +24,47 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "description",
+      "source": "jti",
       "references": null,
-      "allow_nil?": true,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "subject",
+      "references": null,
+      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     },
     {
       "default": "nil",
       "size": null,
-      "type": "bigint",
-      "source": "display_order",
+      "type": "utc_datetime",
+      "source": "expires_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "purpose",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
+      "source": "extra_data",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -51,15 +91,15 @@
       "primary_key?": false
     }
   ],
-  "table": "loops",
-  "hash": "A98FFC7D0F3F79A54FE2324412DD6A0502F98B87DF5A201593C77618A57C8440",
-  "identities": [],
-  "repo": "Elixir.Revelo.Repo",
+  "table": "tokens",
+  "hash": "A8B74873C61244C84C42C530BE906D59FAF5BD775F980FC0F8A4B390EC45FEA4",
   "multitenancy": {
     "global": null,
     "attribute": null,
     "strategy": null
   },
+  "identities": [],
+  "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],

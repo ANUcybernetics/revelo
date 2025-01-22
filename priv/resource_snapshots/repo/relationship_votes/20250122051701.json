@@ -3,11 +3,31 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
-      "source": "loop_id",
+      "source": "relationship_id",
       "references": {
-        "name": "loop_relationships_loop_id_fkey",
-        "table": "loops",
+        "name": "relationship_votes_relationship_id_fkey",
+        "table": "relationships",
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -29,10 +49,10 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "relationship_id",
+      "source": "voter_id",
       "references": {
-        "name": "loop_relationships_relationship_id_fkey",
-        "table": "relationships",
+        "name": "relationship_votes_voter_id_fkey",
+        "table": "users",
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -51,15 +71,25 @@
       "primary_key?": true
     }
   ],
-  "table": "loop_relationships",
-  "hash": "BF17A8B15D5A139DD4678CA67927269D9C04C28E972EF3872F54036E8749A44E",
-  "identities": [],
-  "repo": "Elixir.Revelo.Repo",
+  "table": "relationship_votes",
+  "hash": "A8AF0F1CC14EBE5433D4FC870808B3A126C72FFC85398BB500663552328CA208",
   "multitenancy": {
     "global": null,
     "attribute": null,
     "strategy": null
   },
+  "identities": [
+    {
+      "name": "unique_vote",
+      "keys": [
+        "relationship_id",
+        "voter_id"
+      ],
+      "index_name": "relationship_votes_unique_vote_index",
+      "base_filter": null
+    }
+  ],
+  "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],

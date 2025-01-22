@@ -14,19 +14,9 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
       "source": "description",
       "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -34,17 +24,7 @@
       "default": "nil",
       "size": null,
       "type": "boolean",
-      "source": "is_key?",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "boolean",
-      "source": "included?",
+      "source": "hidden?",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -76,7 +56,7 @@
       "type": "uuid",
       "source": "session_id",
       "references": {
-        "name": "variables_session_id_fkey",
+        "name": "relationships_session_id_fkey",
         "table": "sessions",
         "multitenancy": {
           "global": null,
@@ -99,10 +79,35 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "creator_id",
+      "source": "src_id",
       "references": {
-        "name": "variables_creator_id_fkey",
-        "table": "users",
+        "name": "relationships_src_id_fkey",
+        "table": "variables",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "on_update": null
+      },
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "dst_id",
+      "references": {
+        "name": "relationships_dst_id_fkey",
+        "table": "variables",
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -121,25 +126,25 @@
       "primary_key?": false
     }
   ],
-  "table": "variables",
-  "hash": "69D580219D49E0AA06D035169A30504F3C93C761041171D75B903C5CB0DB2F67",
-  "identities": [
-    {
-      "name": "unique_name",
-      "keys": [
-        "name",
-        "session_id"
-      ],
-      "index_name": "variables_unique_name_index",
-      "base_filter": null
-    }
-  ],
-  "repo": "Elixir.Revelo.Repo",
+  "table": "relationships",
+  "hash": "52583ABD63DE86DF0378950827CBEE6807A9F7DF5E3FE73E09C7169955A31C7F",
   "multitenancy": {
     "global": null,
     "attribute": null,
     "strategy": null
   },
+  "identities": [
+    {
+      "name": "one_relationship_between_variables",
+      "keys": [
+        "src_id",
+        "dst_id"
+      ],
+      "index_name": "relationships_one_relationship_between_variables_index",
+      "base_filter": null
+    }
+  ],
+  "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],

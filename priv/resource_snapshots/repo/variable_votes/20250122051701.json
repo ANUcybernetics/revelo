@@ -24,10 +24,10 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "relationship_id",
+      "source": "variable_id",
       "references": {
-        "name": "relationship_votes_relationship_id_fkey",
-        "table": "relationships",
+        "name": "variable_votes_variable_id_fkey",
+        "table": "variables",
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -51,7 +51,7 @@
       "type": "uuid",
       "source": "voter_id",
       "references": {
-        "name": "relationship_votes_voter_id_fkey",
+        "name": "variable_votes_voter_id_fkey",
         "table": "users",
         "multitenancy": {
           "global": null,
@@ -71,25 +71,25 @@
       "primary_key?": true
     }
   ],
-  "table": "relationship_votes",
-  "hash": "BBF811D307E04561E8C50D93566547D78D41A072A33FB7B645DDEA2FFA2F33DE",
-  "identities": [
-    {
-      "name": "unique_vote",
-      "keys": [
-        "relationship_id",
-        "voter_id"
-      ],
-      "index_name": "relationship_votes_unique_vote_index",
-      "base_filter": null
-    }
-  ],
-  "repo": "Elixir.Revelo.Repo",
+  "table": "variable_votes",
+  "hash": "E1449BF2FCA142DAB1F0A8AE1F53939D7DD980D5786C8EA6BB40CBFAD25CF1C0",
   "multitenancy": {
     "global": null,
     "attribute": null,
     "strategy": null
   },
+  "identities": [
+    {
+      "name": "unique_vote",
+      "keys": [
+        "variable_id",
+        "voter_id"
+      ],
+      "index_name": "variable_votes_unique_vote_index",
+      "base_filter": null
+    }
+  ],
+  "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],
   "custom_statements": [],

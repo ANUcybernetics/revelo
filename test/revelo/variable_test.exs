@@ -55,7 +55,7 @@ defmodule Revelo.VariableTest do
     user = user()
     session = session()
 
-    input = %{name: "test", description: "test", session: session}
+    input = %{name: "test", session: session}
 
     _variable1 =
       Variable

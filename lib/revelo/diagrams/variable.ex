@@ -17,7 +17,7 @@ defmodule Revelo.Diagrams.Variable do
     defaults [:read]
 
     create :create do
-      accept [:description, :is_key?, :included?]
+      accept [:is_key?, :hidden?]
       primary? true
 
       argument :name, :string do
@@ -47,9 +47,8 @@ defmodule Revelo.Diagrams.Variable do
     uuid_primary_key :id
 
     attribute :name, :string, allow_nil?: false
-    attribute :description, :string, allow_nil?: false
     attribute :is_key?, :boolean, allow_nil?: false, default: false
-    attribute :included?, :boolean, allow_nil?: false, default: false
+    attribute :hidden?, :boolean, allow_nil?: false, default: false
 
     timestamps()
   end
