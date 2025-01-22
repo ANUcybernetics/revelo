@@ -2,7 +2,12 @@ defmodule Storybook.Examples.VariableList do
   @moduledoc false
   use PhoenixStorybook.Story, :example
 
-  import ReveloWeb.CoreComponents
+  import SaladUI.Button
+  import SaladUI.Form
+
+  # import ReveloWeb.CoreComponents
+  import SaladUI.Input
+  import SaladUI.Table
 
   alias Phoenix.LiveView.JS
 
@@ -27,32 +32,46 @@ defmodule Storybook.Examples.VariableList do
   @impl true
   def render(assigns) do
     ~H"""
-    <.table id="variable-table" rows={@variables}>
-      <:col :let={variable} label="Id">
-        {variable.id}
-      </:col>
-      <:col :let={variable} label="Name">
-        {variable.name}
-      </:col>
-      <:col :let={variable} label="Description">
-        {variable.description}
-      </:col>
-      <:col :let={variable} label="Key?">
-        {variable.is_key?}
-      </:col>
+    <.table>
+      <.table_caption>Variables</.table_caption>
+      <.table_header>
+        <.table_row>
+          <.table_head>Id</.table_head>
+          <.table_head>Name</.table_head>
+          <.table_head>Description</.table_head>
+          <.table_head>Key?</.table_head>
+        </.table_row>
+      </.table_header>
+      <.table_body>
+        <%= for variable <- @variables do %>
+          <.table_row>
+            <.table_cell class="font-medium">{variable.id}</.table_cell>
+            <.table_cell>{variable.name}</.table_cell>
+            <.table_cell>{variable.description}</.table_cell>
+            <.table_cell>{variable.is_key?}</.table_cell>
+          </.table_row>
+        <% end %>
+      </.table_body>
     </.table>
-    <.header class="mt-16">
+    <ReveloWeb.CoreComponents.header class="mt-16">
       Variables
       <:subtitle>What's in your system?</:subtitle>
-    </.header>
-    <.simple_form :let={f} for={%{}} as={:variable} phx-submit={JS.push("save_variable")}>
-      <.input field={f[:name]} label="Name" />
-      <.input field={f[:description]} label="Description" />
-      <.input field={f[:is_key?]} type="checkbox" label="Is Key?" />
-      <:actions>
-        <.button>Save variable</.button>
-      </:actions>
-    </.simple_form>
+    </ReveloWeb.CoreComponents.header>
+    <.form :let={f} for={%{}} as={:variable} phx-submit={JS.push("save_variable")} class="space-y-6">
+      <.form_item>
+        <.form_label>Name</.form_label>
+        <.input field={f[:name]} type="text" required />
+      </.form_item>
+      <.form_item>
+        <.form_label>Description</.form_label>
+        <.input field={f[:description]} type="text" />
+      </.form_item>
+      <.form_item>
+        <.form_label>Is Key?</.form_label>
+        <.input field={f[:is_key?]} type="checkbox" />
+      </.form_item>
+      <.button type="submit">Save variable</.button>
+    </.form>
     """
   end
 
