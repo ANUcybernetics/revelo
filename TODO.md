@@ -3,6 +3,8 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
+- Variable: remove description, rename included? to hidden
+
 - populate all the resource actions (and remove defaults afterwards if they're
   not necessary)
 
