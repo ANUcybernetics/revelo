@@ -17,7 +17,7 @@ defmodule Storybook.Examples.VariableList do
     "The main variable list interface (for a facilitator)"
   end
 
-  defstruct [:id, :name, :description, :is_key?]
+  defstruct [:id, :name, :is_key?]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -40,7 +40,6 @@ defmodule Storybook.Examples.VariableList do
         <.table_row>
           <.table_head>Id</.table_head>
           <.table_head>Name</.table_head>
-          <.table_head>Description</.table_head>
           <.table_head>Key?</.table_head>
         </.table_row>
       </.table_header>
@@ -49,7 +48,6 @@ defmodule Storybook.Examples.VariableList do
           <.table_row>
             <.table_cell class="font-medium">{variable.id}</.table_cell>
             <.table_cell>{variable.name}</.table_cell>
-            <.table_cell>{variable.description}</.table_cell>
             <.table_cell>{variable.is_key?}</.table_cell>
           </.table_row>
         <% end %>
@@ -63,10 +61,6 @@ defmodule Storybook.Examples.VariableList do
       <.form_item>
         <.form_label>Name</.form_label>
         <.input field={f[:name]} type="text" required />
-      </.form_item>
-      <.form_item>
-        <.form_label>Description</.form_label>
-        <.input field={f[:description]} type="text" />
       </.form_item>
       <.form_item>
         <div class="flex items-center space-x-2">
@@ -83,7 +77,6 @@ defmodule Storybook.Examples.VariableList do
   def handle_event("save_variable", %{"variable" => params}, socket) do
     variable = %__MODULE__{
       name: params["name"],
-      description: params["description"],
       is_key?: params["is_key?"] == "true",
       id: socket.assigns.current_id + 1
     }
