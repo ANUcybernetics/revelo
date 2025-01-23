@@ -16,9 +16,6 @@ defmodule Revelo.Diagrams.Relationship do
   actions do
     defaults [:read, :destroy, update: :*]
 
-    # TODO make this use the argument + change manage_relationship pattern, rather
-    # than just accepting the :session_id (from memory the issue was that the accept :session_id
-    # approach was to get the generate_changeset approach to work, but we should revisit that)
     create :create do
       accept [:description, :hidden?]
 
