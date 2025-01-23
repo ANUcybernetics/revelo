@@ -16,6 +16,19 @@ defmodule Revelo.Diagrams.Relationship do
   actions do
     defaults [:read, :destroy, update: :*]
 
+    read :list do
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      argument :include_hidden, :boolean do
+        default false
+      end
+
+      filter expr(session.id == ^arg(:session_id) and (^arg(:include_hidden) or hidden? == false))
+      prepare build(sort: [:src_id, :dst_id])
+    end
+
     create :create do
       accept [:description, :hidden?]
 
@@ -39,6 +52,14 @@ defmodule Revelo.Diagrams.Relationship do
       change manage_relationship(:session, type: :append)
       change manage_relationship(:src, type: :append)
       change manage_relationship(:dst, type: :append)
+    end
+
+    update :hide do
+      change set_attribute(:hidden?, true)
+    end
+
+    update :unhide do
+      change set_attribute(:hidden?, false)
     end
   end
 

@@ -14,6 +14,9 @@ defmodule Revelo.Diagrams do
 
     resource Revelo.Diagrams.Relationship do
       define :create_relationship, args: [:src, :dst, :session], action: :create
+      define :list_relationships, args: [:session_id, {:optional, :include_hidden}], action: :list
+      define :hide_relationship, action: :hide
+      define :unhide_relationship, action: :unhide
     end
 
     resource Revelo.Diagrams.Loop
