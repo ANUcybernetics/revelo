@@ -54,12 +54,12 @@ defmodule ReveloWeb.UIComponents do
                 class="h-4 w-4 transition-all group-hover:scale-110"
               />
               <span class="sr-only">
-                Variables
+                Prepare
               </span>
             </.link>
           </tooltip_trigger>
           <.tooltip_content side="right">
-            Variables
+            Prepare
           </.tooltip_content>
         </.tooltip>
         <.tooltip>
@@ -70,12 +70,12 @@ defmodule ReveloWeb.UIComponents do
             >
               <.icon name="hero-queue-list-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
               <span class="sr-only">
-                Variable Ranking
+                Identify
               </span>
             </.link>
           </tooltip_trigger>
           <.tooltip_content side="right">
-            Variable Ranking
+            Identify
           </.tooltip_content>
         </.tooltip>
         <.tooltip>
@@ -89,12 +89,12 @@ defmodule ReveloWeb.UIComponents do
                 class="h-4 w-4 transition-all group-hover:scale-110"
               />
               <span class="sr-only">
-                Relationships
+                Relate
               </span>
             </.link>
           </tooltip_trigger>
           <.tooltip_content side="right">
-            Relationships
+            Relate
           </.tooltip_content>
         </.tooltip>
         <.tooltip>
@@ -108,12 +108,12 @@ defmodule ReveloWeb.UIComponents do
                 class="h-4 w-4 transition-all group-hover:scale-110"
               />
               <span class="sr-only">
-                Feedback Loops
+                Analyse
               </span>
             </.link>
           </tooltip_trigger>
           <.tooltip_content side="right">
-            Feedback Loops
+            Analyse
           </.tooltip_content>
         </.tooltip>
       </nav>
