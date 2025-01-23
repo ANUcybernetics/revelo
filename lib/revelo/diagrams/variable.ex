@@ -21,7 +21,11 @@ defmodule Revelo.Diagrams.Variable do
         allow_nil? false
       end
 
-      filter expr(hidden? == false and session.id == ^arg(:session_id))
+      argument :include_hidden, :boolean do
+        default false
+      end
+
+      filter expr(session.id == ^arg(:session_id) and (^arg(:include_hidden) or hidden? == false))
       prepare build(sort: :name)
     end
 

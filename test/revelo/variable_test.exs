@@ -99,6 +99,12 @@ defmodule Revelo.VariableTest do
 
       assert visible_var.id in Enum.map(variables, & &1.id)
       refute hidden_var.id in Enum.map(variables, & &1.id)
+
+      # check that the hidden variable is returned when include_hidden is true
+      variables = Revelo.Diagrams.list_variables!(session.id, true)
+
+      assert visible_var.id in Enum.map(variables, & &1.id)
+      assert hidden_var.id in Enum.map(variables, & &1.id)
     end
 
     test "enforces uniqueness of names within session" do
