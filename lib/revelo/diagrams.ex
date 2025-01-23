@@ -20,7 +20,10 @@ defmodule Revelo.Diagrams do
     resource Revelo.Diagrams.LoopRelationships
 
     # "vote" resources
-    resource Revelo.Diagrams.VariableVote
+    resource Revelo.Diagrams.VariableVote do
+      define :vote, args: [:variable], action: :create
+    end
+
     resource Revelo.Diagrams.RelationshipVote
   end
 end

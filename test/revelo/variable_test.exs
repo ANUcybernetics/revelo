@@ -184,5 +184,17 @@ defmodule Revelo.VariableTest do
       assert voter_id == user.id
       assert variable_id == variable.id
     end
+
+    test "can vote using vote code interface" do
+      user = user()
+      variable = variable(user: user)
+
+      Revelo.Diagrams.vote!(variable, actor: user)
+
+      variable = Ash.load!(variable, :votes)
+      assert [%{voter_id: voter_id, variable_id: variable_id}] = variable.votes
+      assert voter_id == user.id
+      assert variable_id == variable.id
+    end
   end
 end
