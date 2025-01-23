@@ -7,6 +7,8 @@ defmodule Revelo.Diagrams do
       define :create_variable, args: [:name, :session], action: :create
       define :set_key_variable, action: :set_key
       define :unset_key_variable, action: :unset_key
+      define :hide_variable, action: :hide
+      define :unhide_variable, action: :unhide
     end
 
     resource Revelo.Diagrams.Relationship do

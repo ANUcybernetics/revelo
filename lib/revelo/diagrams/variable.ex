@@ -49,6 +49,14 @@ defmodule Revelo.Diagrams.Variable do
     update :unset_key do
       change set_attribute(:is_key?, false)
     end
+
+    update :hide do
+      change set_attribute(:hidden?, true)
+    end
+
+    update :unhide do
+      change set_attribute(:hidden?, false)
+    end
   end
 
   attributes do

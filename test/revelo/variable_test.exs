@@ -72,6 +72,17 @@ defmodule Revelo.VariableTest do
       variable = Revelo.Diagrams.unset_key_variable!(variable)
       assert variable.is_key? == false
     end
+
+    test "can toggle hidden flag on variable" do
+      variable = variable()
+      assert variable.hidden? == false
+
+      variable = Revelo.Diagrams.hide_variable!(variable)
+      assert variable.hidden? == true
+
+      variable = Revelo.Diagrams.unhide_variable!(variable)
+      assert variable.hidden? == false
+    end
   end
 
   test "enforces uniqueness of names within session" do
