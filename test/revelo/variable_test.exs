@@ -49,6 +49,18 @@ defmodule Revelo.VariableTest do
       assert variable.session
       assert variable.creator
     end
+
+    test "can rename variable" do
+      variable = variable()
+      new_name = "new name"
+
+      renamed_var =
+        variable
+        |> Ash.Changeset.for_update(:rename, %{name: new_name})
+        |> Ash.update!()
+
+      assert renamed_var.name == new_name
+    end
   end
 
   test "enforces uniqueness of names within session" do
