@@ -94,21 +94,31 @@ defmodule Revelo.LoopTest do
 
   describe "cycle detection" do
     test "find_loops should find cycles in test graphs" do
-      # Simple cycle: 1 -> 2 -> 3 -> 1
-      edges1 = [{1, 2}, {2, 3}, {3, 1}]
-      assert [[1, 2, 3]] == Loop.find_loops(edges1)
+      # Simple cycle: uuid1 -> uuid2 -> uuid3 -> uuid1
+      uuid1 = Ecto.UUID.generate()
+      uuid2 = Ecto.UUID.generate()
+      uuid3 = Ecto.UUID.generate()
+      uuid4 = Ecto.UUID.generate()
 
-      # Two intersecting cycles: 1->2->3->1 and 2->3->4->2
-      edges2 = [{1, 2}, {2, 3}, {3, 1}, {3, 4}, {4, 2}]
-      assert [[1, 2, 3], [2, 3, 4]] == edges2 |> Loop.find_loops() |> Enum.sort()
+      edges1 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid1}]
+      loop1 = Loop.find_loops(edges1)
+      assert Loop.loops_equal?([uuid1, uuid2, uuid3], hd(loop1))
+
+      # Two intersecting cycles: uuid1->uuid2->uuid3->uuid1 and uuid2->uuid3->uuid4->uuid2
+      edges2 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid1}, {uuid3, uuid4}, {uuid4, uuid2}]
+      loops2 = Loop.find_loops(edges2)
+
+      assert length(loops2) == 2
+      assert Enum.any?(loops2, &Loop.loops_equal?(&1, [uuid1, uuid2, uuid3]))
+      assert Enum.any?(loops2, &Loop.loops_equal?(&1, [uuid2, uuid3, uuid4]))
 
       # No cycles
-      edges3 = [{1, 2}, {2, 3}, {3, 4}]
+      edges3 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid4}]
       assert [] == Loop.find_loops(edges3)
 
       # Self loop
-      edges4 = [{1, 1}]
-      assert [[1]] == Loop.find_loops(edges4)
+      edges4 = [{uuid1, uuid1}]
+      assert Loop.loops_equal?([uuid1], hd(Loop.find_loops(edges4)))
     end
   end
 end
