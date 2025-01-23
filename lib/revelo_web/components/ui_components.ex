@@ -6,8 +6,10 @@ defmodule ReveloWeb.UIComponents do
   use Gettext, backend: ReveloWeb.Gettext
 
   import ReveloWeb.Component.Badge
+  import ReveloWeb.Component.Card
   import ReveloWeb.Component.DropdownMenu
   import ReveloWeb.Component.Menu
+  import ReveloWeb.Component.Progress
   import ReveloWeb.Component.Tooltip
   import ReveloWeb.CoreComponents
 
@@ -211,6 +213,33 @@ defmodule ReveloWeb.UIComponents do
         </.tooltip_content>
       </.tooltip>
     </div>
+    """
+  end
+
+  @doc """
+    The task completed page for mobile
+  """
+
+  def task_completed(assigns) do
+    ~H"""
+    <.card class="w-[350px]">
+      <.card_header>
+        <.card_title>Task Completed!</.card_title>
+        <.card_description>Look at the main screen for next steps</.card_description>
+      </.card_header>
+      <.card_content>
+        <div class="flex justify-between items-center space-x-4 flex-col text-gray-600">
+          <.icon name="hero-tv-solid" class="h-32 w-32" />
+        </div>
+      </.card_content>
+      <.card_footer class="flex flex-col items-center gap-2">
+        <div>
+          <span class="font-bold text-3xl">{@completed}/{@total}</span>
+          <span>completed</span>
+        </div>
+        <.progress class="w-full h-2" value={round(@completed / @total * 100)} />
+      </.card_footer>
+    </.card>
     """
   end
 
