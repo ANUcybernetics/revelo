@@ -89,5 +89,16 @@ defmodule Revelo.SessionTest do
       assert MapSet.new(session.influence_relationships, & &1.id) ==
                MapSet.new([relationship.id, relationship2.id])
     end
+
+    test "list endpoint orders by inserted_at descending" do
+      first_session = session()
+      Process.sleep(100)
+      second_session = session()
+
+      [latest, oldest] = Revelo.Sessions.list!()
+
+      assert latest.id == second_session.id
+      assert oldest.id == first_session.id
+    end
   end
 end

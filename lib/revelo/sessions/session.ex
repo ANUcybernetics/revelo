@@ -11,7 +11,12 @@ defmodule Revelo.Sessions.Session do
   end
 
   actions do
-    defaults [:read, :destroy, update: :*]
+    defaults [:destroy, update: :*]
+
+    read :list do
+      primary? true
+      prepare build(sort: [inserted_at: :desc])
+    end
 
     create :create do
       accept [:description, :report]
