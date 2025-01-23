@@ -91,6 +91,6 @@ defmodule Revelo.Diagrams.Relationship do
   end
 
   identities do
-    identity :one_relationship_between_variables, [:src_id, :dst_id]
+    identity :unique_relationship, [:src_id, :dst_id]
   end
 end

@@ -33,6 +33,20 @@ defmodule Revelo.RelationshipTest do
       assert relationship.dst
     end
 
+    test "get with unique_relationship identity" do
+      user = user()
+      session = session()
+      src = variable(user: user, session: session)
+      dst = variable(user: user, session: session)
+
+      rel = relationship(user: user, session: session, src: src, dst: dst)
+
+      # Look up using unique identity
+      found_rel = Ash.get!(Relationship, src_id: src.id, dst_id: dst.id)
+
+      assert found_rel.id == rel.id
+    end
+
     test "Revelo.Diagrams.list! returns only unhidden relationships" do
       user = user()
       session = session()

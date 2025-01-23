@@ -42,11 +42,11 @@
     }
   ],
   "table": "users",
-  "hash": "C7FEEEC365AE31370FAC62E9EE18BC06838460E73FE804FA0C6900215EB48A5C",
+  "hash": "F91CDA7DEE451A7FBA95611C7765DDDB2CBEB797491448047F24F6429BB99AF4",
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "identities": [
     {

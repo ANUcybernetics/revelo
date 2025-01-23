@@ -92,11 +92,11 @@
     }
   ],
   "table": "tokens",
-  "hash": "CE1724773AE65D9E9AA70A7B81FC61EAFB870CD87983D53F9BCED8E06292F33D",
+  "hash": "A8B74873C61244C84C42C530BE906D59FAF5BD775F980FC0F8A4B390EC45FEA4",
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "identities": [],
   "repo": "Elixir.Revelo.Repo",

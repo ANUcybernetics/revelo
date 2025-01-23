@@ -121,7 +121,7 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     end
 
     create unique_index(:relationships, [:src_id, :dst_id],
-             name: "relationships_one_relationship_between_variables_index"
+             name: "relationships_unique_relationship_index"
            )
 
     create table(:relationship_votes, primary_key: false) do
@@ -210,7 +210,7 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     drop table(:relationship_votes)
 
     drop_if_exists unique_index(:relationships, [:src_id, :dst_id],
-                     name: "relationships_one_relationship_between_variables_index"
+                     name: "relationships_unique_relationship_index"
                    )
 
     drop constraint(:relationships, "relationships_session_id_fkey")

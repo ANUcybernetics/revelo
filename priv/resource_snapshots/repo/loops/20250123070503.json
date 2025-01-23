@@ -52,11 +52,11 @@
     }
   ],
   "table": "loops",
-  "hash": "F3161EA9D98DB3D71DF05F934A0064BC342335FA9A9658260FFABE2AB526B522",
+  "hash": "CEF7CD55B5A526C2C830CBC567929091CC596E81C49A7E90E03611A36F920CAC",
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "identities": [],
   "repo": "Elixir.Revelo.Repo",
