@@ -91,4 +91,24 @@ defmodule Revelo.LoopTest do
       assert length(loop.influence_relationships) > 0
     end
   end
+
+  describe "cycle detection" do
+    test "find_loops should find cycles in test graphs" do
+      # Simple cycle: 1 -> 2 -> 3 -> 1
+      edges1 = [{1, 2}, {2, 3}, {3, 1}]
+      assert [[1, 2, 3]] == Loop.find_loops(edges1)
+
+      # Two intersecting cycles: 1->2->3->1 and 2->3->4->2
+      edges2 = [{1, 2}, {2, 3}, {3, 1}, {3, 4}, {4, 2}]
+      assert [[1, 2, 3], [2, 3, 4]] == edges2 |> Loop.find_loops() |> Enum.sort()
+
+      # No cycles
+      edges3 = [{1, 2}, {2, 3}, {3, 4}]
+      assert [] == Loop.find_loops(edges3)
+
+      # Self loop
+      edges4 = [{1, 1}]
+      assert [[1]] == Loop.find_loops(edges4)
+    end
+  end
 end
