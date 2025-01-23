@@ -7,10 +7,10 @@ defmodule Storybook.Examples.VariableList do
   import ReveloWeb.Component.Form
   import ReveloWeb.Component.Input
   import ReveloWeb.Component.Label
+  import ReveloWeb.Component.Table
+  import ReveloWeb.UIComponents
 
   # import ReveloWeb.CoreComponents
-  import ReveloWeb.Component.Table
-
   alias Phoenix.LiveView.JS
 
   def doc do
@@ -35,20 +35,27 @@ defmodule Storybook.Examples.VariableList do
   def render(assigns) do
     ~H"""
     <.table>
-      <.table_caption>Variables</.table_caption>
       <.table_header>
         <.table_row>
-          <.table_head>Id</.table_head>
           <.table_head>Name</.table_head>
-          <.table_head>Key?</.table_head>
+          <.table_head>Type</.table_head>
+          <.table_head>Actions</.table_head>
         </.table_row>
       </.table_header>
       <.table_body>
         <%= for variable <- @variables do %>
           <.table_row>
-            <.table_cell class="font-medium">{variable.id}</.table_cell>
             <.table_cell>{variable.name}</.table_cell>
-            <.table_cell>{variable.is_key?}</.table_cell>
+            <.table_cell>
+              <%= if variable.is_key? do %>
+                <.badge_key>
+                  Key Variable
+                </.badge_key>
+              <% end %>
+            </.table_cell>
+            <.table_cell>
+              <.variable_actions is_key={variable.is_key?} id={variable.id} />
+            </.table_cell>
           </.table_row>
         <% end %>
       </.table_body>
@@ -85,5 +92,17 @@ defmodule Storybook.Examples.VariableList do
      socket
      |> update(:variables, &(&1 ++ [variable]))
      |> update(:current_id, &(&1 + 1))}
+  end
+
+  @impl true
+  def handle_event("delete_variable", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+
+    updated_variables =
+      Enum.reject(socket.assigns.variables, fn variable ->
+        variable.id == id
+      end)
+
+    {:noreply, assign(socket, :variables, updated_variables)}
   end
 end

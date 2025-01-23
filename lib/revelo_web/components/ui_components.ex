@@ -157,6 +157,64 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
+    The variable table action pane
+
+  """
+
+  def variable_actions(assigns) do
+    ~H"""
+    <div class="flex gap-2">
+      <.tooltip>
+        <tooltip_trigger>
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8">
+            <.icon name="hero-pencil-square" class="h-4 w-4 transition-all" />
+            <span class="sr-only">
+              Edit
+            </span>
+          </button>
+        </tooltip_trigger>
+        <.tooltip_content side="top">
+          Edit
+        </.tooltip_content>
+      </.tooltip>
+      <.tooltip>
+        <tooltip_trigger>
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8">
+            <.icon
+              name={if @is_key, do: "hero-key-solid", else: "hero-key"}
+              class="h-4 w-4 transition-all"
+            />
+            <span class="sr-only">
+              Make Key
+            </span>
+          </button>
+        </tooltip_trigger>
+        <.tooltip_content side="top">
+          Make Key
+        </.tooltip_content>
+      </.tooltip>
+      <.tooltip>
+        <tooltip_trigger>
+          <button
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8"
+            phx-click="delete_variable"
+            phx-value-id={@id}
+          >
+            <.icon name="hero-trash" class="h-4 w-4 transition-all" />
+            <span class="sr-only">
+              Delete
+            </span>
+          </button>
+        </tooltip_trigger>
+        <.tooltip_content side="top">
+          Delete
+        </.tooltip_content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  @doc """
   Renders a modal.
 
   ## Examples
