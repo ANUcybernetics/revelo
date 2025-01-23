@@ -8,7 +8,7 @@ defmodule Revelo.VariableTest do
   alias Revelo.Diagrams.Variable
   alias Revelo.Diagrams.VariableVote
 
-  describe "variable actions" do
+  describe "property-based variable tests" do
     property "accepts valid create input" do
       user = user()
       session = session()
@@ -41,7 +41,9 @@ defmodule Revelo.VariableTest do
         assert var.creator.id == user.id
       end
     end
+  end
 
+  describe "variable actions" do
     test "can create variable" do
       variable = variable()
 
@@ -83,23 +85,23 @@ defmodule Revelo.VariableTest do
       variable = Revelo.Diagrams.unhide_variable!(variable)
       assert variable.hidden? == false
     end
-  end
 
-  test "enforces uniqueness of names within session" do
-    user = user()
-    session = session()
+    test "enforces uniqueness of names within session" do
+      user = user()
+      session = session()
 
-    input = %{name: "test", session: session}
+      input = %{name: "test", session: session}
 
-    _variable1 =
-      Variable
-      |> Ash.Changeset.for_create(:create, input, actor: user)
-      |> Ash.create!()
+      _variable1 =
+        Variable
+        |> Ash.Changeset.for_create(:create, input, actor: user)
+        |> Ash.create!()
 
-    assert_raise Invalid, fn ->
-      Variable
-      |> Ash.Changeset.for_create(:create, input, actor: user)
-      |> Ash.create!()
+      assert_raise Invalid, fn ->
+        Variable
+        |> Ash.Changeset.for_create(:create, input, actor: user)
+        |> Ash.create!()
+      end
     end
   end
 
