@@ -19,7 +19,10 @@ defmodule Revelo.Diagrams do
       define :unhide_relationship, action: :unhide
     end
 
-    resource Revelo.Diagrams.Loop
+    resource Revelo.Diagrams.Loop do
+      define :scan_session, args: [:session_id]
+    end
+
     resource Revelo.Diagrams.LoopRelationships
 
     # "vote" resources

@@ -216,5 +216,81 @@ defmodule Revelo.LoopTest do
                }
              ] = Map.get(changeset, :errors)
     end
+
+    test "scan_session creates loops from relationships" do
+      user = user()
+      session = session()
+
+      # Create variables for two different loops
+      variables = Enum.map(1..5, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3, var4, var5] = variables
+
+      # First loop: var1 -> var2 -> var3 -> var1
+      loop1_rels = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var1, session: session, user: user)
+      ]
+
+      # Second loop: var3 -> var4 -> var5 -> var3
+      loop2_rels = [
+        relationship(src: var3, dst: var4, session: session, user: user),
+        relationship(src: var4, dst: var5, session: session, user: user),
+        relationship(src: var5, dst: var3, session: session, user: user)
+      ]
+
+      # Run the scan_session action
+      loops = Revelo.Diagrams.scan_session!(session.id)
+
+      # Verify both loops were detected
+      assert length(loops) == 2
+
+      # Verify loops by comparing their relationships
+      loops_with_rels =
+        Enum.map(loops, fn loop ->
+          loop
+          |> Ash.load!(:influence_relationships)
+          |> Map.get(:influence_relationships)
+          |> Enum.map(fn rel -> {rel.src_id, rel.dst_id} end)
+        end)
+
+      # Source loop relationships as tuples
+      loop1_tuples = Enum.map(loop1_rels, fn rel -> {rel.src_id, rel.dst_id} end)
+      loop2_tuples = Enum.map(loop2_rels, fn rel -> {rel.src_id, rel.dst_id} end)
+
+      # Check that both expected loops were found
+      assert Enum.any?(loops_with_rels, fn loop_rels ->
+               Analyser.loops_equal?(
+                 Enum.map(loop_rels, fn {src, _dst} -> src end),
+                 Enum.map(loop1_tuples, fn {src, _dst} -> src end)
+               )
+             end)
+
+      assert Enum.any?(loops_with_rels, fn loop_rels ->
+               Analyser.loops_equal?(
+                 Enum.map(loop_rels, fn {src, _dst} -> src end),
+                 Enum.map(loop2_tuples, fn {src, _dst} -> src end)
+               )
+             end)
+    end
+
+    test "scan_session returns empty list when no loops exist" do
+      user = user()
+      session = session()
+
+      # Create variables for a linear path (no loops)
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3] = variables
+
+      # Create linear relationships: var1 -> var2 -> var3
+      [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user)
+      ]
+
+      # Run scan_session and verify empty result
+      loops = Revelo.Diagrams.scan_session!(session.id)
+      assert loops == []
+    end
   end
 end
