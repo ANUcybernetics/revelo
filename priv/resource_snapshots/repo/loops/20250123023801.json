@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "description",
+      "source": "story",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -52,7 +52,7 @@
     }
   ],
   "table": "loops",
-  "hash": "A5DB10EB75E50BEA9C482AE6148F8B4699CAE1C726E18004CCAB0F12BC66B264",
+  "hash": "CEF7CD55B5A526C2C830CBC567929091CC596E81C49A7E90E03611A36F920CAC",
   "multitenancy": {
     "global": null,
     "attribute": null,

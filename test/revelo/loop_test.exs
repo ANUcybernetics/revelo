@@ -27,7 +27,7 @@ defmodule Revelo.LoopTest do
       input =
         %{
           relationships: relationships,
-          description: Faker.Lorem.paragraph()
+          story: Faker.Lorem.paragraph()
         }
 
       loop =

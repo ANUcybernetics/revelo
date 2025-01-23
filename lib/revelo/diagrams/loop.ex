@@ -17,7 +17,7 @@ defmodule Revelo.Diagrams.Loop do
     defaults [:read]
 
     create :create do
-      accept [:description, :display_order]
+      accept [:story, :display_order]
 
       argument :relationships, {:array, :struct} do
         constraints items: [instance_of: Relationship]
@@ -40,7 +40,7 @@ defmodule Revelo.Diagrams.Loop do
 
   attributes do
     uuid_primary_key :id
-    attribute :description, :string
+    attribute :story, :string
     attribute :display_order, :integer
     timestamps()
   end

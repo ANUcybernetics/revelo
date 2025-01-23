@@ -80,7 +80,7 @@ defmodule ReveloTest.Generators do
     input =
       %{
         relationships: StreamData.constant(relationships),
-        description: StreamData.repeatedly(fn -> Faker.Lorem.paragraph() end),
+        story: StreamData.repeatedly(fn -> Faker.Lorem.paragraph() end),
         display_order: StreamData.positive_integer()
       }
       |> StreamData.fixed_map()
