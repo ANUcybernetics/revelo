@@ -7,6 +7,7 @@ defmodule Revelo.LoopTest do
   # alias Revelo.Diagrams.Relationship
   # alias Revelo.Diagrams.Variable
 
+  alias Revelo.Diagrams.Analyser
   alias Revelo.Diagrams.Loop
 
   describe "loop actions" do
@@ -101,24 +102,28 @@ defmodule Revelo.LoopTest do
       uuid4 = Ecto.UUID.generate()
 
       edges1 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid1}]
-      loop1 = Loop.find_loops(edges1)
-      assert Loop.loops_equal?([uuid1, uuid2, uuid3], hd(loop1))
+      loop1 = Analyser.find_loops(edges1)
+      assert Analyser.loops_equal?([uuid1, uuid2, uuid3], hd(loop1))
 
       # Two intersecting cycles: uuid1->uuid2->uuid3->uuid1 and uuid2->uuid3->uuid4->uuid2
       edges2 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid1}, {uuid3, uuid4}, {uuid4, uuid2}]
-      loops2 = Loop.find_loops(edges2)
+      loops2 = Analyser.find_loops(edges2)
 
       assert length(loops2) == 2
-      assert Enum.any?(loops2, &Loop.loops_equal?(&1, [uuid1, uuid2, uuid3]))
-      assert Enum.any?(loops2, &Loop.loops_equal?(&1, [uuid2, uuid3, uuid4]))
+      assert Enum.any?(loops2, &Analyser.loops_equal?(&1, [uuid1, uuid2, uuid3]))
+      assert Enum.any?(loops2, &Analyser.loops_equal?(&1, [uuid2, uuid3, uuid4]))
 
       # No cycles
       edges3 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid4}]
-      assert [] == Loop.find_loops(edges3)
+      assert [] == Analyser.find_loops(edges3)
 
       # Self loop
       edges4 = [{uuid1, uuid1}]
-      assert Loop.loops_equal?([uuid1], hd(Loop.find_loops(edges4)))
+
+      assert Analyser.loops_equal?(
+               [uuid1],
+               hd(Analyser.find_loops(edges4))
+             )
     end
   end
 end
