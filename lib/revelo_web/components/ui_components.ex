@@ -7,9 +7,11 @@ defmodule ReveloWeb.UIComponents do
 
   import ReveloWeb.Component.Badge
   import ReveloWeb.Component.Card
+  import ReveloWeb.Component.Checkbox
   import ReveloWeb.Component.DropdownMenu
   import ReveloWeb.Component.Menu
   import ReveloWeb.Component.Progress
+  import ReveloWeb.Component.ScrollArea
   import ReveloWeb.Component.Tooltip
   import ReveloWeb.CoreComponents
 
@@ -239,6 +241,42 @@ defmodule ReveloWeb.UIComponents do
         </div>
         <.progress class="w-full h-2" value={round(@completed / @total * 100)} />
       </.card_footer>
+    </.card>
+    """
+  end
+
+  @doc """
+    The variable voting page for mobile
+  """
+
+  def variable_voting(assigns) do
+    ~H"""
+    <.card class="w-[350px] overflow-hidden">
+      <.card_header>
+        <.card_title>Which of these are important parts of your system?</.card_title>
+      </.card_header>
+
+      <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
+        <div class="flex justify-between w-full">
+          <span>
+            {Enum.at(@variables, @key_variable).name}
+          </span>
+          <.badge_key />
+        </div>
+      </.card_content>
+
+      <.scroll_area class="h-72">
+        <.card_content class="p-0">
+          <%= for variable <- Enum.reject(@variables, fn v -> v.id == Enum.at(@variables, @key_variable).id end) do %>
+            <.label for={"var" <> Integer.to_string(variable.id)}>
+              <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
+                <.checkbox id={"var" <> Integer.to_string(variable.id)} />
+                {variable.name}
+              </div>
+            </.label>
+          <% end %>
+        </.card_content>
+      </.scroll_area>
     </.card>
     """
   end
