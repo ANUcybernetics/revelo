@@ -3,35 +3,15 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "inserted_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime_usec",
-      "source": "updated_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "uuid",
-      "source": "relationship_id",
+      "source": "session_id",
       "references": {
-        "name": "relationship_votes_relationship_id_fkey",
-        "table": "relationships",
+        "name": "session_participants_session_id_fkey",
+        "table": "sessions",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -49,14 +29,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "voter_id",
+      "source": "participant_id",
       "references": {
-        "name": "relationship_votes_voter_id_fkey",
+        "name": "session_participants_participant_id_fkey",
         "table": "users",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -71,24 +51,14 @@
       "primary_key?": true
     }
   ],
-  "table": "relationship_votes",
-  "hash": "A8AF0F1CC14EBE5433D4FC870808B3A126C72FFC85398BB500663552328CA208",
+  "table": "session_participants",
+  "hash": "C91D27172D6A37E56E06283AFA26145106AAAE1C215642CA76EC5575C2209F85",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
-  "identities": [
-    {
-      "name": "unique_vote",
-      "keys": [
-        "relationship_id",
-        "voter_id"
-      ],
-      "index_name": "relationship_votes_unique_vote_index",
-      "base_filter": null
-    }
-  ],
+  "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],

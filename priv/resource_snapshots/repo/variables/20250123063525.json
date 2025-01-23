@@ -3,6 +3,46 @@
     {
       "default": "nil",
       "size": null,
+      "type": "uuid",
+      "source": "id",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "name",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "boolean",
+      "source": "is_key?",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "boolean",
+      "source": "hidden?",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "utc_datetime_usec",
       "source": "inserted_at",
       "references": null,
@@ -24,14 +64,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "variable_id",
+      "source": "session_id",
       "references": {
-        "name": "variable_votes_variable_id_fkey",
-        "table": "variables",
+        "name": "variables_session_id_fkey",
+        "table": "sessions",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -43,20 +83,20 @@
       },
       "allow_nil?": false,
       "generated?": false,
-      "primary_key?": true
+      "primary_key?": false
     },
     {
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "voter_id",
+      "source": "creator_id",
       "references": {
-        "name": "variable_votes_voter_id_fkey",
+        "name": "variables_creator_id_fkey",
         "table": "users",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -68,24 +108,24 @@
       },
       "allow_nil?": false,
       "generated?": false,
-      "primary_key?": true
+      "primary_key?": false
     }
   ],
-  "table": "variable_votes",
-  "hash": "E1449BF2FCA142DAB1F0A8AE1F53939D7DD980D5786C8EA6BB40CBFAD25CF1C0",
+  "table": "variables",
+  "hash": "95B565ED44EF13E96BA9B295B00B8A90B0642C9CF730570F6DC15625B9A67C23",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "identities": [
     {
-      "name": "unique_vote",
+      "name": "unique_name",
       "keys": [
-        "variable_id",
-        "voter_id"
+        "name",
+        "session_id"
       ],
-      "index_name": "variable_votes_unique_vote_index",
+      "index_name": "variables_unique_name_index",
       "base_filter": null
     }
   ],

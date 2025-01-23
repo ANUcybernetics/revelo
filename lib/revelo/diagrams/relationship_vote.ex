@@ -16,6 +16,8 @@ defmodule Revelo.Diagrams.RelationshipVote do
     defaults [:read]
 
     create :create do
+      accept [:type]
+
       argument :relationship, :struct do
         constraints instance_of: Relationship
         allow_nil? false
@@ -27,6 +29,11 @@ defmodule Revelo.Diagrams.RelationshipVote do
   end
 
   attributes do
+    attribute :type, :atom do
+      allow_nil? false
+      constraints one_of: [:balancing, :reinforcing, :no_relationship]
+    end
+
     timestamps()
   end
 

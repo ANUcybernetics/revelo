@@ -3,6 +3,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "created_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "id",
       "references": null,
@@ -14,17 +24,47 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "story",
+      "source": "jti",
       "references": null,
-      "allow_nil?": true,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "subject",
+      "references": null,
+      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     },
     {
       "default": "nil",
       "size": null,
-      "type": "bigint",
-      "source": "display_order",
+      "type": "utc_datetime",
+      "source": "expires_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "purpose",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
+      "source": "extra_data",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -51,12 +91,12 @@
       "primary_key?": false
     }
   ],
-  "table": "loops",
-  "hash": "CEF7CD55B5A526C2C830CBC567929091CC596E81C49A7E90E03611A36F920CAC",
+  "table": "tokens",
+  "hash": "CE1724773AE65D9E9AA70A7B81FC61EAFB870CD87983D53F9BCED8E06292F33D",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "identities": [],
   "repo": "Elixir.Revelo.Repo",

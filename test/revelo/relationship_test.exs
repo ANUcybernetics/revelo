@@ -78,7 +78,14 @@ defmodule Revelo.RelationshipTest do
 
       vote =
         RelationshipVote
-        |> Ash.Changeset.for_create(:create, %{relationship: relationship}, actor: user)
+        |> Ash.Changeset.for_create(
+          :create,
+          %{
+            relationship: relationship,
+            type: :reinforcing
+          },
+          actor: user
+        )
         |> Ash.create!()
 
       assert vote.voter_id == user.id
@@ -97,12 +104,26 @@ defmodule Revelo.RelationshipTest do
 
       vote1 =
         RelationshipVote
-        |> Ash.Changeset.for_create(:create, %{relationship: relationship1}, actor: user)
+        |> Ash.Changeset.for_create(
+          :create,
+          %{
+            relationship: relationship1,
+            type: :reinforcing
+          },
+          actor: user
+        )
         |> Ash.create!()
 
       vote2 =
         RelationshipVote
-        |> Ash.Changeset.for_create(:create, %{relationship: relationship2}, actor: user)
+        |> Ash.Changeset.for_create(
+          :create,
+          %{
+            relationship: relationship2,
+            type: :reinforcing
+          },
+          actor: user
+        )
         |> Ash.create!()
 
       assert vote1.voter_id == user.id
@@ -128,12 +149,26 @@ defmodule Revelo.RelationshipTest do
 
       vote1 =
         RelationshipVote
-        |> Ash.Changeset.for_create(:create, %{relationship: relationship}, actor: user1)
+        |> Ash.Changeset.for_create(
+          :create,
+          %{
+            relationship: relationship,
+            type: :reinforcing
+          },
+          actor: user1
+        )
         |> Ash.create!()
 
       vote2 =
         RelationshipVote
-        |> Ash.Changeset.for_create(:create, %{relationship: relationship}, actor: user2)
+        |> Ash.Changeset.for_create(
+          :create,
+          %{
+            relationship: relationship,
+            type: :reinforcing
+          },
+          actor: user2
+        )
         |> Ash.create!()
 
       assert vote1.voter_id == user1.id

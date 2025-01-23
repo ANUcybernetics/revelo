@@ -3,28 +3,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "uuid",
-      "source": "id",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": true
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "text",
-      "source": "description",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "boolean",
-      "source": "hidden?",
+      "source": "type",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -54,14 +34,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "session_id",
+      "source": "relationship_id",
       "references": {
-        "name": "relationships_session_id_fkey",
-        "table": "sessions",
+        "name": "relationship_votes_relationship_id_fkey",
+        "table": "relationships",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -73,20 +53,20 @@
       },
       "allow_nil?": false,
       "generated?": false,
-      "primary_key?": false
+      "primary_key?": true
     },
     {
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "src_id",
+      "source": "voter_id",
       "references": {
-        "name": "relationships_src_id_fkey",
-        "table": "variables",
+        "name": "relationship_votes_voter_id_fkey",
+        "table": "users",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -98,49 +78,24 @@
       },
       "allow_nil?": false,
       "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "dst_id",
-      "references": {
-        "name": "relationships_dst_id_fkey",
-        "table": "variables",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "on_delete": null,
-        "destination_attribute": "id",
-        "deferrable": false,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "on_update": null
-      },
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
+      "primary_key?": true
     }
   ],
-  "table": "relationships",
-  "hash": "52583ABD63DE86DF0378950827CBEE6807A9F7DF5E3FE73E09C7169955A31C7F",
+  "table": "relationship_votes",
+  "hash": "19B188271369E3FA0FD4B04FF76246039AE02941AEC8F06BDF97F3B33625272B",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "identities": [
     {
-      "name": "one_relationship_between_variables",
+      "name": "unique_vote",
       "keys": [
-        "src_id",
-        "dst_id"
+        "relationship_id",
+        "voter_id"
       ],
-      "index_name": "relationships_one_relationship_between_variables_index",
+      "index_name": "relationship_votes_unique_vote_index",
       "base_filter": null
     }
   ],

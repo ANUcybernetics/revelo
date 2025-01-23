@@ -62,11 +62,11 @@
     }
   ],
   "table": "sessions",
-  "hash": "12C87C89CD12495C34ECBF6FF620935BFD3D357597818610758157BD0AC9B133",
+  "hash": "D22D27DBA54D4E9CA320BDBFDF51A99664DB47030501EFBC61E766AF44201B8F",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "identities": [],
   "repo": "Elixir.Revelo.Repo",

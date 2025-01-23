@@ -141,6 +141,7 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
 
       add :updated_at, :utc_datetime_usec, null: false
       add :inserted_at, :utc_datetime_usec, null: false
+      add :type, :text, null: false
     end
 
     create unique_index(:relationship_votes, [:relationship_id, :voter_id],

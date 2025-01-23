@@ -3,16 +3,6 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "confirmed_at",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "uuid",
       "source": "id",
       "references": null,
@@ -23,8 +13,28 @@
     {
       "default": "nil",
       "size": null,
-      "type": "citext",
-      "source": "email",
+      "type": "text",
+      "source": "story",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "display_order",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -33,31 +43,22 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "hashed_password",
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     }
   ],
-  "table": "users",
-  "hash": "F91CDA7DEE451A7FBA95611C7765DDDB2CBEB797491448047F24F6429BB99AF4",
+  "table": "loops",
+  "hash": "F3161EA9D98DB3D71DF05F934A0064BC342335FA9A9658260FFABE2AB526B522",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
-  "identities": [
-    {
-      "name": "unique_email",
-      "keys": [
-        "email"
-      ],
-      "index_name": "users_unique_email_index",
-      "base_filter": null
-    }
-  ],
+  "identities": [],
   "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],

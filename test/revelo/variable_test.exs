@@ -189,7 +189,7 @@ defmodule Revelo.VariableTest do
       user = user()
       variable = variable(user: user)
 
-      Revelo.Diagrams.vote!(variable, actor: user)
+      Revelo.Diagrams.variable_vote!(variable, actor: user)
 
       variable = Ash.load!(variable, :votes)
       assert [%{voter_id: voter_id, variable_id: variable_id}] = variable.votes
