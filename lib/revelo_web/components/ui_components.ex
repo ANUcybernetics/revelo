@@ -5,6 +5,7 @@ defmodule ReveloWeb.UIComponents do
   use Phoenix.Component
   use Gettext, backend: ReveloWeb.Gettext
 
+  import ReveloWeb.Component.Badge
   import ReveloWeb.Component.DropdownMenu
   import ReveloWeb.Component.Menu
   import ReveloWeb.Component.Tooltip
@@ -139,6 +140,19 @@ defmodule ReveloWeb.UIComponents do
         </.tooltip>
       </nav>
     </aside>
+    """
+  end
+
+  @doc """
+    The key variable badge
+
+  """
+
+  def badge_key(assigns) do
+    ~H"""
+    <.badge class="bg-sky-200 text-sky-950 hover:bg-sky-300">
+      <.icon name="hero-key-mini" class="h-4 w-4 mr-1" /> Key Variable
+    </.badge>
     """
   end
 
