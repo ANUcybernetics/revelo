@@ -7,6 +7,7 @@ defmodule Revelo.LoopTest do
   # alias Revelo.Diagrams.Relationship
   # alias Revelo.Diagrams.Variable
 
+  alias Ash.Error.Changes.InvalidChanges
   alias Revelo.Diagrams.Analyser
   alias Revelo.Diagrams.Loop
 
@@ -124,6 +125,96 @@ defmodule Revelo.LoopTest do
                [uuid1],
                hd(Analyser.find_loops(edges4))
              )
+    end
+
+    test "can create simple a->b->a loop" do
+      user = user()
+      session = session()
+
+      # Create the two variables for the loop
+      [var_a, var_b] = Enum.map(1..2, fn _ -> variable(session: session, user: user) end)
+
+      # Create relationships a->b and b->a
+      relationships = [
+        relationship(src: var_a, dst: var_b, session: session, user: user),
+        relationship(src: var_b, dst: var_a, session: session, user: user)
+      ]
+
+      loop =
+        Loop
+        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
+        |> Ash.create!()
+        |> Ash.load!(:influence_relationships)
+
+      # Verify loop was created with both relationships
+      assert MapSet.new(relationships, & &1.id) ==
+               MapSet.new(loop.influence_relationships, & &1.id)
+    end
+
+    test "non-loop relationships return error changeset" do
+      user = user()
+      session = session()
+
+      # Create three variables but don't close the loop
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+      relationships =
+        variables
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship(src: src, dst: dst, session: session, user: user)
+        end)
+
+      input = %{
+        relationships: relationships,
+        story: Faker.Lorem.paragraph()
+      }
+
+      result =
+        Loop
+        |> Ash.Changeset.for_create(:create, input, actor: user)
+        |> Ash.create()
+
+      assert {:error, changeset} = result
+
+      # this is fragile - update it if the error message changes
+      assert [
+               %InvalidChanges{
+                 message: "Loop does not close back to starting point"
+               }
+             ] = Map.get(changeset, :errors)
+    end
+
+    test "invalid relationships with no loop return error changeset" do
+      user = user()
+      session = session()
+
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3] = variables
+
+      # Create non-sequential relationships that don't form a loop
+      relationships = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var3, dst: var1, session: session, user: user)
+      ]
+
+      input = %{
+        relationships: relationships,
+        story: Faker.Lorem.paragraph()
+      }
+
+      result =
+        Loop
+        |> Ash.Changeset.for_create(:create, input, actor: user)
+        |> Ash.create()
+
+      assert {:error, changeset} = result
+
+      assert [
+               %InvalidChanges{
+                 message: "Relationships do not form a continuous loop"
+               }
+             ] = Map.get(changeset, :errors)
     end
   end
 end
