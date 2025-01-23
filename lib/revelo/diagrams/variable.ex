@@ -16,6 +16,15 @@ defmodule Revelo.Diagrams.Variable do
   actions do
     defaults [:read]
 
+    read :list do
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      filter expr(hidden? == false and session.id == ^arg(:session_id))
+      prepare build(sort: :name)
+    end
+
     create :create do
       accept [:is_key?, :hidden?]
       primary? true

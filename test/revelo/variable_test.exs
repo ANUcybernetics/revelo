@@ -86,6 +86,21 @@ defmodule Revelo.VariableTest do
       assert variable.hidden? == false
     end
 
+    test "Revelo.Diagrams.list! returns only unhidden variables" do
+      user = user()
+      session = session()
+      visible_var = variable(user: user, session: session)
+      hidden_var = variable(user: user, session: session)
+
+      hidden_var = Revelo.Diagrams.hide_variable!(hidden_var)
+      assert hidden_var.hidden? == true
+
+      variables = Revelo.Diagrams.list_variables!(session.id)
+
+      assert visible_var.id in Enum.map(variables, & &1.id)
+      refute hidden_var.id in Enum.map(variables, & &1.id)
+    end
+
     test "enforces uniqueness of names within session" do
       user = user()
       session = session()
