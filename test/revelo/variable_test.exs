@@ -61,6 +61,17 @@ defmodule Revelo.VariableTest do
 
       assert renamed_var.name == new_name
     end
+
+    test "can toggle key flag on variable" do
+      variable = variable()
+      assert variable.is_key? == false
+
+      variable = Revelo.Diagrams.set_key_variable!(variable)
+      assert variable.is_key? == true
+
+      variable = Revelo.Diagrams.unset_key_variable!(variable)
+      assert variable.is_key? == false
+    end
   end
 
   test "enforces uniqueness of names within session" do
