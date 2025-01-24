@@ -8,6 +8,19 @@ defmodule Revelo.Diagrams.Variable do
   alias Revelo.Accounts.User
   alias Revelo.Sessions.Session
 
+  calculations do
+    # TODO this seems to be required because ash_sqlite doesn't support count
+    # aggregates in expressions (or in aggregates)
+    calculate :vote_tally,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM variable_votes WHERE variable_votes.variable_id = ?)",
+                  id
+                )
+              )
+  end
+
   sqlite do
     table "variables"
     repo Revelo.Repo

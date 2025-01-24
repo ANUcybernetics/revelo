@@ -215,6 +215,12 @@ defmodule Revelo.VariableTest do
 
       assert votes |> Enum.map(& &1.voter_id) |> Enum.sort() ==
                Enum.sort([user1.id, user1.id, user2.id])
+
+      variable1 = Ash.load!(variable1, :vote_tally)
+      variable2 = Ash.load!(variable2, :vote_tally)
+
+      assert variable1.vote_tally == 2
+      assert variable2.vote_tally == 1
     end
   end
 end
