@@ -185,6 +185,27 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
+    The vote badges
+
+  """
+
+  def badge_vote(assigns) do
+    ~H"""
+    <.badge class="bg-emerald-200 text-emerald-900 hover:bg-emerald-300">
+      <.icon name="hero-hand-thumb-up-mini" class="h-4 w-4 mr-1" /> Important
+    </.badge>
+    """
+  end
+
+  def badge_no_vote(assigns) do
+    ~H"""
+    <.badge class="bg-rose-200 text-rose-900 hover:bg-rose-300">
+      <.icon name="hero-hand-thumb-down-mini" class="h-4 w-4 mr-1" /> Not Important
+    </.badge>
+    """
+  end
+
+  @doc """
     The variable table action pane
 
   """
@@ -298,6 +319,54 @@ defmodule ReveloWeb.UIComponents do
                 {variable.name}
               </div>
             </.label>
+          <% end %>
+        </.card_content>
+      </.scroll_area>
+    </.card>
+    """
+  end
+
+  @doc """
+    The variable confirmation page for mobile
+  """
+
+  def variable_confirmation(assigns) do
+    ~H"""
+    <.card class="w-[350px] overflow-hidden">
+      <.card_header>
+        <.card_title>Your Variable Votes</.card_title>
+      </.card_header>
+
+      <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
+        <div class="flex justify-between w-full">
+          <span>
+            {Enum.find(@variables, fn variable -> variable.is_key? end).name}
+          </span>
+          <.badge_key />
+        </div>
+      </.card_content>
+
+      <.scroll_area class="h-72">
+        <.card_content class="p-0">
+          <%= for variable <-
+              Enum.reject(@variables, fn variable -> variable.is_key? end)
+              |> Enum.sort_by(fn variable ->
+                if Enum.find(@votes, fn vote -> vote.id == variable.id and vote.voter_id == @user_id end) do
+                  0 # Voted items go to the top
+                else
+                  1 # Non-voted items go to the bottom
+                end
+              end) do %>
+            <div class="flex items-center justify-between py-4 px-6 gap-2">
+              <span>{variable.name}</span>
+              <%= if Enum.find(@votes, fn vote ->
+                  vote.id == variable.id and vote.voter_id == @user_id
+                end) do %>
+                <.badge_vote />
+              <% else %>
+                <.badge_no_vote />
+              <% end %>
+            </div>
           <% end %>
         </.card_content>
       </.scroll_area>
