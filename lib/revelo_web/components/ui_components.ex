@@ -434,6 +434,48 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
+    Renders a countdown timer component.
+  """
+
+  def countdown(assigns) do
+    ~H"""
+    <.card class="w-[350px] overflow-hidden">
+      <.card_content class="border-gray-300 p-0 flex justify-between items-center h-full">
+        <%= if @type == "left_button" or @type == "both_buttons" do %>
+          <ReveloWeb.Component.Button.button
+            variant="outline"
+            class="h-full border-0 border-r-[1px] rounded-none"
+          >
+            <.icon name="hero-arrow-left" class="h-5 w-5" />
+          </ReveloWeb.Component.Button.button>
+        <% end %>
+        <div class="p-6 flex grow justify-center items-center space-x-4 flex-col gap-2">
+          <span class="text-2xl">
+            <b>
+              {Integer.to_string(div(@time_left, 60), 10) |> String.pad_leading(2, "0")}:{Integer.to_string(
+                rem(@time_left, 60),
+                10
+              )
+              |> String.pad_leading(2, "0")}
+            </b>
+            remaining
+          </span>
+          <.progress class="w-full h-2 !m-0" value={round(@time_left / @initial_time * 100)} />
+        </div>
+        <%= if @type == "both_buttons" do %>
+          <ReveloWeb.Component.Button.button
+            variant="outline"
+            class="h-full border-0 border-l-[1px] rounded-none"
+          >
+            <.icon name="hero-arrow-right" class="h-5 w-5" />
+          </ReveloWeb.Component.Button.button>
+        <% end %>
+      </.card_content>
+    </.card>
+    """
+  end
+
+  @doc """
   Renders a modal.
 
   ## Examples
