@@ -11,6 +11,7 @@ defmodule ReveloWeb.UIComponents do
   import ReveloWeb.Component.DropdownMenu
   import ReveloWeb.Component.Menu
   import ReveloWeb.Component.Progress
+  import ReveloWeb.Component.RadioGroup
   import ReveloWeb.Component.ScrollArea
   import ReveloWeb.Component.Tooltip
   import ReveloWeb.CoreComponents
@@ -391,6 +392,43 @@ defmodule ReveloWeb.UIComponents do
           <% end %>
         </.card_content>
       </.scroll_area>
+    </.card>
+    """
+  end
+
+  @doc """
+    The relationships page for mobile
+  """
+
+  def relationship_voting(assigns) do
+    ~H"""
+    <.card class="w-[350px] overflow-hidden">
+      <.card_header>
+        <.card_title>Pick the most accurate relation</.card_title>
+      </.card_header>
+      <.card_content class="px-0 pb-0">
+        <.radio_group :let={builder} name="relationship" class="gap-0">
+          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+            <.radio_group_item builder={builder} value="decreases" id="decreases" />
+            <.label for="decreases">
+              As {@variable1.name} <b><em>increases</em></b>, {@variable2.name} <b><em>decreases</em></b>.
+            </.label>
+          </div>
+          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+            <.radio_group_item builder={builder} value="increases" id="increases" />
+            <.label for="increases">
+              As {@variable1.name} <b><em>increases</em></b>, {@variable2.name} <b><em>increases</em></b>.
+            </.label>
+          </div>
+          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+            <.radio_group_item builder={builder} value="none" id="none" />
+            <.label for="none">
+              There is <b><em>no direct relationship</em></b>
+              between {@variable1.name} and {@variable2.name}.
+            </.label>
+          </div>
+        </.radio_group>
+      </.card_content>
     </.card>
     """
   end
