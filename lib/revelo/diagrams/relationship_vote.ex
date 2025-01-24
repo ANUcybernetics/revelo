@@ -21,11 +21,12 @@ defmodule Revelo.Diagrams.RelationshipVote do
     defaults [:read]
 
     read :list do
-      prepare fn query, context ->
-        query
-        |> Ash.Query.load([:relationship, :src_name, :dst_name])
-        |> Ash.Query.sort([:src_name, :dst_name])
+      argument :session_id, :uuid do
+        allow_nil? false
       end
+
+      filter expr(relationship.session_id == ^arg(:session_id))
+      prepare build(load: [:relationship, :src_name, :dst_name], sort: [:src_name, :dst_name])
     end
 
     create :create do

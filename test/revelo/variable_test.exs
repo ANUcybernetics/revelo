@@ -208,7 +208,7 @@ defmodule Revelo.VariableTest do
       Revelo.Diagrams.variable_vote!(variable1, actor: user1)
       Revelo.Diagrams.variable_vote!(variable1, actor: user2)
 
-      votes = Revelo.Diagrams.list_variable_votes!()
+      votes = Revelo.Diagrams.list_variable_votes!(session.id)
 
       assert length(votes) == 3
       assert Enum.map(votes, & &1.variable_id) == [variable1.id, variable1.id, variable2.id]

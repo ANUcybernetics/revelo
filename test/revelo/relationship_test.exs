@@ -209,7 +209,7 @@ defmodule Revelo.RelationshipTest do
       vote2 = Revelo.Diagrams.relationship_vote!(rel2, :balancing, actor: user)
       vote3 = Revelo.Diagrams.relationship_vote!(rel3, :reinforcing, actor: user)
 
-      votes = Revelo.Diagrams.list_relationship_votes!()
+      votes = Revelo.Diagrams.list_relationship_votes!(session.id)
 
       assert Enum.map(votes, fn v -> {v.relationship_id, v.voter_id} end) == [
                {vote2.relationship_id, vote2.voter_id},

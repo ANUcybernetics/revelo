@@ -20,6 +20,12 @@ defmodule Revelo.Diagrams.VariableVote do
     defaults [:read]
 
     read :list do
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      filter expr(variable.session_id == ^arg(:session_id))
+
       prepare build(
                 load: [:variable, :variable_name],
                 sort: [:variable_name]
