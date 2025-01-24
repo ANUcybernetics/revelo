@@ -3,17 +3,9 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- populate all the resource actions (and remove defaults afterwards if they're
-  not necessary)
-
 - add policies/authorizations
 
 - sketch out notifications architecture (what gets broadcast, and to whom?)
-
-- add a validation to the Loop resource such that the provided relationships do
-  actually constitue a cycle
-
-- add UI views (via the ash_phoenix generator)
 
 - add a "create uuid on device and send on initial load" hook
 
