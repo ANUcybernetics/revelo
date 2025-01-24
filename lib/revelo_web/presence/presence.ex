@@ -1,24 +1,10 @@
-defmodule ReveloWeb.SessionManager do
-  @moduledoc """
-  Central Session Manager GenServer responsible for maintaining state of Revelo
-  workshop sessions.
-
-  Tracks participant presence, voting status, and facilitation controls during
-  interactive workshop sessions. Uses Phoenix.Presence for real-time participant
-  tracking and synchronization across distributed nodes.
-
-  Manages:
-  - Active participant list and status
-  - Voting and feedback collection
-  - Facilitation controls and workshop flow
-  """
+defmodule ReveloWeb.Presence do
+  @moduledoc false
   use Phoenix.Presence,
     otp_app: :revelo,
     pubsub_server: Revelo.PubSub
 
-  def init(_opts) do
-    {:ok, %{}}
-  end
+  def init(_opts), do: {:ok, %{}}
 
   def fetch(_topic, presences) do
     for {key, %{metas: [meta | metas]}} <- presences, into: %{} do

@@ -13,6 +13,9 @@ defmodule Revelo.Application do
       {Ecto.Migrator, repos: Application.fetch_env!(:revelo, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:revelo, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Revelo.PubSub},
+      {Registry, keys: :unique, name: Revelo.SessionRegistry},
+      ReveloWeb.Presence,
+      Revelo.SessionSupervisor,
       # Start the Finch HTTP client for sending emails
       {Finch, name: Revelo.Finch},
       TwMerge.Cache,
@@ -20,8 +23,7 @@ defmodule Revelo.Application do
       # {Revelo.Worker, arg},
       # Start to serve requests, typically the last entry
       ReveloWeb.Endpoint,
-      {AshAuthentication.Supervisor, [otp_app: :revelo]},
-      ReveloWeb.SessionManager
+      {AshAuthentication.Supervisor, [otp_app: :revelo]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
