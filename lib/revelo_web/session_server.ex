@@ -1,6 +1,6 @@
-defmodule ReveloWeb.SessionManager do
+defmodule ReveloWeb.SessionServer do
   @moduledoc """
-  Central Session Manager GenServer responsible for maintaining state of Revelo
+  Central Session GenServer responsible for maintaining state of Revelo
   workshop sessions.
 
   Tracks participant presence, voting status, and facilitation controls during

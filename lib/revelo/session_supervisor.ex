@@ -11,7 +11,7 @@ defmodule Revelo.SessionSupervisor do
   end
 
   def start_session(session) do
-    spec = {ReveloWeb.SessionManager, session}
+    spec = {ReveloWeb.SessionServer, session}
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
 end
