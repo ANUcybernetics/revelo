@@ -7,6 +7,10 @@ defmodule Revelo.Diagrams.VariableVote do
 
   alias Revelo.Diagrams.Variable
 
+  calculations do
+    calculate :variable_name, :string, expr(variable.name)
+  end
+
   sqlite do
     table "variable_votes"
     repo Revelo.Repo
@@ -14,6 +18,13 @@ defmodule Revelo.Diagrams.VariableVote do
 
   actions do
     defaults [:read]
+
+    read :list do
+      prepare build(
+                load: [:variable, :variable_name],
+                sort: [:variable_name]
+              )
+    end
 
     create :create do
       argument :variable, :struct do

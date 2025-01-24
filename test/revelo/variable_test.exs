@@ -196,5 +196,25 @@ defmodule Revelo.VariableTest do
       assert voter_id == user.id
       assert variable_id == variable.id
     end
+
+    test "list_variable_votes shows all votes sorted by variable name" do
+      user1 = user()
+      user2 = user()
+      session = session()
+      variable1 = variable(name: "abc", user: user1, session: session)
+      variable2 = variable(name: "xyz", user: user1, session: session)
+
+      Revelo.Diagrams.variable_vote!(variable2, actor: user1)
+      Revelo.Diagrams.variable_vote!(variable1, actor: user1)
+      Revelo.Diagrams.variable_vote!(variable1, actor: user2)
+
+      votes = Revelo.Diagrams.list_variable_votes!()
+
+      assert length(votes) == 3
+      assert Enum.map(votes, & &1.variable_id) == [variable1.id, variable1.id, variable2.id]
+
+      assert votes |> Enum.map(& &1.voter_id) |> Enum.sort() ==
+               Enum.sort([user1.id, user1.id, user2.id])
+    end
   end
 end

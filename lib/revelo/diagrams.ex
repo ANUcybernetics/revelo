@@ -28,6 +28,7 @@ defmodule Revelo.Diagrams do
     # "vote" resources
     resource Revelo.Diagrams.VariableVote do
       define :variable_vote, args: [:variable], action: :create
+      define :list_variable_votes, action: :list
     end
 
     resource Revelo.Diagrams.RelationshipVote do
