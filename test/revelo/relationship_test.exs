@@ -216,6 +216,16 @@ defmodule Revelo.RelationshipTest do
                {vote3.relationship_id, vote3.voter_id},
                {vote1.relationship_id, vote1.voter_id}
              ]
+
+      relationships = Revelo.Diagrams.list_relationships!(session.id)
+
+      rel1 = Enum.find(relationships, &(&1.id == rel1.id))
+      rel2 = Enum.find(relationships, &(&1.id == rel2.id))
+      rel3 = Enum.find(relationships, &(&1.id == rel3.id))
+
+      assert rel1.vote_tally == %{reinforcing: 1, balancing: 0, no_relationship: 0}
+      assert rel2.vote_tally == %{reinforcing: 0, balancing: 1, no_relationship: 0}
+      assert rel3.vote_tally == %{reinforcing: 1, balancing: 0, no_relationship: 0}
     end
   end
 end

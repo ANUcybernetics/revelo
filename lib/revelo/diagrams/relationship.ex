@@ -8,6 +8,30 @@ defmodule Revelo.Diagrams.Relationship do
   alias Revelo.Diagrams.Variable
   alias Revelo.Sessions.Session
 
+  calculations do
+    # TODO this seems to be required because ash_sqlite doesn't support count
+    # aggregates in expressions (or in aggregates)
+    calculate :vote_tally,
+              :map,
+              expr(%{
+                reinforcing:
+                  fragment(
+                    "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'reinforcing')",
+                    id
+                  ),
+                balancing:
+                  fragment(
+                    "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'balancing')",
+                    id
+                  ),
+                no_relationship:
+                  fragment(
+                    "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'no_relationship')",
+                    id
+                  )
+              })
+  end
+
   sqlite do
     table "relationships"
     repo Revelo.Repo
@@ -26,7 +50,7 @@ defmodule Revelo.Diagrams.Relationship do
       end
 
       filter expr(session.id == ^arg(:session_id) and (^arg(:include_hidden) or hidden? == false))
-      prepare build(sort: [:src_id, :dst_id])
+      prepare build(sort: [:src_id, :dst_id], load: [:vote_tally])
     end
 
     create :create do
