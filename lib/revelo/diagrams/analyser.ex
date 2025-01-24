@@ -3,21 +3,31 @@ defmodule Revelo.Diagrams.Analyser do
   @doc """
   Detects cycles in a directed graph.
 
-  Takes a list of edges, where each edge is represented as a tuple {source_id, destination_id} of UUIDs.
-  Returns a list of all cycles found in the graph, where each cycle is a list of vertices that form a loop.
+  Takes a list of Relationship structs.
+  Returns a list of all cycles found in the graph, where each cycle is a list of relationships that form a loop.
   If no cycles exist (the graph is acyclic), returns an empty list.
 
   Example:
-    edges = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid1}]
-    find_loops(edges)  # Returns [[uuid1, uuid2, uuid3]]
+    relationships = [%Relationship{src_id: uuid1, dst_id: uuid2}, ...]
+    find_loops(relationships)  # Returns [[%Relationship{...}, %Relationship{...}, %Relationship{...}]]
   """
-  def find_loops(edges) do
+  def find_loops(relationships) do
+    # Convert relationships to tuples
+    edges = Enum.map(relationships, fn rel -> {rel.src_id, rel.dst_id} end)
+
+    # Build graph representation
     graph =
       Enum.reduce(edges, %{}, fn {src, dst}, acc ->
         Map.update(acc, src, [dst], fn existing -> [dst | existing] end)
       end)
 
     vertices = edges |> Enum.flat_map(fn {src, dst} -> [src, dst] end) |> Enum.uniq()
+
+    # Create lookup map for relationships by src/dst pair
+    relationship_lookup =
+      Enum.reduce(relationships, %{}, fn rel, acc ->
+        Map.put(acc, {rel.src_id, rel.dst_id}, rel)
+      end)
 
     vertices
     |> Enum.reduce([], fn start, cycles ->
@@ -30,6 +40,12 @@ defmodule Revelo.Diagrams.Analyser do
     |> Enum.uniq()
     |> Enum.map(&normalize_cycle/1)
     |> Enum.uniq()
+    |> Enum.map(fn cycle ->
+      # Convert vertex cycles back to relationship cycles
+      cycle
+      |> Enum.zip(Enum.drop(cycle, 1) ++ [List.first(cycle)])
+      |> Enum.map(fn {src, dst} -> Map.get(relationship_lookup, {src, dst}) end)
+    end)
   end
 
   defp find_loops_helper(current, start, graph, visited, path, cycles) do

@@ -95,36 +95,62 @@ defmodule Revelo.LoopTest do
   end
 
   describe "cycle detection" do
-    test "find_loops should find cycles in test graphs" do
-      # Simple cycle: uuid1 -> uuid2 -> uuid3 -> uuid1
-      uuid1 = Ecto.UUID.generate()
-      uuid2 = Ecto.UUID.generate()
-      uuid3 = Ecto.UUID.generate()
-      uuid4 = Ecto.UUID.generate()
+    test "find_loops should find simple cycles" do
+      user = user()
+      session = session()
+      vars = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3] = vars
 
-      edges1 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid1}]
-      loop1 = Analyser.find_loops(edges1)
-      assert Analyser.loops_equal?([uuid1, uuid2, uuid3], hd(loop1))
+      # Simple cycle: var1 -> var2 -> var3 -> var1
+      rels = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var1, session: session, user: user)
+      ]
 
-      # Two intersecting cycles: uuid1->uuid2->uuid3->uuid1 and uuid2->uuid3->uuid4->uuid2
-      edges2 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid1}, {uuid3, uuid4}, {uuid4, uuid2}]
-      loops2 = Analyser.find_loops(edges2)
+      loops = Analyser.find_loops(rels)
+      assert length(loops) == 1
+      assert MapSet.new(rels, & &1.id) == MapSet.new(hd(loops), & &1.id)
+    end
 
-      assert length(loops2) == 2
-      assert Enum.any?(loops2, &Analyser.loops_equal?(&1, [uuid1, uuid2, uuid3]))
-      assert Enum.any?(loops2, &Analyser.loops_equal?(&1, [uuid2, uuid3, uuid4]))
+    test "find_loops should find intersecting cycles" do
+      user = user()
+      session = session()
+      vars = Enum.map(1..4, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3, var4] = vars
+
+      rels = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var1, session: session, user: user),
+        relationship(src: var3, dst: var4, session: session, user: user),
+        relationship(src: var4, dst: var2, session: session, user: user)
+      ]
+
+      loops = Analyser.find_loops(rels)
+      assert length(loops) == 2
+    end
+
+    test "find_loops should handle edge cases" do
+      user = user()
+      session = session()
+      vars = Enum.map(1..4, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3, var4] = vars
 
       # No cycles
-      edges3 = [{uuid1, uuid2}, {uuid2, uuid3}, {uuid3, uuid4}]
-      assert [] == Analyser.find_loops(edges3)
+      rels1 = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var4, session: session, user: user)
+      ]
+
+      assert [] == Analyser.find_loops(rels1)
 
       # Self loop
-      edges4 = [{uuid1, uuid1}]
-
-      assert Analyser.loops_equal?(
-               [uuid1],
-               hd(Analyser.find_loops(edges4))
-             )
+      rels2 = [relationship(src: var1, dst: var1, session: session, user: user)]
+      loops = Analyser.find_loops(rels2)
+      assert length(loops) == 1
+      assert MapSet.new(rels2, & &1.id) == MapSet.new(hd(loops), & &1.id)
     end
 
     test "can create simple a->b->a loop" do
@@ -248,28 +274,21 @@ defmodule Revelo.LoopTest do
       # Verify loops by comparing their relationships
       loops_with_rels =
         Enum.map(loops, fn loop ->
-          loop
-          |> Ash.load!(:influence_relationships)
-          |> Map.get(:influence_relationships)
-          |> Enum.map(fn rel -> {rel.src_id, rel.dst_id} end)
+          Ash.load!(loop, :influence_relationships).influence_relationships
         end)
-
-      # Source loop relationships as tuples
-      loop1_tuples = Enum.map(loop1_rels, fn rel -> {rel.src_id, rel.dst_id} end)
-      loop2_tuples = Enum.map(loop2_rels, fn rel -> {rel.src_id, rel.dst_id} end)
 
       # Check that both expected loops were found
       assert Enum.any?(loops_with_rels, fn loop_rels ->
-               Analyser.loops_equal?(
-                 Enum.map(loop_rels, fn {src, _dst} -> src end),
-                 Enum.map(loop1_tuples, fn {src, _dst} -> src end)
+               Enum.all?(
+                 loop1_rels,
+                 fn rel1 -> Enum.any?(loop_rels, fn rel2 -> rel1.id == rel2.id end) end
                )
              end)
 
       assert Enum.any?(loops_with_rels, fn loop_rels ->
-               Analyser.loops_equal?(
-                 Enum.map(loop_rels, fn {src, _dst} -> src end),
-                 Enum.map(loop2_tuples, fn {src, _dst} -> src end)
+               Enum.all?(
+                 loop2_rels,
+                 fn rel1 -> Enum.any?(loop_rels, fn rel2 -> rel1.id == rel2.id end) end
                )
              end)
     end

@@ -74,23 +74,11 @@ defmodule Revelo.Diagrams.Loop do
         # load relationships
         relationships = Revelo.Diagrams.list_relationships!(session_id)
 
-        # extract edges for analyser
-        edges = Enum.map(relationships, fn rel -> {rel.src_id, rel.dst_id} end)
-
-        # find cycles, create loops from any cycles found
+        # find cycles and create loops from any found
         loops =
-          edges
+          relationships
           |> Revelo.Diagrams.Analyser.find_loops()
-          |> Enum.with_index()
-          |> Enum.map(fn {cycle_ids, index} ->
-            # Convert pairs of IDs back to relationships using identity lookup
-            cycle_relationships =
-              cycle_ids
-              |> Enum.zip(Enum.drop(cycle_ids, 1) ++ [List.first(cycle_ids)])
-              |> Enum.map(fn {src_id, dst_id} ->
-                Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
-              end)
-
+          |> Enum.map(fn cycle_relationships ->
             # Create the loop
             __MODULE__
             |> Ash.Changeset.for_create(:create, %{
