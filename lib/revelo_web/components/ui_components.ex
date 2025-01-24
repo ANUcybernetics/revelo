@@ -206,6 +206,27 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
+    The feedback badges
+
+  """
+
+  def badge_reinforcing(assigns) do
+    ~H"""
+    <.badge class="bg-yellow-200 text-yellow-900 hover:bg-yellow-300">
+      <.icon name="hero-arrows-pointing-out-mini" class="h-4 w-4 mr-1" /> Reinforcing
+    </.badge>
+    """
+  end
+
+  def badge_balancing(assigns) do
+    ~H"""
+    <.badge class="bg-fuchsia-200 text-fuchsia-900 hover:bg-fuchsia-300">
+      <.icon name="hero-arrows-pointing-in-mini" class="h-4 w-4 mr-1" /> Balancing
+    </.badge>
+    """
+  end
+
+  @doc """
     The variable table action pane
 
   """
