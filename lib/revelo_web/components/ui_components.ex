@@ -476,6 +476,69 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
+    Renders the discussion page for a given feedback loop
+  """
+
+  def discussion(assigns) do
+    ~H"""
+    <.card class="w-[350px]">
+      <.card_header class="pb-2">
+        <.card_title class="flex">
+          <div class="w-6 shrink-0">{@loop_id}.</div>
+          {@title}
+        </.card_title>
+        <div class="mx-6 pt-2">
+          <.badge_reinforcing :if={@type == "reinforcing"} />
+          <.badge_balancing :if={@type == "balancing"} />
+        </div>
+      </.card_header>
+      <.card_content class="mx-6">
+        <div class="flex -ml-8 gap-1">
+          <div class="text-sky-600 border-sky-600 border-2 border-r-0 rounded-l-lg w-8 my-10 relative">
+            <.icon
+              name="hero-arrow-long-right-solid"
+              class="h-8 w-8 absolute -top-[17px] -right-[6px]"
+            />
+          </div>
+          <div class="flex flex-col mb-2 grow">
+            <%= for {relationship, index} <- Enum.with_index(@loop) do %>
+              <% variable = Enum.find(@variables, fn v -> v.id == relationship.src end) %>
+              <div>
+                <.card class="w-full shadow-none relative">
+                  <.card_content class={
+                    Enum.join(
+                      [
+                        "flex justify-center items-center font-bold",
+                        if(variable.is_key?, do: "pt-7 pb-5", else: "py-6")
+                      ],
+                      " "
+                    )
+                  }>
+                    <div class="absolute top-1 left-1">
+                      <.badge_key :if={variable.is_key?} />
+                    </div>
+                    <span class="text-center">{variable.name}</span>
+                  </.card_content>
+                </.card>
+
+                <%= if index < length(@loop) - 1 do %>
+                  <div class="text-sky-600 w-full flex justify-center">
+                    <.icon name="hero-arrow-long-down-solid" class="h-8 w-8" />
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="flex justify-between items-center space-x-4">
+          <.card_description>{@description}</.card_description>
+        </div>
+      </.card_content>
+    </.card>
+    """
+  end
+
+  @doc """
   Renders a modal.
 
   ## Examples
