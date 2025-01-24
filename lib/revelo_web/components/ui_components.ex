@@ -52,7 +52,13 @@ defmodule ReveloWeb.UIComponents do
           <tooltip_trigger>
             <.link
               href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              class={
+                if @current_page == "prepare",
+                  do:
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                  else:
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              }
             >
               <.icon
                 name="hero-adjustments-horizontal-mini"
@@ -71,7 +77,13 @@ defmodule ReveloWeb.UIComponents do
           <tooltip_trigger>
             <.link
               href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              class={
+                if @current_page == "identify",
+                  do:
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                  else:
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              }
             >
               <.icon name="hero-queue-list-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
               <span class="sr-only">
@@ -87,7 +99,13 @@ defmodule ReveloWeb.UIComponents do
           <tooltip_trigger>
             <.link
               href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              class={
+                if @current_page == "relate",
+                  do:
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                  else:
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              }
             >
               <.icon
                 name="hero-arrows-right-left-mini"
@@ -106,7 +124,13 @@ defmodule ReveloWeb.UIComponents do
           <tooltip_trigger>
             <.link
               href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              class={
+                if @current_page == "analyse",
+                  do:
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                  else:
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              }
             >
               <.icon
                 name="hero-arrow-path-rounded-square-mini"
