@@ -20,7 +20,8 @@ defmodule Revelo.Application do
       # {Revelo.Worker, arg},
       # Start to serve requests, typically the last entry
       ReveloWeb.Endpoint,
-      {AshAuthentication.Supervisor, [otp_app: :revelo]}
+      {AshAuthentication.Supervisor, [otp_app: :revelo]},
+      ReveloWeb.SessionManager
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
