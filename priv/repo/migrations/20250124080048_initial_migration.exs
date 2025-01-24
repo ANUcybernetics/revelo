@@ -45,8 +45,8 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
     end
 
     create table(:users, primary_key: false) do
-      add :hashed_password, :text, null: false
-      add :email, :citext, null: false
+      add :hashed_password, :text
+      add :email, :citext
       add :id, :uuid, null: false, primary_key: true
       add :confirmed_at, :utc_datetime_usec
     end

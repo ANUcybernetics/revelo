@@ -26,7 +26,7 @@
       "type": "citext",
       "source": "email",
       "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -36,13 +36,13 @@
       "type": "text",
       "source": "hashed_password",
       "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     }
   ],
   "table": "users",
-  "hash": "F91CDA7DEE451A7FBA95611C7765DDDB2CBEB797491448047F24F6429BB99AF4",
+  "hash": "8E7ADFA1F75E73AF64FEB6FC8D0E23414814695D18DC6A8F9302627DD2ED5780",
   "multitenancy": {
     "global": null,
     "attribute": null,

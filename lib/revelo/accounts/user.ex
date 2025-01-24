@@ -60,6 +60,42 @@ defmodule Revelo.Accounts.User do
   actions do
     defaults [:read]
 
+    create :register_anonymous_user do
+      description "Register a new anonymous user with a UUID."
+
+      argument :id, :uuid do
+        allow_nil? false
+      end
+
+      change set_attribute(:id, arg(:id))
+    end
+
+    update :upgrade_anonymous_user do
+      description "Upgrade an anonymous user to a full user with email and password."
+
+      argument :email, :ci_string do
+        allow_nil? false
+      end
+
+      argument :password, :string do
+        description "The proposed password for the user, in plain text."
+        allow_nil? false
+        constraints min_length: 8
+        sensitive? true
+      end
+
+      argument :password_confirmation, :string do
+        description "The proposed password for the user (again), in plain text."
+        allow_nil? false
+        sensitive? true
+      end
+
+      change set_attribute(:email, arg(:email))
+      change HashPasswordChange
+      validate PasswordConfirmationValidation
+      change AshAuthentication.GenerateTokenChange
+    end
+
     read :get_by_subject do
       description "Get a user by the subject claim in a JWT"
       argument :subject, :string, allow_nil?: false
@@ -68,9 +104,6 @@ defmodule Revelo.Accounts.User do
     end
 
     update :change_password do
-      # Use this action to allow users to change their password by providing
-      # their current password and a new password.
-
       require_atomic? false
       accept []
       argument :current_password, :string, sensitive?: true, allow_nil?: false
@@ -100,7 +133,6 @@ defmodule Revelo.Accounts.User do
         sensitive? true
       end
 
-      # validates the provided email and password and generates a token
       prepare AshAuthentication.Strategy.Password.SignInPreparation
 
       metadata :token, :string do
@@ -110,14 +142,6 @@ defmodule Revelo.Accounts.User do
     end
 
     read :sign_in_with_token do
-      # In the generated sign in components, we validate the
-      # email and password directly in the LiveView
-      # and generate a short-lived token that can be used to sign in over
-      # a standard controller action, exchanging it for a standard token.
-      # This action performs that exchange. If you do not use the generated
-      # liveviews, you may remove this action, and set
-      # `sign_in_tokens_enabled? false` in the password strategy.
-
       description "Attempt to sign in using a short-lived sign in token."
       get? true
 
@@ -127,7 +151,6 @@ defmodule Revelo.Accounts.User do
         sensitive? true
       end
 
-      # validates the provided sign in token and generates a token
       prepare AshAuthentication.Strategy.Password.SignInWithTokenPreparation
 
       metadata :token, :string do
@@ -156,16 +179,9 @@ defmodule Revelo.Accounts.User do
         sensitive? true
       end
 
-      # Sets the email from the argument
       change set_attribute(:email, arg(:email))
-
-      # Hashes the provided password
       change HashPasswordChange
-
-      # Generates an authentication token for the user
       change AshAuthentication.GenerateTokenChange
-
-      # validates that the password matches the confirmation
       validate PasswordConfirmationValidation
 
       metadata :token, :string do
@@ -181,7 +197,6 @@ defmodule Revelo.Accounts.User do
         allow_nil? false
       end
 
-      # creates a reset token and invokes the relevant senders
       run {AshAuthentication.Strategy.Password.RequestPasswordReset, action: :get_by_email}
     end
 
@@ -215,15 +230,9 @@ defmodule Revelo.Accounts.User do
         sensitive? true
       end
 
-      # validates the provided reset token
       validate AshAuthentication.Strategy.Password.ResetTokenValidation
-
-      # validates that the password matches the confirmation
       validate PasswordConfirmationValidation
-      # Hashes the provided password
       change HashPasswordChange
-
-      # Generates an authentication token for the user
       change AshAuthentication.GenerateTokenChange
     end
   end
@@ -232,12 +241,12 @@ defmodule Revelo.Accounts.User do
     uuid_primary_key :id
 
     attribute :email, :ci_string do
-      allow_nil? false
+      allow_nil? true
       public? true
     end
 
     attribute :hashed_password, :string do
-      allow_nil? false
+      allow_nil? true
       sensitive? true
     end
   end
