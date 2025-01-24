@@ -7,6 +7,11 @@ defmodule Revelo.Diagrams.RelationshipVote do
 
   alias Revelo.Diagrams.Relationship
 
+  calculations do
+    calculate :src_name, :string, expr(relationship.src.name)
+    calculate :dst_name, :string, expr(relationship.dst.name)
+  end
+
   sqlite do
     table "relationship_votes"
     repo Revelo.Repo
@@ -14,6 +19,14 @@ defmodule Revelo.Diagrams.RelationshipVote do
 
   actions do
     defaults [:read]
+
+    read :list do
+      prepare fn query, context ->
+        query
+        |> Ash.Query.load([:relationship, :src_name, :dst_name])
+        |> Ash.Query.sort([:src_name, :dst_name])
+      end
+    end
 
     create :create do
       accept [:type]

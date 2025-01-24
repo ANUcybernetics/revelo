@@ -193,5 +193,29 @@ defmodule Revelo.RelationshipTest do
       relationship = Ash.load!(relationship, :votes)
       assert length(relationship.votes) == 2
     end
+
+    test "list_relationship_votes returns all votes sorted by source/dest variable name" do
+      user = user()
+      session = session()
+      var1 = variable(user: user, session: session, name: "A")
+      var2 = variable(user: user, session: session, name: "B")
+      var3 = variable(user: user, session: session, name: "C")
+
+      rel1 = relationship(user: user, session: session, src: var2, dst: var3)
+      rel2 = relationship(user: user, session: session, src: var1, dst: var2)
+      rel3 = relationship(user: user, session: session, src: var1, dst: var3)
+
+      vote1 = Revelo.Diagrams.relationship_vote!(rel1, :reinforcing, actor: user)
+      vote2 = Revelo.Diagrams.relationship_vote!(rel2, :balancing, actor: user)
+      vote3 = Revelo.Diagrams.relationship_vote!(rel3, :reinforcing, actor: user)
+
+      votes = Revelo.Diagrams.list_relationship_votes!()
+
+      assert Enum.map(votes, fn v -> {v.relationship_id, v.voter_id} end) == [
+               {vote2.relationship_id, vote2.voter_id},
+               {vote3.relationship_id, vote3.voter_id},
+               {vote1.relationship_id, vote1.voter_id}
+             ]
+    end
   end
 end

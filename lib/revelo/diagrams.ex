@@ -33,6 +33,7 @@ defmodule Revelo.Diagrams do
 
     resource Revelo.Diagrams.RelationshipVote do
       define :relationship_vote, args: [:relationship, :type], action: :create
+      define :list_relationship_votes, action: :list
     end
   end
 end
