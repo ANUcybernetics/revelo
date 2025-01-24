@@ -14,7 +14,7 @@ defmodule ReveloWeb.SessionServer do
   """
   use GenServer
 
-  @game_states [:prepare, :identify, :relate, :analyse]
+  @phases [:prepare, :identify, :relate, :analyse]
   @timer_interval :timer.seconds(1)
 
   # Client API
@@ -27,8 +27,8 @@ defmodule ReveloWeb.SessionServer do
     GenServer.call(via_tuple(session_id), :get_state)
   end
 
-  def transition_state(session_id, new_state) when new_state in @game_states do
-    GenServer.cast(via_tuple(session_id), {:transition, new_state})
+  def transition_state(session_id, new_phase) when new_phase in @phases do
+    GenServer.cast(via_tuple(session_id), {:transition, new_phase})
   end
 
   def set_timer(session_id, seconds) do
@@ -43,7 +43,7 @@ defmodule ReveloWeb.SessionServer do
 
     state = %{
       session: session,
-      game_state: :prepare,
+      phase: :prepare,
       time_left: 0
     }
 
@@ -56,10 +56,10 @@ defmodule ReveloWeb.SessionServer do
   end
 
   @impl true
-  def handle_cast({:transition, new_state}, state) do
-    on_exit(state.game_state, state)
-    new_state = on_enter(new_state, state)
-    {:noreply, %{state | game_state: new_state}}
+  def handle_cast({:transition, new_phase}, state) do
+    on_exit(state.phase, state)
+    new_phase = on_enter(new_phase, state)
+    {:noreply, %{state | phase: new_phase}}
   end
 
   @impl true
@@ -72,17 +72,17 @@ defmodule ReveloWeb.SessionServer do
 
   @impl true
   def handle_info(:tick, state) do
-    new_state = on_timer(state)
-    {:noreply, %{new_state | time_left: new_state.time_left - 1}}
+    on_timer(state)
+    {:noreply, Map.update!(state, :time_left, &(&1 - 1))}
   end
 
   # Game State Lifecycle Callbacks
 
-  defp on_enter(new_state, state) do
+  defp on_enter(new_phase, state) do
     Phoenix.PubSub.broadcast(
       Revelo.PubSub,
       "session:#{state.session.id}",
-      {:state_changed, new_state}
+      {:state_changed, new_phase}
     )
 
     state
@@ -100,7 +100,7 @@ defmodule ReveloWeb.SessionServer do
       {:timer_update, state.time_left}
     )
 
-    state
+    :ok
   end
 
   # Private Helpers
