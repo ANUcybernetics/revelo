@@ -23,7 +23,7 @@ defmodule ReveloWeb.SessionLive.FormComponent do
             field={@form[:description]}
             type="text"
             label="Description"
-          /><.input field={@form[:report]} type="text" label="Report" />
+          />
         <% end %>
         <%= if @form.source.type == :update do %>
         <% end %>
