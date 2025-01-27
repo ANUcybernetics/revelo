@@ -32,6 +32,7 @@ defmodule Revelo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:sourceror, "~> 1.0"},
       {:phoenix_storybook, "~> 0.8"},
       {:salad_ui, "~> 0.14"},
       {:bcrypt_elixir, "~> 3.0"},
@@ -66,6 +67,7 @@ defmodule Revelo.MixProject do
       {:req, "~> 0.5"},
       {:faker, "~> 0.18", only: :test},
       {:styler, "~> 1.2", only: [:dev, :test], runtime: false},
+      {:rewrite, "~> 1.0"},
       {:igniter, "~> 0.5"}
     ]
   end
