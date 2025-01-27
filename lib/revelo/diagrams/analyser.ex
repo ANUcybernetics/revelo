@@ -95,16 +95,7 @@ defmodule Revelo.Diagrams.Analyser do
     loops_equal?([rel1, rel2, rel3], [rel2, rel1, rel3]) # Returns false
   """
   def loops_equal?(loop1, loop2) when length(loop1) == length(loop2) do
-    len = length(loop1)
-
-    0..(len - 1)
-    |> Enum.map(fn offset ->
-      loop2
-      |> Stream.cycle()
-      |> Stream.drop(offset)
-      |> Enum.take(len)
-    end)
-    |> Enum.any?(&(&1 == loop1))
+    MapSet.new(Enum.map(loop1, & &1.id)) == MapSet.new(Enum.map(loop2, & &1.id))
   end
 
   def loops_equal?(_, _), do: false
