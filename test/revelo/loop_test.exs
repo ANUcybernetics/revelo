@@ -312,6 +312,27 @@ defmodule Revelo.LoopTest do
       assert loops == []
     end
 
+    test "can create self-loop" do
+      user = user()
+      session = session()
+
+      # Create a single variable for the self-loop
+      variable = variable(session: session, user: user)
+
+      # Create relationship from variable to itself
+      relationship = relationship(src: variable, dst: variable, session: session, user: user)
+
+      loop =
+        Loop
+        |> Ash.Changeset.for_create(:create, %{relationships: [relationship]}, actor: user)
+        |> Ash.create!()
+        |> Ash.load!(:influence_relationships)
+
+      # Verify loop was created with the self-referential relationship
+      assert [relationship_id] = Enum.map(loop.influence_relationships, & &1.id)
+      assert relationship_id == relationship.id
+    end
+
     test "loops_equal? correctly compares loops" do
       user = user()
       session = session()
