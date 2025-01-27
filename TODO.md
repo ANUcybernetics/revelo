@@ -3,6 +3,16 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
+- add a on_mount hook that creates an anon user if they're not logged in
+
+- for all the "session" live views, add the relevant presence stuff so that all
+  participants are tracked (plus add a "session participants) view for admins
+  which lists all curerntly-connected participants
+
+- flesh out the different PIRA liveviews (and add the abovementioned hooks)
+
+- add the required state machine stuff to actually manage the session's progress
+
 - add policies/authorizations
 
 - sketch out notifications architecture (what gets broadcast, and to whom?)
