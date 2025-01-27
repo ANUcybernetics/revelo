@@ -36,7 +36,6 @@ defmodule Revelo.Diagrams.Analyser do
       find_loops_helper(start, start, graph, visited, path, cycles)
     end)
     |> Enum.map(&Enum.reverse/1)
-    |> Enum.uniq()
     |> Enum.map(&normalize_cycle/1)
     |> Enum.uniq()
     |> Enum.map(fn cycle ->
