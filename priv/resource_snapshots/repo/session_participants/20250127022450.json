@@ -3,6 +3,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "boolean",
+      "source": "facilitator",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "session_id",
       "references": {
@@ -52,7 +62,7 @@
     }
   ],
   "table": "session_participants",
-  "hash": "D90E82364D7AD5C59E37A19357AC35EE6B61873DA65DB13FE16BDDF470126856",
+  "hash": "CC8E067D2ED2265C818B0D48421714CB03A56202EDAFFE607010720643AC2558",
   "multitenancy": {
     "global": null,
     "attribute": null,

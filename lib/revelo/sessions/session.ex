@@ -5,6 +5,8 @@ defmodule Revelo.Sessions.Session do
     domain: Revelo.Sessions,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Accounts.User
+
   sqlite do
     table "sessions"
     repo Revelo.Repo
@@ -29,12 +31,13 @@ defmodule Revelo.Sessions.Session do
       change set_attribute(:name, arg(:name))
     end
 
-    update :add_participants do
-      argument :participants, {:array, :map} do
+    update :add_participant do
+      argument :participant, :struct do
+        constraints instance_of: User
         allow_nil? false
       end
 
-      change manage_relationship(:participants, type: :append)
+      change manage_relationship(:participant, :participants, type: :append)
     end
   end
 
@@ -55,7 +58,7 @@ defmodule Revelo.Sessions.Session do
     has_many :variables, Revelo.Diagrams.Variable
     has_many :influence_relationships, Revelo.Diagrams.Relationship
 
-    many_to_many :participants, Revelo.Accounts.User do
+    many_to_many :participants, User do
       through Revelo.Sessions.SessionParticipants
       source_attribute_on_join_resource :session_id
       destination_attribute_on_join_resource :participant_id

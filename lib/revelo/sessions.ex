@@ -7,7 +7,7 @@ defmodule Revelo.Sessions do
     resource Revelo.Sessions.Session do
       define :create, args: [:name]
       define :list
-      define :add_participants, args: [:participants]
+      define :add_participant, args: [:participant]
     end
 
     resource Revelo.Sessions.ContextDoc

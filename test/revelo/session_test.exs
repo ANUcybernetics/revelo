@@ -40,7 +40,7 @@ defmodule Revelo.SessionTest do
 
       session =
         session
-        |> Ash.Changeset.for_update(:add_participants, %{participants: [user]})
+        |> Ash.Changeset.for_update(:add_participant, %{participant: user})
         |> Ash.update!()
 
       assert SessionParticipants |> Ash.read!() |> Enum.count() == 1
@@ -50,7 +50,7 @@ defmodule Revelo.SessionTest do
       # add a second user
       session =
         session
-        |> Ash.Changeset.for_update(:add_participants, %{participants: [user2]})
+        |> Ash.Changeset.for_update(:add_participant, %{participant: user2})
         |> Ash.update!()
         # |> Ash.load!(:participants, actor: user)
         |> Ash.load!(:participants, authorize?: false)
@@ -58,6 +58,27 @@ defmodule Revelo.SessionTest do
       assert SessionParticipants |> Ash.read!() |> Enum.count() == 2
       assert length(session.participants) == 2
       assert Enum.map(session.participants, & &1.id) == [user.id, user2.id]
+    end
+
+    test "can add participant as facilitator" do
+      session = session()
+      user = user()
+
+      session =
+        session
+        |> Ash.Changeset.for_update(:add_participant, %{participant: user})
+        |> Ash.update!()
+        |> Ash.load!(:participants, authorize?: false)
+
+      session_participant =
+        Revelo.Sessions.SessionParticipants
+        |> Ash.get!(session_id: session.id, participant_id: user.id)
+        |> Ash.Changeset.for_update(:set_as_facilitator)
+        |> Ash.update!()
+
+      assert session_participant.facilitator == true
+      assert length(session.participants) == 1
+      assert hd(session.participants).id == user.id
     end
 
     test "can create session with variables and relationships" do
