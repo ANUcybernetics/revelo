@@ -311,5 +311,41 @@ defmodule Revelo.LoopTest do
       loops = Revelo.Diagrams.scan_session!(session.id)
       assert loops == []
     end
+
+    test "loops_equal? correctly compares loops" do
+      user = user()
+      session = session()
+
+      # Create test variables
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3] = variables
+
+      # Create a simple loop: var1 -> var2 -> var3 -> var1
+      loop_rels = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var1, session: session, user: user)
+      ]
+
+      # Create the same loop but starting from a different point
+      rotated_loop = Enum.drop(loop_rels, 1) ++ [List.first(loop_rels)]
+
+      # Different loop with same variables
+      different_loop = [
+        relationship(src: var1, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var1, session: session, user: user)
+      ]
+
+      # Test equal loops with different starting points
+      assert Analyser.loops_equal?(loop_rels, rotated_loop)
+      assert Analyser.loops_equal?(rotated_loop, loop_rels)
+
+      # Test different loops
+      refute Analyser.loops_equal?(loop_rels, different_loop)
+
+      # Test loops of different lengths
+      refute Analyser.loops_equal?(loop_rels, Enum.drop(loop_rels, 1))
+    end
   end
 end

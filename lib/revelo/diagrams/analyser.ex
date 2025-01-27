@@ -12,8 +12,7 @@ defmodule Revelo.Diagrams.Analyser do
     find_loops(relationships)  # Returns [[%Relationship{...}, %Relationship{...}, %Relationship{...}]]
   """
   def find_loops(relationships) do
-    # Convert relationships to tuples
-    edges = Enum.map(relationships, fn rel -> {rel.src_id, rel.dst_id} end)
+    edges = relationships_to_edges(relationships)
 
     # Build graph representation
     graph =
@@ -48,6 +47,10 @@ defmodule Revelo.Diagrams.Analyser do
     end)
   end
 
+  defp relationships_to_edges(relationships) do
+    Enum.map(relationships, fn rel -> {rel.src_id, rel.dst_id} end)
+  end
+
   defp find_loops_helper(current, start, graph, visited, path, cycles) do
     if current in visited do
       if current == start and length(path) > 0 do
@@ -71,6 +74,9 @@ defmodule Revelo.Diagrams.Analyser do
     end
   end
 
+  # This function normalizes a cycle by rotating it such that the smallest element
+  # (according to the standard ordering of the elements) comes first. This ensures
+  # that cycles which are rotations of each other are considered equal.
   defp normalize_cycle(cycle) do
     min_element = Enum.min(cycle)
     {prefix, suffix} = Enum.split_while(cycle, fn x -> x != min_element end)
@@ -78,16 +84,16 @@ defmodule Revelo.Diagrams.Analyser do
   end
 
   @doc """
-  Compares two loops (represented as lists of UUIDs) to see if they are equal, regardless of starting point.
+  Compares two loops (represented as lists of Relationship structs) to see if they are equal, regardless of starting point.
 
   Example:
-    uuid1 = "550e8400-e29b-41d4-a716-446655440000"
-    uuid2 = "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
-    uuid3 = "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+    rel1 = %Relationship{src_id: uuid1, dst_id: uuid2}
+    rel2 = %Relationship{src_id: uuid2, dst_id: uuid3}
+    rel3 = %Relationship{src_id: uuid3, dst_id: uuid1}
 
-    loops_equal?([uuid1, uuid2, uuid3], [uuid2, uuid3, uuid1]) # Returns true
-    loops_equal?([uuid1, uuid2, uuid3], [uuid3, uuid1, uuid2]) # Returns true
-    loops_equal?([uuid1, uuid2, uuid3], [uuid2, uuid1, uuid3]) # Returns false
+    loops_equal?([rel1, rel2, rel3], [rel2, rel3, rel1]) # Returns true
+    loops_equal?([rel1, rel2, rel3], [rel3, rel1, rel2]) # Returns true
+    loops_equal?([rel1, rel2, rel3], [rel2, rel1, rel3]) # Returns false
   """
   def loops_equal?(loop1, loop2) when length(loop1) == length(loop2) do
     len = length(loop1)
