@@ -66,15 +66,14 @@ defmodule Revelo.SessionTest do
 
       session =
         session
-        |> Ash.Changeset.for_update(:add_participant, %{participant: user})
+        |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator: true})
         |> Ash.update!()
         |> Ash.load!(:participants, authorize?: false)
 
-      session_participant =
-        Revelo.Sessions.SessionParticipants
-        |> Ash.get!(session_id: session.id, participant_id: user.id)
-        |> Ash.Changeset.for_update(:set_as_facilitator)
-        |> Ash.update!()
+      session_participant = Ash.get!(Revelo.Sessions.SessionParticipants, session_id: session.id, participant_id: user.id)
+
+      # |> Ash.Changeset.for_update(:set_as_facilitator)
+      # |> Ash.update!()
 
       assert session_participant.facilitator == true
       assert length(session.participants) == 1

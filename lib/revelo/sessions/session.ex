@@ -6,6 +6,7 @@ defmodule Revelo.Sessions.Session do
     data_layer: AshSqlite.DataLayer
 
   alias Revelo.Accounts.User
+  alias Revelo.Sessions.SessionParticipants
 
   sqlite do
     table "sessions"
@@ -37,7 +38,25 @@ defmodule Revelo.Sessions.Session do
         allow_nil? false
       end
 
+      argument :facilitator, :boolean, default: false
+
       change manage_relationship(:participant, :participants, type: :append)
+
+      change after_transaction(fn changeset, {:ok, session}, _context ->
+               participant_id = changeset.arguments.participant.id
+
+               SessionParticipants
+               |> Ash.get!(
+                 session_id: session.id,
+                 participant_id: participant_id
+               )
+               |> Ash.Changeset.for_update(:set_facilitation_status, %{
+                 facilitator: changeset.arguments.facilitator
+               })
+               |> Ash.update!()
+
+               {:ok, session}
+             end)
     end
   end
 
@@ -59,7 +78,7 @@ defmodule Revelo.Sessions.Session do
     has_many :influence_relationships, Revelo.Diagrams.Relationship
 
     many_to_many :participants, User do
-      through Revelo.Sessions.SessionParticipants
+      through SessionParticipants
       source_attribute_on_join_resource :session_id
       destination_attribute_on_join_resource :participant_id
     end
