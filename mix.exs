@@ -65,7 +65,8 @@ defmodule Revelo.MixProject do
       {:instructor_lite, "~> 0.3.0"},
       {:req, "~> 0.5"},
       {:faker, "~> 0.18", only: :test},
-      {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
+      {:styler, "~> 1.2", only: [:dev, :test], runtime: false},
+      {:igniter, "~> 0.5"}
     ]
   end
 
