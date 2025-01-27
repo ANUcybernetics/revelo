@@ -96,4 +96,44 @@ defmodule Revelo.UserTest do
       assert user.hashed_password == nil
     end
   end
+
+  describe "admin user actions" do
+    test "can promote, demote and re-promote a user" do
+      user =
+        User
+        |> Ash.Changeset.for_create(
+          :register_with_password,
+          %{
+            email: "test@example.com",
+            password: "password123",
+            password_confirmation: "password123"
+          },
+          authorize?: false
+        )
+        |> Ash.create!()
+
+      assert user.admin == false
+
+      admin_user =
+        user
+        |> Ash.Changeset.for_update(:promote_to_admin, %{}, authorize?: false)
+        |> Ash.update!()
+
+      assert admin_user.admin == true
+
+      regular_user =
+        admin_user
+        |> Ash.Changeset.for_update(:demote_to_regular_user, %{}, authorize?: false)
+        |> Ash.update!()
+
+      assert regular_user.admin == false
+
+      re_promoted_user =
+        regular_user
+        |> Ash.Changeset.for_update(:promote_to_admin, %{}, authorize?: false)
+        |> Ash.update!()
+
+      assert re_promoted_user.admin == true
+    end
+  end
 end

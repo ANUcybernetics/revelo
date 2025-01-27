@@ -33,6 +33,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "boolean",
+      "source": "admin",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "text",
       "source": "hashed_password",
       "references": null,
@@ -42,7 +52,7 @@
     }
   ],
   "table": "users",
-  "hash": "8E7ADFA1F75E73AF64FEB6FC8D0E23414814695D18DC6A8F9302627DD2ED5780",
+  "hash": "ECB1E1B361C8ADA86CCE4D35E77002588A21B8456FF3B04118A1FC311FFCE232",
   "multitenancy": {
     "global": null,
     "attribute": null,

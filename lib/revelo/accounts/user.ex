@@ -235,6 +235,18 @@ defmodule Revelo.Accounts.User do
       change HashPasswordChange
       change AshAuthentication.GenerateTokenChange
     end
+
+    update :promote_to_admin do
+      accept []
+      change set_attribute(:admin, true)
+      validate changing(:admin)
+    end
+
+    update :demote_to_regular_user do
+      accept []
+      change set_attribute(:admin, false)
+      validate changing(:admin)
+    end
   end
 
   attributes do
@@ -244,6 +256,8 @@ defmodule Revelo.Accounts.User do
       allow_nil? true
       public? true
     end
+
+    attribute :admin, :boolean, default: false
 
     attribute :hashed_password, :string do
       allow_nil? true
