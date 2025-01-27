@@ -5,6 +5,7 @@ defmodule Revelo.Diagrams.Loop do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Diagrams.Analyser
   alias Revelo.Diagrams.LoopRelationships
   alias Revelo.Diagrams.Relationship
 
@@ -51,6 +52,44 @@ defmodule Revelo.Diagrams.Loop do
         end
       end
 
+      # check if loop already exists for this session
+      # NOTE: if this ever gets too computationally expensive, we could put a hash of the relationships
+      # in the DB and then add a unique constraint on that (but not necessary for now)
+      validate fn changeset, _context ->
+        relationships = changeset.arguments.relationships
+        relationship_id_set = MapSet.new(relationships, & &1.id)
+
+        session_id =
+          relationships
+          |> List.first()
+          |> Ash.load!(:src)
+          |> Map.get(:src)
+          |> Map.get(:session_id)
+
+        duplicate_exists? =
+          __MODULE__
+          |> Ash.read!(load: :influence_relationships)
+          |> Enum.map(fn loop ->
+            Map.get(loop, :influence_relationships)
+          end)
+          |> Enum.filter(fn relationships ->
+            first = relationships |> List.first() |> Ash.load!(:src)
+            first && first.src.session_id == session_id
+          end)
+          |> Enum.map(fn relationships ->
+            MapSet.new(relationships, & &1.id)
+          end)
+          |> Enum.any?(fn existing_ids ->
+            MapSet.equal?(relationship_id_set, existing_ids)
+          end)
+
+        if duplicate_exists? do
+          {:error, "A loop with these exact relationships already exists"}
+        else
+          :ok
+        end
+      end
+
       # this is necessary as an :after_action because in the loop's create action there's no loop ID yet,
       # so it can't be set in the join table
       change after_action(fn changeset, record, _context ->
@@ -77,7 +116,7 @@ defmodule Revelo.Diagrams.Loop do
         # find cycles and create loops from any found
         loops =
           relationships
-          |> Revelo.Diagrams.Analyser.find_loops()
+          |> Analyser.find_loops()
           |> Enum.map(fn cycle_relationships ->
             # Create the loop
             __MODULE__

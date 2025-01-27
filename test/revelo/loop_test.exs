@@ -92,6 +92,42 @@ defmodule Revelo.LoopTest do
       assert loop
       assert length(loop.influence_relationships) > 0
     end
+
+    test "creating duplicate loop returns error" do
+      user = user()
+      session = session()
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+      relationships =
+        variables
+        # add the first variable to the end to "close" the loop
+        |> List.insert_at(-1, List.first(variables))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship(src: src, dst: dst, session: session, user: user)
+        end)
+
+      input = %{
+        relationships: relationships,
+        story: Faker.Lorem.paragraph()
+      }
+
+      # Create first loop successfully
+      Loop
+      |> Ash.Changeset.for_create(:create, input, actor: user)
+      |> Ash.create!()
+
+      # Attempt to create duplicate loop
+      result =
+        Loop
+        |> Ash.Changeset.for_create(:create, input, actor: user)
+        |> Ash.create()
+
+      assert {:error, changeset} = result
+
+      assert [%InvalidChanges{message: "A loop with these exact relationships already exists"}] =
+               Map.get(changeset, :errors)
+    end
   end
 
   describe "cycle detection" do
