@@ -30,7 +30,14 @@ defmodule ReveloWeb.Router do
   scope "/", ReveloWeb do
     pipe_through :browser
 
-    ash_authentication_live_session :authenticated_routes do
+    ash_authentication_live_session :authenticated_routes,
+      on_mount: {ReveloWeb.LiveUserAuth, :live_user_optional} do
+      live "/sessions", SessionLive.Index, :index
+      live "/sessions/new", SessionLive.Index, :new
+      live "/sessions/:id/edit", SessionLive.Index, :edit
+
+      live "/sessions/:id", SessionLive.Show, :show
+      live "/sessions/:id/show/edit", SessionLive.Show, :edit
       # in each liveview, add one of the following at the top of the module:
       #
       # If an authenticated user must be present:
