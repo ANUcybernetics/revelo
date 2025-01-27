@@ -39,7 +39,7 @@ defmodule ReveloWeb.SessionServer do
 
   @impl true
   def init(session) do
-    :timer.send_interval(@timer_interval, :tick)
+    schedule_tick()
 
     state = %{
       session: session,
@@ -68,11 +68,15 @@ defmodule ReveloWeb.SessionServer do
   end
 
   @impl true
-  def handle_info(:tick, %{time_left: 0} = state), do: {:noreply, state}
+  def handle_info(:tick, %{time_left: 0} = state) do
+    schedule_tick()
+    {:noreply, state}
+  end
 
   @impl true
   def handle_info(:tick, state) do
     on_timer(state)
+    schedule_tick()
     {:noreply, Map.update!(state, :time_left, &(&1 - 1))}
   end
 
@@ -104,6 +108,10 @@ defmodule ReveloWeb.SessionServer do
   end
 
   # Private Helpers
+
+  defp schedule_tick do
+    Process.send_after(self(), :tick, @timer_interval)
+  end
 
   defp via_tuple(session_id) do
     {:via, Registry, {Revelo.SessionRegistry, session_id}}
