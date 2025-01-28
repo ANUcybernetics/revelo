@@ -7,6 +7,8 @@ we're building it out & exploring the problem space).
   (Panic!)[https://github.com/benswift/panic/blob/main/lib/panic_web/components/panic_components.ex#L235]
   if it helps
 
+- set up a PhoenixTest which can log in and then do stuff
+
 - modify auth_required hook to do the "create user if doesn't exist" thing
 
 - liveview modules for identify, relate and analyse
