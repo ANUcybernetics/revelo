@@ -26,6 +26,7 @@ defmodule Revelo.UserTest do
         |> Ash.create!()
 
       assert Ash.CiString.value(user.email) == email
+      assert user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false
     end
 
     test "register_with_password fails with invalid attributes" do
@@ -86,6 +87,7 @@ defmodule Revelo.UserTest do
       assert String.length(user.id) == 36
       assert user.email == nil
       assert user.hashed_password == nil
+      assert user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == true
     end
   end
 

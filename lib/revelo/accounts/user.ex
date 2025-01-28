@@ -38,6 +38,10 @@ defmodule Revelo.Accounts.User do
         end)
       end
     end
+
+    calculate :anonymous?, :boolean do
+      calculation expr(is_nil(email))
+    end
   end
 
   sqlite do
