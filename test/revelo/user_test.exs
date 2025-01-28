@@ -1,6 +1,8 @@
 defmodule Revelo.UserTest do
   use Revelo.DataCase
 
+  import ReveloTest.Generators
+
   alias Ash.Error.Invalid
   alias Revelo.Accounts.User
 
@@ -134,6 +136,38 @@ defmodule Revelo.UserTest do
         |> Ash.update!()
 
       assert re_promoted_user.admin == true
+    end
+  end
+
+  describe "calculated facilitator attribute" do
+    test "facilitator calculation returns true when user is facilitator" do
+      session = session()
+      user = user()
+      Revelo.Sessions.add_participant!(session, user)
+
+      session
+      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator: true}, authorize?: false)
+      |> Ash.update!()
+
+      user_with_calculation =
+        Ash.load!(user, facilitator: [session_id: session.id])
+
+      assert user_with_calculation.facilitator
+    end
+
+    test "facilitator calculation returns false when user is not facilitator" do
+      session = session()
+      user = user()
+      Revelo.Sessions.add_participant!(session, user)
+
+      session
+      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator: false}, authorize?: false)
+      |> Ash.update!()
+
+      user_with_calculation =
+        Ash.load!(user, facilitator: [session_id: session.id])
+
+      refute user_with_calculation.facilitator
     end
   end
 end

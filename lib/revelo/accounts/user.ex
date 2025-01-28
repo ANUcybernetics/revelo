@@ -20,6 +20,26 @@ defmodule Revelo.Accounts.User do
     end
   end
 
+  calculations do
+    calculate :facilitator, :boolean do
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      calculation fn users, context ->
+        Enum.map(users, fn user ->
+          participant =
+            Ash.get!(Revelo.Sessions.SessionParticipants,
+              session_id: context.arguments.session_id,
+              participant_id: user.id
+            )
+
+          participant.facilitator
+        end)
+      end
+    end
+  end
+
   sqlite do
     table "users"
     repo Revelo.Repo
