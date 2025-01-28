@@ -7,8 +7,8 @@ defmodule ReveloWeb.Presence do
   def init(_opts), do: {:ok, %{}}
 
   def fetch(_topic, presences) do
-    for {key, %{metas: [meta | metas]}} <- presences, into: %{} do
-      {key, %{metas: [meta | metas], id: meta.id, user: %{name: meta.id}}}
+    for {user_id, %{metas: [meta | metas]}} <- presences, into: %{} do
+      {user_id, %{metas: [meta | metas], id: user_id, user: %{id: user_id}}}
     end
   end
 
@@ -32,5 +32,17 @@ defmodule ReveloWeb.Presence do
     end
 
     {:ok, state}
+  end
+
+  def list_online_participants(session) do
+    "session:#{session.id}" |> list() |> Enum.map(fn {_id, presence} -> presence end)
+  end
+
+  def track_participant(session, user) do
+    track(self(), "session:#{session.id}", user.id, %{id: user.id})
+  end
+
+  def subscribe(session) do
+    Phoenix.PubSub.subscribe(Revelo.PubSub, "proxy:session:#{session.id}")
   end
 end
