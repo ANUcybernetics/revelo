@@ -7,16 +7,14 @@ we're building it out & exploring the problem space).
   (Panic!)[https://github.com/benswift/panic/blob/main/lib/panic_web/components/panic_components.ex#L235]
   if it helps
 
-- full mockups for all views in the Live Storybook?
+- modify auth_required hook to do the "create user if doesn't exist" thing
 
-- add some component tests using PhoenixTest
+- liveview modules for identify, relate and analyse
 
 - add (or modify the auth optional) on_mount hook so that if there's no user
   they get created (using uuid, also stored in localstorage) and logged in
 
-- add the relevant presence stuff so that all session participants are tracked
-  (plus add a "session participants") view for admins which lists all
-  curerntly-connected participants (the
+- faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
   example of doing just this we could use as a staring point)
 
