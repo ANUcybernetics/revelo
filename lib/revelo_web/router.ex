@@ -31,7 +31,7 @@ defmodule ReveloWeb.Router do
     pipe_through :browser
 
     ash_authentication_live_session :authenticated_routes,
-      on_mount: {ReveloWeb.LiveUserAuth, :live_user_optional} do
+      on_mount: {ReveloWeb.LiveUserAuth, :live_user_required} do
       live "/sessions", SessionLive.Index, :index
       live "/sessions/new", SessionLive.Index, :new
       live "/sessions/:id/edit", SessionLive.Index, :edit
