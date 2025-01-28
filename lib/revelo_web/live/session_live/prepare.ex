@@ -25,13 +25,29 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   @impl true
   def handle_params(%{"session_id" => session_id}, _, socket) do
+    user = socket.assigns.current_user
+    session = Ash.get!(Revelo.Sessions.Session, session_id, actor: user)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(
-       :session,
-       Ash.get!(Revelo.Sessions.Session, session_id, actor: socket.assigns.current_user)
-     )}
+     |> assign(:session, session)
+     |> ReveloWeb.Presence.setup_presence_tracking(session, user)}
+  end
+
+  @impl true
+  def handle_info({ReveloWeb.Presence, event}, socket) do
+    {:noreply,
+     case event do
+       {:join, presence} ->
+         stream_insert(socket, :participants, presence)
+
+       {:leave, presence} when presence.metas == [] ->
+         stream_delete(socket, :participants, presence)
+
+       {:leave, presence} ->
+         stream_insert(socket, :participants, presence)
+     end}
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"

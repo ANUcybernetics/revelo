@@ -45,4 +45,15 @@ defmodule ReveloWeb.Presence do
   def subscribe(session) do
     Phoenix.PubSub.subscribe(Revelo.PubSub, "proxy:session:#{session.id}")
   end
+
+  def setup_presence_tracking(socket, session, current_user) do
+    if Phoenix.LiveView.connected?(socket) do
+      track_participant(session, current_user)
+      subscribe(session)
+    end
+
+    socket
+    |> Phoenix.LiveView.stream(:participants, [])
+    |> Phoenix.LiveView.stream(:participants, list_online_participants(session))
+  end
 end
