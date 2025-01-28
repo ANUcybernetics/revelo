@@ -7,39 +7,44 @@ defmodule ReveloWeb.SessionLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.header>
-      Listing Sessions
-      <:actions>
-        <.link patch={~p"/sessions/new"}>
-          <.button>New Session</.button>
-        </.link>
-      </:actions>
-    </.header>
-
-    <.table
-      id="Sessions"
-      rows={@streams.sessions}
-      row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}") end}
-    >
-      <:col :let={{_id, session}} label="Id">{session.id}</:col>
-
-      <:action :let={{_id, session}}>
-        <div class="sr-only">
-          <.link navigate={~p"/sessions/#{session}"}>Show</.link>
-        </div>
-
-        <.link patch={~p"/sessions/#{session}/edit"}>Edit</.link>
-      </:action>
-
-      <:action :let={{id, session}}>
-        <.link
-          phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
-          data-confirm="Are you sure?"
+    <.card>
+      <.card_header>
+        <.header>
+          <.card_title>Your Sessions</.card_title>
+          <:actions>
+            <.link patch={~p"/sessions/new"}>
+              <.button>New Session</.button>
+            </.link>
+          </:actions>
+        </.header>
+      </.card_header>
+      <.card_content>
+        <.table
+          id="Sessions"
+          rows={@streams.sessions}
+          row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}") end}
         >
-          Delete
-        </.link>
-      </:action>
-    </.table>
+          <:col :let={{_id, session}} label="Id">{session.id}</:col>
+
+          <:action :let={{_id, session}}>
+            <div class="sr-only">
+              <.link navigate={~p"/sessions/#{session}"}>Show</.link>
+            </div>
+
+            <.link patch={~p"/sessions/#{session}/edit"}>Edit</.link>
+          </:action>
+
+          <:action :let={{id, session}}>
+            <.link
+              phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
+              data-confirm="Are you sure?"
+            >
+              Delete
+            </.link>
+          </:action>
+        </.table>
+      </.card_content>
+    </.card>
 
     <.modal
       :if={@live_action in [:new, :edit]}
