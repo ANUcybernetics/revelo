@@ -3,21 +3,30 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- add a on_mount hook that creates an anon user if they're not logged in
+- add QR code component, look at
+  (Panic!)[https://github.com/benswift/panic/blob/main/lib/panic_web/components/panic_components.ex#L235]
+  if it helps
 
-- for all the "session" live views, add the relevant presence stuff so that all
-  participants are tracked (plus add a "session participants) view for admins
-  which lists all curerntly-connected participants
+- full mockups for all views in the Live Storybook?
 
-- flesh out the different PIRA liveviews (and add the abovementioned hooks)
+- add some component tests using PhoenixTest
 
-- add the required state machine stuff to actually manage the session's progress
+- add (or modify the auth optional) on_mount hook so that if there's no user
+  they get created (using uuid, also stored in localstorage) and logged in
+
+- add the relevant presence stuff so that all session participants are tracked
+  (plus add a "session participants") view for admins which lists all
+  curerntly-connected participants (the
+  (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
+  example of doing just this we could use as a staring point)
+
+- add the required logic to SessionServer to actually manage the session's
+  progress
 
 - add policies/authorizations
 
-- sketch out notifications architecture (what gets broadcast, and to whom?)
-
-- add a "create uuid on device and send on initial load" hook
+- sketch out notifications architecture (what gets broadcast, and to whom, and
+  which views need what?)
 
 ## Libraries we'll use
 
