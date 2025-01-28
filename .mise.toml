@@ -1,5 +1,6 @@
 [tools]
 elixir = "latest"
 erlang = "latest"
+rebar = "latest"
 sqlite = "latest"
 pnpm = "latest"
