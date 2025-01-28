@@ -38,6 +38,13 @@ defmodule ReveloWeb.Router do
 
       live "/sessions/:id", SessionLive.Show, :show
       live "/sessions/:id/show/edit", SessionLive.Show, :edit
+
+      # live "/sessions/:session_id/phase/prepare/", SessionLive.Prepare, :edit
+      # live "/sessions/:session_id/phase/identify/", SessionLive.Identify, :edit
+      # live "/sessions/:session_id/phase/relate/", SessionLive.Relate, :edit
+      # live "/sessions/:session_id/phase/analyse/", SessionLive.Analyse, :edit
+
+      # live "/sessions/:session_id/online_participants/", SessionLive.OnlineParticipants, :show
       # in each liveview, add one of the following at the top of the module:
       #
       # If an authenticated user must be present:
