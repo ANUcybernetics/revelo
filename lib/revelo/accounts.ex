@@ -5,6 +5,9 @@ defmodule Revelo.Accounts do
 
   resources do
     resource Revelo.Accounts.Token
-    resource Revelo.Accounts.User
+
+    resource Revelo.Accounts.User do
+      define :register_anonymous_user
+    end
   end
 end

@@ -80,15 +80,7 @@ defmodule Revelo.Accounts.User do
   actions do
     defaults [:read]
 
-    create :register_anonymous_user do
-      description "Register a new anonymous user with a UUID."
-
-      argument :id, :uuid do
-        allow_nil? false
-      end
-
-      change set_attribute(:id, arg(:id))
-    end
+    create :register_anonymous_user
 
     update :upgrade_anonymous_user do
       description "Upgrade an anonymous user to a full user with email and password."

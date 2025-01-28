@@ -79,21 +79,11 @@ defmodule Revelo.UserTest do
       end
     end
 
-    test "register_anonymous_user creates a new user with only a UUID" do
-      uuid = Ecto.UUID.generate()
+    test "register_anonymous_user creates a new user with auto-generated UUID" do
+      user = Revelo.Accounts.register_anonymous_user!(authorize?: false)
 
-      user =
-        User
-        |> Ash.Changeset.for_create(
-          :register_anonymous_user,
-          %{
-            id: uuid
-          },
-          authorize?: false
-        )
-        |> Ash.create!()
-
-      assert user.id == uuid
+      assert is_binary(user.id)
+      assert String.length(user.id) == 36
       assert user.email == nil
       assert user.hashed_password == nil
     end
