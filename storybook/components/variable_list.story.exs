@@ -17,16 +17,16 @@ defmodule Storybook.Examples.VariableList do
     "The main variable list interface (for a facilitator)"
   end
 
-  defstruct [:id, :name, :is_key?]
+  defstruct [:id, :name, :is_key?, :hidden]
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       current_id: 1,
+       current_id: 2,
        variables: [
-         %__MODULE__{id: 1, name: "Stuff", is_key?: true},
-         %__MODULE__{id: 2, name: "Things", is_key?: false}
+         %__MODULE__{id: 1, name: "Stuff", is_key?: true, hidden: false},
+         %__MODULE__{id: 2, name: "Things", is_key?: false, hidden: true}
        ]
      )}
   end
@@ -44,7 +44,7 @@ defmodule Storybook.Examples.VariableList do
       </.table_header>
       <.table_body>
         <%= for variable <- @variables do %>
-          <.table_row>
+          <.table_row class={if variable.hidden, do: "opacity-40"}>
             <.table_cell>{variable.name}</.table_cell>
             <.table_cell>
               <%= if variable.is_key? do %>
@@ -54,7 +54,7 @@ defmodule Storybook.Examples.VariableList do
               <% end %>
             </.table_cell>
             <.table_cell>
-              <.variable_actions is_key={variable.is_key?} id={variable.id} />
+              <.variable_actions variable={variable} />
             </.table_cell>
           </.table_row>
         <% end %>
@@ -85,7 +85,8 @@ defmodule Storybook.Examples.VariableList do
     variable = %__MODULE__{
       name: params["name"],
       is_key?: params["is_key?"] == "true",
-      id: socket.assigns.current_id + 1
+      id: socket.assigns.current_id + 1,
+      hidden: false
     }
 
     {:noreply,
@@ -101,6 +102,22 @@ defmodule Storybook.Examples.VariableList do
     updated_variables =
       Enum.reject(socket.assigns.variables, fn variable ->
         variable.id == id
+      end)
+
+    {:noreply, assign(socket, :variables, updated_variables)}
+  end
+
+  @impl true
+  def handle_event("toggle_hidden", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+
+    updated_variables =
+      Enum.map(socket.assigns.variables, fn variable ->
+        if variable.id == id do
+          Map.update!(variable, :hidden, fn hidden -> !hidden end)
+        else
+          variable
+        end
       end)
 
     {:noreply, assign(socket, :variables, updated_variables)}

@@ -252,7 +252,7 @@ defmodule ReveloWeb.UIComponents do
         <tooltip_trigger>
           <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8">
             <.icon
-              name={if @is_key, do: "hero-key-solid", else: "hero-key"}
+              name={if @variable.is_key?, do: "hero-key-solid", else: "hero-key"}
               class="h-4 w-4 transition-all"
             />
             <span class="sr-only">
@@ -268,8 +268,28 @@ defmodule ReveloWeb.UIComponents do
         <tooltip_trigger>
           <button
             class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8"
+            phx-click="toggle_hidden"
+            phx-value-id={@variable.id}
+          >
+            <.icon
+              name={if @variable.hidden, do: "hero-eye-slash", else: "hero-eye-solid"}
+              class="h-4 w-4 transition-all"
+            />
+            <span class="sr-only">
+              {if @variable.hidden, do: "Hide", else: "Show"}
+            </span>
+          </button>
+        </tooltip_trigger>
+        <.tooltip_content side="top">
+          {if @variable.hidden, do: "Show", else: "Hide"}
+        </.tooltip_content>
+      </.tooltip>
+      <.tooltip>
+        <tooltip_trigger>
+          <button
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8"
             phx-click="delete_variable"
-            phx-value-id={@id}
+            phx-value-id={@variable.id}
           >
             <.icon name="hero-trash" class="h-4 w-4 transition-all" />
             <span class="sr-only">
