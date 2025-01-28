@@ -22,8 +22,10 @@ defmodule ReveloWeb.ConnCase do
       use ReveloWeb, :verified_routes
 
       import Phoenix.ConnTest
+      import PhoenixTest
       import Plug.Conn
       import ReveloWeb.ConnCase
+
       # The default endpoint for testing
       @endpoint ReveloWeb.Endpoint
 
