@@ -14,6 +14,8 @@ config :phoenix_live_view,
 #
 # The MIX_TEST_PARTITION environment variable can be used
 
+config :phoenix_test, :endpoint, ReveloWeb.Endpoint
+
 # In test we don't send emails
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
