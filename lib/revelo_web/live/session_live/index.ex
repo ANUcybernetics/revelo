@@ -22,17 +22,9 @@ defmodule ReveloWeb.SessionLive.Index do
         <.table
           id="Sessions"
           rows={@streams.sessions}
-          row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}") end}
+          row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}/prepare") end}
         >
           <:col :let={{_id, session}} label="Id">{session.id}</:col>
-
-          <:action :let={{_id, session}}>
-            <div class="sr-only">
-              <.link navigate={~p"/sessions/#{session}"}>Show</.link>
-            </div>
-
-            <.link patch={~p"/sessions/#{session}/edit"}>Edit</.link>
-          </:action>
 
           <:action :let={{id, session}}>
             <.link
