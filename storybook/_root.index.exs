@@ -1,16 +1,23 @@
 defmodule Storybook.Root do
-  # See https://hexdocs.pm/phoenix_storybook/PhoenixStorybook.Index.html for full index
-  # documentation.
   @moduledoc false
   use PhoenixStorybook.Index
 
-  def folder_icon, do: {:fa, "book-open", :light, "psb-mr-1"}
-  def folder_name, do: "Storybook"
-
-  def entry("welcome") do
+  def folders do
     [
-      name: "Revelo component gallery",
-      icon: {:fa, "hand-wave", :thin}
+      Examples: [
+        icon: "far fa-rectangle-list",
+        items: [
+          "side_nav",
+          "session_settings",
+          "variable_list",
+          "variable_voting",
+          "variable_confirmation",
+          "relationship_voting",
+          "countdown",
+          "task_completed",
+          "discussion"
+        ]
+      ]
     ]
   end
 end
