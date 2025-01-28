@@ -4,7 +4,7 @@ defmodule Storybook.Root do
 
   def folders do
     [
-      Examples: [
+      Components: [
         icon: "far fa-rectangle-list",
         items: [
           "side_nav",
