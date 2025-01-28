@@ -25,10 +25,10 @@ defmodule ReveloWeb.UIComponents do
 
   def sidebar(assigns) do
     ~H"""
-    <aside class="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-white sm:flex">
-      <nav class="flex flex-col items-center gap-4 px-2 sm:py-5">
+    <aside class="fixed inset-y-0 left-0 z-10 w-14 flex-col border-r bg-white flex">
+      <nav class="flex flex-col items-center gap-4 px-2 py-5">
         <.dropdown_menu>
-          <.dropdown_menu_trigger class="cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base">
+          <.dropdown_menu_trigger class="cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground">
             <.icon name="hero-window-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
             <span class="sr-only">Sessions</span>
           </.dropdown_menu_trigger>
@@ -56,9 +56,9 @@ defmodule ReveloWeb.UIComponents do
               class={
                 if @current_page == "prepare",
                   do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground",
                   else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
               }
             >
               <.icon
@@ -81,9 +81,9 @@ defmodule ReveloWeb.UIComponents do
               class={
                 if @current_page == "identify",
                   do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground ",
                   else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
               }
             >
               <.icon name="hero-queue-list-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
@@ -103,9 +103,9 @@ defmodule ReveloWeb.UIComponents do
               class={
                 if @current_page == "relate",
                   do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground ",
                   else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
               }
             >
               <.icon
@@ -128,9 +128,9 @@ defmodule ReveloWeb.UIComponents do
               class={
                 if @current_page == "analyse",
                   do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground",
                   else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
               }
             >
               <.icon
@@ -147,12 +147,12 @@ defmodule ReveloWeb.UIComponents do
           </.tooltip_content>
         </.tooltip>
       </nav>
-      <nav class="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+      <nav class="mt-auto flex flex-col items-center gap-4 px-2">
         <.tooltip>
           <tooltip_trigger>
             <.link
               href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground py-8"
             >
               <.icon
                 name="hero-user-circle-mini"
@@ -237,7 +237,7 @@ defmodule ReveloWeb.UIComponents do
     <div class="flex gap-2">
       <.tooltip>
         <tooltip_trigger>
-          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8">
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
             <.icon name="hero-pencil-square" class="h-4 w-4 transition-all" />
             <span class="sr-only">
               Edit
@@ -250,7 +250,7 @@ defmodule ReveloWeb.UIComponents do
       </.tooltip>
       <.tooltip>
         <tooltip_trigger>
-          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8">
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
             <.icon
               name={if @variable.is_key?, do: "hero-key-solid", else: "hero-key"}
               class="h-4 w-4 transition-all"
@@ -267,7 +267,7 @@ defmodule ReveloWeb.UIComponents do
       <.tooltip>
         <tooltip_trigger>
           <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
             phx-click="toggle_hidden"
             phx-value-id={@variable.id}
           >
@@ -287,7 +287,7 @@ defmodule ReveloWeb.UIComponents do
       <.tooltip>
         <tooltip_trigger>
           <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200 md:h-8 md:w-8"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
             phx-click="delete_variable"
             phx-value-id={@variable.id}
           >
@@ -662,7 +662,7 @@ defmodule ReveloWeb.UIComponents do
         tabindex="0"
       >
         <div class="flex min-h-full items-center justify-center">
-          <div class="w-full max-w-3xl p-4 sm:p-6 lg:py-8">
+          <div class="w-full max-w-3xl p-4 py-8">
             <.focus_wrap
               id={"#{@id}-container"}
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
