@@ -8,15 +8,17 @@ export const StoreUserID = {
   },
 
   storeUserId(user_id) {
-    localStorage.setItem("user_id", user_id);
+    localStorage.setItem("revelo_user_id", user_id);
   },
 
   restoreUserId() {
-    const user_id = localStorage.getItem("user_id");
+    const user_id = localStorage.getItem("revelo_user_id");
     this.pushEvent("restore_user_id", user_id);
   },
 
   clearUserId() {
-    localStorage.removeItem("user_id");
+    localStorage.removeItem("revelo_user_id");
   },
 };
+
+export default StoreUserID;

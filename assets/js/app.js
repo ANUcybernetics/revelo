@@ -23,13 +23,20 @@ import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 import Hooks from "./hooks";
 
-let csrfToken = document
-  .querySelector("meta[name='csrf-token']")
-  .getAttribute("content");
+let params = {
+  _csrf_token: document
+    .querySelector("meta[name='csrf-token']")
+    .getAttribute("content"),
+};
+
+if (localStorage.getItem("revelo_user_id")) {
+  params.revelo_user_id = localStorage.getItem("revelo_user_id");
+}
+
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks: Hooks,
   longPollFallbackMs: 2500,
-  params: { _csrf_token: csrfToken },
+  params: params,
 });
 
 // Show progress bar on live navigation and form submits
