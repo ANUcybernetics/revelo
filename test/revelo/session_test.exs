@@ -60,6 +60,36 @@ defmodule Revelo.SessionTest do
       assert Enum.map(session.participants, & &1.id) == [user.id, user2.id]
     end
 
+    test "add_participant! exists and works" do
+      session = session()
+      user = user()
+
+      session = Revelo.Sessions.add_participant!(session, user)
+      session = Ash.load!(session, :participants, authorize?: false)
+
+      assert SessionParticipants |> Ash.read!() |> Enum.count() == 1
+      assert length(session.participants) == 1
+      assert hd(session.participants).id == user.id
+    end
+
+    test "add_participant! works with facilitator option" do
+      session = session()
+      user = user()
+
+      session = Revelo.Sessions.add_participant!(session, user, true)
+      session = Ash.load!(session, :participants, authorize?: false)
+
+      session_participant =
+        Ash.get!(Revelo.Sessions.SessionParticipants,
+          session_id: session.id,
+          participant_id: user.id
+        )
+
+      assert session_participant.facilitator == true
+      assert length(session.participants) == 1
+      assert hd(session.participants).id == user.id
+    end
+
     test "can add participant as facilitator" do
       session = session()
       user = user()
@@ -70,7 +100,11 @@ defmodule Revelo.SessionTest do
         |> Ash.update!()
         |> Ash.load!(:participants, authorize?: false)
 
-      session_participant = Ash.get!(Revelo.Sessions.SessionParticipants, session_id: session.id, participant_id: user.id)
+      session_participant =
+        Ash.get!(Revelo.Sessions.SessionParticipants,
+          session_id: session.id,
+          participant_id: user.id
+        )
 
       # |> Ash.Changeset.for_update(:set_as_facilitator)
       # |> Ash.update!()
