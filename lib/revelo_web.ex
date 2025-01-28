@@ -88,8 +88,12 @@ defmodule ReveloWeb do
 
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components
-      import ReveloWeb.CoreComponents
+
+      # UI Components
+      import ReveloWeb.Component.Button
+      import ReveloWeb.Component.Card
+      import ReveloWeb.CoreComponents, except: [modal: 1, button: 1]
+      import ReveloWeb.UIComponents
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

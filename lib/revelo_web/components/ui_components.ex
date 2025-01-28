@@ -28,7 +28,13 @@ defmodule ReveloWeb.UIComponents do
     <aside class="fixed inset-y-0 left-0 z-10 w-14 flex-col border-r bg-white flex">
       <nav class="flex flex-col items-center gap-4 px-2 py-5">
         <.dropdown_menu>
-          <.dropdown_menu_trigger class="cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground">
+          <.dropdown_menu_trigger class={
+            if @current_page == "Listing Sessions",
+              do:
+                "cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground  outline outline-white -outline-offset-4",
+              else:
+                "cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground"
+          }>
             <.icon name="hero-window-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
             <span class="sr-only">Sessions</span>
           </.dropdown_menu_trigger>
