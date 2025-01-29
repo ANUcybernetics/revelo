@@ -4,56 +4,27 @@ defmodule ReveloWeb.Presence do
     otp_app: :revelo,
     pubsub_server: Revelo.PubSub
 
+  @impl true
   def init(_opts), do: {:ok, %{}}
 
-  def fetch(_topic, presences) do
-    for {user_id, %{metas: [meta | metas]}} <- presences, into: %{} do
-      {user_id, %{metas: [meta | metas], id: user_id, user: %{id: user_id}}}
-    end
-  end
+  @impl true
+  def handle_metas("session_presence:" <> session_id, _diff, presences, state) do
+    # Calculate total number of connected clients
+    total_count = Enum.count(presences)
 
-  def handle_metas(topic, %{joins: joins, leaves: leaves}, presences, state) do
-    for {user_id, presence} <- joins do
-      user_data = %{id: user_id, user: presence.user, metas: Map.fetch!(presences, user_id)}
-      msg = {__MODULE__, {:join, user_data}}
-      Phoenix.PubSub.local_broadcast(Revelo.PubSub, "proxy:#{topic}", msg)
-    end
-
-    for {user_id, presence} <- leaves do
-      metas =
-        case Map.fetch(presences, user_id) do
-          {:ok, presence_metas} -> presence_metas
-          :error -> []
-        end
-
-      user_data = %{id: user_id, user: presence.user, metas: metas}
-      msg = {__MODULE__, {:leave, user_data}}
-      Phoenix.PubSub.local_broadcast(Revelo.PubSub, "proxy:#{topic}", msg)
-    end
+    # Broadcast only the count
+    msg = {:participant_count, total_count}
+    Phoenix.PubSub.local_broadcast(Revelo.PubSub, "session:#{session_id}", msg)
 
     {:ok, state}
   end
 
-  def list_online_participants(session) do
-    "session:#{session.id}" |> list() |> Enum.map(fn {_id, presence} -> presence end)
+  def list_online_participants(session_id) do
+    "session_presence:#{session_id}" |> list() |> Enum.map(fn {_id, presence} -> presence end)
   end
 
-  def track_participant(session, user) do
-    track(self(), "session:#{session.id}", user.id, %{id: user.id})
-  end
-
-  def subscribe(session) do
-    Phoenix.PubSub.subscribe(Revelo.PubSub, "proxy:session:#{session.id}")
-  end
-
-  def setup_presence_tracking(socket, session, current_user) do
-    if Phoenix.LiveView.connected?(socket) do
-      track_participant(session, current_user)
-      subscribe(session)
-    end
-
-    socket
-    |> Phoenix.LiveView.stream(:participants, [])
-    |> Phoenix.LiveView.stream(:participants, list_online_participants(session))
+  # TODO perhaps we should track (and update) the user's phase as well
+  def track_participant(session_id, user_id) do
+    track(self(), "session_presence:#{session_id}", user_id, %{session_id: session_id})
   end
 end

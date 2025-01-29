@@ -139,15 +139,18 @@ defmodule ReveloWeb.SessionLive.Prepare do
   def handle_params(%{"session_id" => session_id}, _, socket) do
     user = socket.assigns.current_user
     session = Ash.get!(Revelo.Sessions.Session, session_id, actor: user)
-
     variables = Ash.read!(Revelo.Diagrams.Variable, actor: user)
+
+    if connected?(socket) do
+      ReveloWeb.Presence.track_participant(session.id, user.id)
+    end
 
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:session, session)
      |> assign(:variables, variables)
-     |> ReveloWeb.Presence.setup_presence_tracking(session, user)}
+     |> assign(:session, session)}
   end
 
   @impl true
