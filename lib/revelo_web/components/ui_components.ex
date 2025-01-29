@@ -29,11 +29,15 @@ defmodule ReveloWeb.UIComponents do
       <nav class="flex flex-col items-center gap-4 px-2 py-5">
         <.dropdown_menu>
           <.dropdown_menu_trigger class={
-            if @current_page == "Elixir.ReveloWeb.SessionLive.Index",
-              do:
-                "cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground  outline outline-white -outline-offset-4",
-              else:
-                "cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground"
+            Enum.join(
+              [
+                "cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground ",
+                if(@current_page == "Elixir.ReveloWeb.SessionLive.Index",
+                  do: "outline outline-white -outline-offset-4"
+                )
+              ],
+              " "
+            )
           }>
             <.icon name="hero-window-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
             <span class="sr-only">Sessions</span>
@@ -54,103 +58,36 @@ defmodule ReveloWeb.UIComponents do
           </.dropdown_menu_content>
         </.dropdown_menu>
 
-        <.tooltip>
-          <tooltip_trigger>
-            <.link
-              href="#"
-              class={
-                if @current_page == "prepare",
-                  do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground",
-                  else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
-              }
-            >
-              <.icon
-                name="hero-adjustments-horizontal-mini"
-                class="h-4 w-4 transition-all group-hover:scale-110"
-              />
-              <span class="sr-only">
-                Prepare
-              </span>
-            </.link>
-          </tooltip_trigger>
-          <.tooltip_content side="right">
-            Prepare
-          </.tooltip_content>
-        </.tooltip>
-        <.tooltip>
-          <tooltip_trigger>
-            <.link
-              href="#"
-              class={
-                if @current_page == "identify",
-                  do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground ",
-                  else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
-              }
-            >
-              <.icon name="hero-queue-list-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
-              <span class="sr-only">
-                Identify
-              </span>
-            </.link>
-          </tooltip_trigger>
-          <.tooltip_content side="right">
-            Identify
-          </.tooltip_content>
-        </.tooltip>
-        <.tooltip>
-          <tooltip_trigger>
-            <.link
-              href="#"
-              class={
-                if @current_page == "relate",
-                  do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground ",
-                  else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
-              }
-            >
-              <.icon
-                name="hero-arrows-right-left-mini"
-                class="h-4 w-4 transition-all group-hover:scale-110"
-              />
-              <span class="sr-only">
-                Relate
-              </span>
-            </.link>
-          </tooltip_trigger>
-          <.tooltip_content side="right">
-            Relate
-          </.tooltip_content>
-        </.tooltip>
-        <.tooltip>
-          <tooltip_trigger>
-            <.link
-              href="#"
-              class={
-                if @current_page == "analyse",
-                  do:
-                    "flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground",
-                  else:
-                    "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
-              }
-            >
-              <.icon
-                name="hero-arrow-path-rounded-square-mini"
-                class="h-4 w-4 transition-all group-hover:scale-110"
-              />
-              <span class="sr-only">
-                Analyse
-              </span>
-            </.link>
-          </tooltip_trigger>
-          <.tooltip_content side="right">
-            Analyse
-          </.tooltip_content>
-        </.tooltip>
+        <%= for {page, {icon}, label} <- [
+            {"Elixir.ReveloWeb.SessionLive.Prepare", {"hero-adjustments-horizontal-mini"}, "Prepare"},
+            {"identify", {"hero-queue-list-mini"}, "Identify"},
+            {"relate", {"hero-arrows-right-left-mini"}, "Relate"},
+            {"analyse", {"hero-arrow-path-rounded-square-mini"}, "Analyse"}
+          ] do %>
+          <.tooltip>
+            <tooltip_trigger>
+              <.link
+                href="#"
+                class={
+                  Enum.join(
+                    [
+                      "flex h-9 w-9 items-center justify-center rounded-lg transition-colors  hover:text-foreground ",
+                      if(@current_page == page,
+                        do: "bg-accent text-foreground",
+                        else: "text-muted-foreground"
+                      )
+                    ],
+                    " "
+                  )
+                }
+              >
+                <.icon name={icon} class="h-4 w-4 transition-all group-hover:scale-110" />
+                <span class="sr-only">{label}</span>
+              </.link>
+            </tooltip_trigger>
+            <.tooltip_content side="right">{label}</.tooltip_content>
+          </.tooltip>
+        <% end %>
       </nav>
       <nav class="mt-auto flex flex-col items-center gap-4 px-2">
         <.tooltip>
@@ -163,14 +100,10 @@ defmodule ReveloWeb.UIComponents do
                 name="hero-user-circle-mini"
                 class="h-4 w-4 transition-all group-hover:scale-110"
               />
-              <span class="sr-only">
-                User
-              </span>
+              <span class="sr-only">User</span>
             </.link>
           </tooltip_trigger>
-          <.tooltip_content side="right">
-            User
-          </.tooltip_content>
+          <.tooltip_content side="right">User</.tooltip_content>
         </.tooltip>
       </nav>
     </aside>
