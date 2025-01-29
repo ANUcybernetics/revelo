@@ -24,7 +24,7 @@ defmodule ReveloWeb.SessionLive.Index do
           rows={@streams.sessions}
           row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}/prepare") end}
         >
-          <:col :let={{_id, session}} label="Id">{session.id}</:col>
+          <:col :let={{_id, session}} label="Name">{session.name}</:col>
 
           <:action :let={{id, session}}>
             <.link
