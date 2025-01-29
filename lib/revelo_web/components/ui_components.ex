@@ -62,37 +62,38 @@ defmodule ReveloWeb.UIComponents do
           </.dropdown_menu_content>
         </.dropdown_menu>
 
-        <%= if Map.get(assigns, :session) do
-          for {page, {icon}, label, path} <- [
+        <%= if Map.get(assigns, :session) do %>
+          <%= for {page, {icon}, label, path} <- [
           {"Elixir.ReveloWeb.SessionLive.Prepare", {"hero-adjustments-horizontal-mini"}, "Prepare", "/sessions/#{@session.id}/prepare"},
           {"identify", {"hero-queue-list-mini"}, "Identify", "/sessions/#{@session.id}/identify"},
           {"relate", {"hero-arrows-right-left-mini"}, "Relate", "/sessions/#{@session.id}/relate"},
           {"analyse", {"hero-arrow-path-rounded-square-mini"}, "Analyse", "/sessions/#{@session.id}/analyse"}
             ] do %>
-          <.tooltip>
-            <tooltip_trigger>
-              <.link
-                href={path}
-                class={
-                  Enum.join(
-                    [
-                      "flex h-9 w-9 items-center justify-center rounded-lg transition-colors  hover:text-foreground ",
-                      if(@current_page == page,
-                        do: "bg-accent text-foreground",
-                        else: "text-muted-foreground"
-                      )
-                    ],
-                    " "
-                  )
-                }
-              >
-                <.icon name={icon} class="h-4 w-4 transition-all group-hover:scale-110" />
-                <span class="sr-only">{label}</span>
-              </.link>
-            </tooltip_trigger>
-            <.tooltip_content side="right">{label}</.tooltip_content>
-          </.tooltip>
-        <% end end %>
+            <.tooltip>
+              <tooltip_trigger>
+                <.link
+                  href={path}
+                  class={
+                    Enum.join(
+                      [
+                        "flex h-9 w-9 items-center justify-center rounded-lg transition-colors  hover:text-foreground ",
+                        if(@current_page == page,
+                          do: "bg-accent text-foreground",
+                          else: "text-muted-foreground"
+                        )
+                      ],
+                      " "
+                    )
+                  }
+                >
+                  <.icon name={icon} class="h-4 w-4 transition-all group-hover:scale-110" />
+                  <span class="sr-only">{label}</span>
+                </.link>
+              </tooltip_trigger>
+              <.tooltip_content side="right">{label}</.tooltip_content>
+            </.tooltip>
+          <% end %>
+        <% end %>
       </nav>
       <nav class="mt-auto flex flex-col items-center gap-4 px-2">
         <.tooltip>
