@@ -30,4 +30,23 @@ defmodule ReveloWeb.LiveUserAuth do
       {:cont, assign(socket, :current_user, nil)}
     end
   end
+
+  def on_mount(:live_user_create_anon, _params, _session, socket) do
+    if socket.assigns[:current_user] do
+      {:cont, socket}
+    else
+      case Revelo.Accounts.register_anonymous_user() do
+        {:ok, user} ->
+          socket =
+            socket
+            |> assign(:current_user, user)
+            |> assign(:user_token, user.__metadata__.token)
+
+          {:cont, socket}
+
+        {:error, _error} ->
+          {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
+      end
+    end
+  end
 end

@@ -38,23 +38,15 @@ defmodule ReveloWeb.Router do
 
       live "/sessions/:id", SessionLive.Show, :show
       live "/sessions/:id/show/edit", SessionLive.Show, :edit
+    end
 
+    # these are the sessions used during a session, and as such have the "create anon user if not presetnt" on mount
+    ash_authentication_live_session :session_routes,
+      on_mount: {ReveloWeb.LiveUserAuth, :live_user_create_anon} do
       live "/sessions/:session_id/prepare", SessionLive.Prepare, :prepare
       # live "/sessions/:session_id/identify/", SessionLive.Identify, :identify
       # live "/sessions/:session_id/relate/", SessionLive.Relate, :relate
       # live "/sessions/:session_id/analyse/", SessionLive.Analyse, :analyse
-
-      # live "/sessions/:session_id/online_participants/", SessionLive.OnlineParticipants, :show
-      # in each liveview, add one of the following at the top of the module:
-      #
-      # If an authenticated user must be present:
-      # on_mount {ReveloWeb.LiveUserAuth, :live_user_required}
-      #
-      # If an authenticated user *may* be present:
-      # on_mount {ReveloWeb.LiveUserAuth, :live_user_optional}
-      #
-      # If an authenticated user must *not* be present:
-      # on_mount {ReveloWeb.LiveUserAuth, :live_no_user}
     end
   end
 
