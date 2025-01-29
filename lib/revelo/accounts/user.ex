@@ -75,7 +75,13 @@ defmodule Revelo.Accounts.User do
         monitor_fields [:email]
         confirm_on_create? true
         confirm_on_update? false
-        auto_confirm_actions [:sign_in_with_magic_link, :reset_password_with_token]
+
+        auto_confirm_actions [
+          :sign_in_with_magic_link,
+          :reset_password_with_token,
+          :register_anonymous_user
+        ]
+
         sender Revelo.Accounts.User.Senders.SendNewUserConfirmationEmail
       end
     end
@@ -84,7 +90,14 @@ defmodule Revelo.Accounts.User do
   actions do
     defaults [:read]
 
-    create :register_anonymous_user
+    create :register_anonymous_user do
+      change Revelo.Accounts.Changes.GenerateAnonymousTokenChange
+
+      metadata :token, :string do
+        description "A JWT that can be used to authenticate the user."
+        allow_nil? false
+      end
+    end
 
     update :upgrade_anonymous_user do
       description "Upgrade an anonymous user to a full user with email and password."
