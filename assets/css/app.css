@@ -125,6 +125,10 @@ body {
         --chart-5: 340 75% 55%;
     }
 
+    [type="checkbox"] {
+        color: black;
+    }
+
     * {
         @apply border-border !important;
     }
