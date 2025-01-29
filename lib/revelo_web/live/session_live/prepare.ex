@@ -151,7 +151,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:session, session)
+     |> assign(:time_remaining, session)
      |> assign(:variables, variables)
      |> assign(:session, session)}
   end
@@ -201,6 +201,11 @@ defmodule ReveloWeb.SessionLive.Prepare do
          if v.id == updated_variable.id, do: updated_variable, else: v
        end)
      end)}
+  end
+
+  @impl true
+  def handle_info({:timer_update, total_count}, socket) do
+    {:noreply, assign(socket, :time_remaining, total_count)}
   end
 
   @impl true
