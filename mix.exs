@@ -33,6 +33,7 @@ defmodule Revelo.MixProject do
   defp deps do
     [
       {:phoenix_test, "~> 0.5", only: :test, runtime: false},
+      {:phoenix_test_playwright, "~> 0.1", only: :test, runtime: false},
       {:phoenix_storybook, "~> 0.8"},
       {:salad_ui, "~> 0.14"},
       {:bcrypt_elixir, "~> 3.0"},
