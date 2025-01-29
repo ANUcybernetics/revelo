@@ -45,27 +45,30 @@ defmodule ReveloWeb.UIComponents do
           <.dropdown_menu_content side="right">
             <.menu class="w-56">
               <.menu_group>
-                <.menu_item>
-                  <.icon name="hero-plus" class="mr-2 h-4 w-4" />
-                  <span>Add Session</span>
-                </.menu_item>
-                <.menu_item>
-                  <.link navigate="/sessions">
+                <.link navigate="/sessions/new">
+                  <.menu_item class="cursor-pointer">
+                    <.icon name="hero-plus" class="mr-2 h-4 w-4" />
+                    <span>Add Session</span>
+                  </.menu_item>
+                </.link>
+                <.link navigate="/sessions">
+                  <.menu_item class="cursor-pointer">
                     <.icon name="hero-eye" class="mr-2 h-4 w-4" />
                     <span>View All Sessions</span>
-                  </.link>
-                </.menu_item>
+                  </.menu_item>
+                </.link>
               </.menu_group>
             </.menu>
           </.dropdown_menu_content>
         </.dropdown_menu>
 
-        <%= for {page, {icon}, label, path} <- [
-          {"Elixir.ReveloWeb.SessionLive.Prepare", {"hero-adjustments-horizontal-mini"}, "Prepare", Enum.join(["/sessions/",@session,"/prepare"],"")},
-            {"identify", {"hero-queue-list-mini"}, "Identify", Enum.join(["/sessions/",@session,"/identify"],"")},
-            {"relate", {"hero-arrows-right-left-mini"}, "Relate", Enum.join(["/sessions/",@session,"/relate"],"")},
-            {"analyse", {"hero-arrow-path-rounded-square-mini"}, "Analyse", Enum.join(["/sessions/",@session,"/analyse"],"")}
-          ] do %>
+        <%= if @session do
+          for {page, {icon}, label, path} <- [
+            {"Elixir.ReveloWeb.SessionLive.Prepare", {"hero-adjustments-horizontal-mini"}, "Prepare", Enum.join(["/sessions/",@session,"/prepare"],"")},
+              {"identify", {"hero-queue-list-mini"}, "Identify", Enum.join(["/sessions/",@session,"/identify"],"")},
+              {"relate", {"hero-arrows-right-left-mini"}, "Relate", Enum.join(["/sessions/",@session,"/relate"],"")},
+              {"analyse", {"hero-arrow-path-rounded-square-mini"}, "Analyse", Enum.join(["/sessions/",@session,"/analyse"],"")}
+            ] do %>
           <.tooltip>
             <tooltip_trigger>
               <.link
@@ -89,7 +92,7 @@ defmodule ReveloWeb.UIComponents do
             </tooltip_trigger>
             <.tooltip_content side="right">{label}</.tooltip_content>
           </.tooltip>
-        <% end %>
+        <% end end %>
       </nav>
       <nav class="mt-auto flex flex-col items-center gap-4 px-2">
         <.tooltip>
