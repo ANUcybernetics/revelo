@@ -19,7 +19,7 @@ defmodule ReveloWeb.SessionLive.Index do
         </.header>
       </.card_header>
       <.card_content>
-        <.table
+        <ReveloWeb.CoreComponents.table
           id="Sessions"
           rows={@streams.sessions}
           row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}/prepare") end}
@@ -34,7 +34,7 @@ defmodule ReveloWeb.SessionLive.Index do
               Delete
             </.link>
           </:action>
-        </.table>
+        </ReveloWeb.CoreComponents.table>
       </.card_content>
     </.card>
 
