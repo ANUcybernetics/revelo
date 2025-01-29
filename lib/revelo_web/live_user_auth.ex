@@ -35,7 +35,7 @@ defmodule ReveloWeb.LiveUserAuth do
     if socket.assigns[:current_user] do
       {:cont, socket}
     else
-      case Revelo.Accounts.register_anonymous_user() do
+      case Revelo.Accounts.register_anonymous_user(authorize?: false) do
         {:ok, user} ->
           socket =
             socket
