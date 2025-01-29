@@ -1,5 +1,5 @@
-import StoreUserID from "./store_user_id";
+import AnonUser from "./anon_user";
 
 export default {
-  StoreUserID,
+  AnonUser,
 };
