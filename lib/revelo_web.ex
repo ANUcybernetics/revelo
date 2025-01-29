@@ -92,7 +92,13 @@ defmodule ReveloWeb do
       # UI Components
       import ReveloWeb.Component.Button
       import ReveloWeb.Component.Card
-      import ReveloWeb.CoreComponents, except: [modal: 1, button: 1]
+      import ReveloWeb.Component.Checkbox
+      import ReveloWeb.Component.Form
+      import ReveloWeb.Component.Input
+      import ReveloWeb.Component.Label
+      import ReveloWeb.Component.Table
+      import ReveloWeb.Component.Textarea
+      import ReveloWeb.CoreComponents, except: [modal: 1, button: 1, input: 1, table: 1, label: 1]
       import ReveloWeb.UIComponents
 
       # Shortcut for generating JS commands
