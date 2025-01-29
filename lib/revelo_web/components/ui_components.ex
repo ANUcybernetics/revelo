@@ -192,7 +192,11 @@ defmodule ReveloWeb.UIComponents do
       </.tooltip>
       <.tooltip>
         <tooltip_trigger>
-          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+          <button
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
+            phx-click="toggle_key"
+            phx-value-id={@variable.id}
+          >
             <.icon
               name={if @variable.is_key?, do: "hero-key-solid", else: "hero-key"}
               class="h-4 w-4 transition-all"
