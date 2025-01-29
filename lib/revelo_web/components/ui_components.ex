@@ -214,16 +214,16 @@ defmodule ReveloWeb.UIComponents do
             phx-value-id={@variable.id}
           >
             <.icon
-              name={if @variable.hidden, do: "hero-eye-slash", else: "hero-eye-solid"}
+              name={if @variable.hidden?, do: "hero-eye-slash", else: "hero-eye-solid"}
               class="h-4 w-4 transition-all"
             />
             <span class="sr-only">
-              {if @variable.hidden, do: "Hide", else: "Show"}
+              {if @variable.hidden?, do: "Hide", else: "Show"}
             </span>
           </button>
         </tooltip_trigger>
         <.tooltip_content side="top">
-          {if @variable.hidden, do: "Show", else: "Hide"}
+          {if @variable.hidden?, do: "Show", else: "Hide"}
         </.tooltip_content>
       </.tooltip>
       <.tooltip>

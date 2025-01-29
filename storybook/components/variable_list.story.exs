@@ -17,7 +17,7 @@ defmodule Storybook.Examples.VariableList do
     "The main variable list interface (for a facilitator)"
   end
 
-  defstruct [:id, :name, :is_key?, :hidden]
+  defstruct [:id, :name, :is_key?, :hidden?]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -25,8 +25,8 @@ defmodule Storybook.Examples.VariableList do
      assign(socket,
        current_id: 2,
        variables: [
-         %__MODULE__{id: 1, name: "Stuff", is_key?: true, hidden: false},
-         %__MODULE__{id: 2, name: "Things", is_key?: false, hidden: true}
+         %__MODULE__{id: 1, name: "Stuff", is_key?: true, hidden?: false},
+         %__MODULE__{id: 2, name: "Things", is_key?: false, hidden?: true}
        ]
      )}
   end
@@ -44,7 +44,7 @@ defmodule Storybook.Examples.VariableList do
       </.table_header>
       <.table_body>
         <%= for variable <- @variables do %>
-          <.table_row class={if variable.hidden, do: "opacity-40"}>
+          <.table_row class={if variable.hidden?, do: "opacity-40"}>
             <.table_cell>{variable.name}</.table_cell>
             <.table_cell>
               <%= if variable.is_key? do %>
@@ -86,7 +86,7 @@ defmodule Storybook.Examples.VariableList do
       name: params["name"],
       is_key?: params["is_key?"] == "true",
       id: socket.assigns.current_id + 1,
-      hidden: false
+      hidden?: false
     }
 
     {:noreply,
@@ -114,7 +114,7 @@ defmodule Storybook.Examples.VariableList do
     updated_variables =
       Enum.map(socket.assigns.variables, fn variable ->
         if variable.id == id do
-          Map.update!(variable, :hidden, fn hidden -> !hidden end)
+          Map.update!(variable, :hidden?, fn hidden -> !hidden end)
         else
           variable
         end
