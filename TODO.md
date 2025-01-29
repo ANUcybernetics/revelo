@@ -3,18 +3,14 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
+- modify auth_required hook to do the "create user if doesn't exist" thing
+  (looks like the on_mount is the way to go in the end...)
+
 - add QR code component, look at
   (Panic!)[https://github.com/benswift/panic/blob/main/lib/panic_web/components/panic_components.ex#L235]
   if it helps
 
 - set up a PhoenixTest which can log in and then do stuff
-
-- modify auth_required hook to do the "create user if doesn't exist" thing
-
-- liveview modules for identify, relate and analyse
-
-- add (or modify the auth optional) on_mount hook so that if there's no user
-  they get created (using uuid, also stored in localstorage) and logged in
 
 - faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
@@ -24,9 +20,6 @@ we're building it out & exploring the problem space).
   progress
 
 - add policies/authorizations
-
-- sketch out notifications architecture (what gets broadcast, and to whom, and
-  which views need what?)
 
 ## Libraries we'll use
 
