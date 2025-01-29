@@ -6,7 +6,7 @@ defmodule Revelo.UIComponentsTest do
   import ReveloTest.Generators
 
   test "sidebar contains icons (with links) for all stages of the session" do
-    assigns = %{session: session(), current_page: "prepare"}
+    assigns = %{session_id: session().id, current_page: :prepare}
     html = render_component(&ReveloWeb.UIComponents.sidebar/1, assigns)
 
     assert html =~ "Add Session"
@@ -19,7 +19,7 @@ defmodule Revelo.UIComponentsTest do
   end
 
   test "sidebar contains just the top icon when no session present" do
-    assigns = %{current_page: "prepare"}
+    assigns = %{session_id: nil, current_page: :prepare}
     html = render_component(&ReveloWeb.UIComponents.sidebar/1, assigns)
 
     assert html =~ "Add Session"

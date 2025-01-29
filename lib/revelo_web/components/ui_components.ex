@@ -32,9 +32,7 @@ defmodule ReveloWeb.UIComponents do
             Enum.join(
               [
                 "cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground ",
-                if(@current_page == "Elixir.ReveloWeb.SessionLive.Index",
-                  do: "outline outline-white -outline-offset-4"
-                )
+                (@current_page == :index && "outline outline-white -outline-offset-4") || ""
               ],
               " "
             )
@@ -62,37 +60,32 @@ defmodule ReveloWeb.UIComponents do
           </.dropdown_menu_content>
         </.dropdown_menu>
 
-        <%= if Map.get(assigns, :session) do %>
-          <%= for {page, {icon}, label, path} <- [
-          {"Elixir.ReveloWeb.SessionLive.Prepare", {"hero-adjustments-horizontal-mini"}, "Prepare", "/sessions/#{@session.id}/prepare"},
-          {"identify", {"hero-queue-list-mini"}, "Identify", "/sessions/#{@session.id}/identify"},
-          {"relate", {"hero-arrows-right-left-mini"}, "Relate", "/sessions/#{@session.id}/relate"},
-          {"analyse", {"hero-arrow-path-rounded-square-mini"}, "Analyse", "/sessions/#{@session.id}/analyse"}
-            ] do %>
-            <.tooltip>
-              <tooltip_trigger>
-                <.link
-                  href={path}
-                  class={
-                    Enum.join(
-                      [
-                        "flex h-9 w-9 items-center justify-center rounded-lg transition-colors  hover:text-foreground ",
-                        if(@current_page == page,
-                          do: "bg-accent text-foreground",
-                          else: "text-muted-foreground"
-                        )
-                      ],
-                      " "
-                    )
-                  }
-                >
-                  <.icon name={icon} class="h-4 w-4 transition-all group-hover:scale-110" />
-                  <span class="sr-only">{label}</span>
-                </.link>
-              </tooltip_trigger>
-              <.tooltip_content side="right">{label}</.tooltip_content>
-            </.tooltip>
-          <% end %>
+        <%= if @session_id do %>
+          <.tooltip :for={page <- [:prepare, :identify, :relate, :analyse]}>
+            <tooltip_trigger>
+              <.link
+                href={"/sessions/#{@session_id}/#{page}"}
+                class={
+                  Enum.join(
+                    [
+                      "flex h-9 w-9 items-center justify-center rounded-lg transition-colors  hover:text-foreground ",
+                      if(@current_page == page,
+                        do: "bg-accent text-foreground",
+                        else: "text-muted-foreground"
+                      )
+                    ],
+                    " "
+                  )
+                }
+              >
+                <.icon name={sidebar_icon(page)} class="h-4 w-4 transition-all group-hover:scale-110" />
+                <span class="sr-only">{page |> Atom.to_string() |> String.capitalize()}</span>
+              </.link>
+            </tooltip_trigger>
+            <.tooltip_content side="right">
+              {page |> Atom.to_string() |> String.capitalize()}
+            </.tooltip_content>
+          </.tooltip>
         <% end %>
       </nav>
       <nav class="mt-auto flex flex-col items-center gap-4 px-2">
@@ -115,6 +108,11 @@ defmodule ReveloWeb.UIComponents do
     </aside>
     """
   end
+
+  def sidebar_icon(:prepare), do: "hero-adjustments-horizontal-mini"
+  def sidebar_icon(:identify), do: "hero-queue-list-mini"
+  def sidebar_icon(:relate), do: "hero-arrows-right-left-mini"
+  def sidebar_icon(:analyse), do: "hero-arrow-path-rounded-square-mini"
 
   @doc """
     The key variable badge

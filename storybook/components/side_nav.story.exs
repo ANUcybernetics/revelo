@@ -12,7 +12,7 @@ defmodule Storybook.Examples.SideNav do
   def render(assigns) do
     ~H"""
     <div class="scale-[1] h-[500px]">
-      <.sidebar current_page="prepare" />
+      <.sidebar current_page={:prepare} />
     </div>
     """
   end
