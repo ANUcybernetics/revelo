@@ -121,7 +121,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_key(assigns) do
     ~H"""
-    <.badge class="bg-sky-200 text-sky-950 hover:bg-sky-300 w-fit">
+    <.badge class="bg-sky-200 text-sky-950 hover:bg-sky-300 w-fit border-none">
       <.icon name="hero-key-mini" class="h-4 w-4 mr-1" /> Key Variable
     </.badge>
     """
@@ -134,7 +134,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_vote(assigns) do
     ~H"""
-    <.badge class="bg-emerald-200 text-emerald-900 hover:bg-emerald-300 w-fit">
+    <.badge class="bg-emerald-200 text-emerald-900 hover:bg-emerald-300 w-fit border-none">
       <.icon name="hero-hand-thumb-up-mini" class="h-4 w-4 mr-1" /> Important
     </.badge>
     """
@@ -142,7 +142,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_no_vote(assigns) do
     ~H"""
-    <.badge class="bg-rose-200 text-rose-900 hover:bg-rose-300 w-fit">
+    <.badge class="bg-rose-200 text-rose-900 hover:bg-rose-300 w-fit border-none">
       <.icon name="hero-hand-thumb-down-mini" class="h-4 w-4 mr-1" /> Not Important
     </.badge>
     """
@@ -155,7 +155,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_reinforcing(assigns) do
     ~H"""
-    <.badge class="bg-yellow-200 text-yellow-900 hover:bg-yellow-300 w-fit">
+    <.badge class="bg-yellow-200 text-yellow-900 hover:bg-yellow-300 w-fit border-none">
       <.icon name="hero-arrows-pointing-out-mini" class="h-4 w-4 mr-1" /> Reinforcing
     </.badge>
     """
@@ -163,7 +163,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_balancing(assigns) do
     ~H"""
-    <.badge class="bg-fuchsia-200 text-fuchsia-900 hover:bg-fuchsia-300 w-fit">
+    <.badge class="bg-fuchsia-200 text-fuchsia-900 hover:bg-fuchsia-300 w-fit border-none">
       <.icon name="hero-arrows-pointing-in-mini" class="h-4 w-4 mr-1" /> Balancing
     </.badge>
     """
