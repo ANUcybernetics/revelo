@@ -3,9 +3,10 @@ defmodule Revelo.UIComponentsTest do
 
   import Phoenix.Component
   import Phoenix.LiveViewTest
+  import ReveloTest.Generators
 
   test "sidebar contains icons (with links) for all stages of the session" do
-    assigns = %{current_page: "prepare"}
+    assigns = %{session: session(), current_page: "prepare"}
     html = render_component(&ReveloWeb.UIComponents.sidebar/1, assigns)
 
     assert html =~ "Add Session"
@@ -14,6 +15,15 @@ defmodule Revelo.UIComponentsTest do
     assert html =~ "Identify"
     assert html =~ "Relate"
     assert html =~ "Analyse"
+    assert html =~ "User"
+  end
+
+  test "sidebar contains just the top icon when no session present" do
+    assigns = %{current_page: "prepare"}
+    html = render_component(&ReveloWeb.UIComponents.sidebar/1, assigns)
+
+    assert html =~ "Add Session"
+    assert html =~ "View All Sessions"
     assert html =~ "User"
   end
 

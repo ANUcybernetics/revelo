@@ -62,12 +62,12 @@ defmodule ReveloWeb.UIComponents do
           </.dropdown_menu_content>
         </.dropdown_menu>
 
-        <%= if @session do
+        <%= if Map.get(assigns, :session) do
           for {page, {icon}, label, path} <- [
-            {"Elixir.ReveloWeb.SessionLive.Prepare", {"hero-adjustments-horizontal-mini"}, "Prepare", Enum.join(["/sessions/",@session,"/prepare"],"")},
-              {"identify", {"hero-queue-list-mini"}, "Identify", Enum.join(["/sessions/",@session,"/identify"],"")},
-              {"relate", {"hero-arrows-right-left-mini"}, "Relate", Enum.join(["/sessions/",@session,"/relate"],"")},
-              {"analyse", {"hero-arrow-path-rounded-square-mini"}, "Analyse", Enum.join(["/sessions/",@session,"/analyse"],"")}
+          {"Elixir.ReveloWeb.SessionLive.Prepare", {"hero-adjustments-horizontal-mini"}, "Prepare", "/sessions/#{@session.id}/prepare"},
+          {"identify", {"hero-queue-list-mini"}, "Identify", "/sessions/#{@session.id}/identify"},
+          {"relate", {"hero-arrows-right-left-mini"}, "Relate", "/sessions/#{@session.id}/relate"},
+          {"analyse", {"hero-arrow-path-rounded-square-mini"}, "Analyse", "/sessions/#{@session.id}/analyse"}
             ] do %>
           <.tooltip>
             <tooltip_trigger>
