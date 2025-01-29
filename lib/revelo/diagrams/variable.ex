@@ -76,12 +76,26 @@ defmodule Revelo.Diagrams.Variable do
       change set_attribute(:is_key?, false)
     end
 
+    update :toggle_key do
+      change fn changeset, _ ->
+        current_value = Ash.Changeset.get_attribute(changeset, :is_key?)
+        Ash.Changeset.force_change_attribute(changeset, :is_key?, !current_value)
+      end
+    end
+
     update :hide do
       change set_attribute(:hidden?, true)
     end
 
     update :unhide do
       change set_attribute(:hidden?, false)
+    end
+
+    update :toggle_visibility do
+      change fn changeset, _ ->
+        current_value = Ash.Changeset.get_attribute(changeset, :hidden?)
+        Ash.Changeset.force_change_attribute(changeset, :hidden?, !current_value)
+      end
     end
   end
 

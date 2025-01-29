@@ -9,8 +9,10 @@ defmodule Revelo.Diagrams do
       define :list_variables, args: [:session_id, {:optional, :include_hidden}], action: :list
       define :set_key_variable, action: :set_key
       define :unset_key_variable, action: :unset_key
+      define :toggle_key_variable, action: :toggle_key
       define :hide_variable, action: :hide
       define :unhide_variable, action: :unhide
+      define :toggle_variable_visibility, action: :toggle_visibility
     end
 
     resource Revelo.Diagrams.Relationship do

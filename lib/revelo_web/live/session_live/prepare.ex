@@ -2,6 +2,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
   @moduledoc false
   use ReveloWeb, :live_view
 
+  alias Revelo.Diagrams
   alias Revelo.Diagrams.Variable
   alias Revelo.Sessions.Session
 
@@ -161,7 +162,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
     actor = socket.assigns.current_user
 
     case Ash.create(
-           Revelo.Diagrams.Variable,
+           Variable,
            %{
              name: params["name"],
              is_key?: params["is_key?"] == "true",
@@ -180,38 +181,26 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   @impl true
   def handle_event("toggle_hidden", %{"id" => variable_id}, socket) do
-    case Ash.get!(Revelo.Diagrams.Variable, variable_id) do
-      %Revelo.Diagrams.Variable{hidden?: hidden?} = variable ->
-        updated_variable =
-          if hidden?,
-            do: Revelo.Diagrams.unhide_variable!(variable),
-            else: Revelo.Diagrams.hide_variable!(variable)
+    updated_variable = Diagrams.toggle_variable_visibility!(variable_id)
 
-        {:noreply,
-         update(socket, :variables, fn vars ->
-           Enum.map(vars, fn v ->
-             if v.id == updated_variable.id, do: updated_variable, else: v
-           end)
-         end)}
-    end
+    {:noreply,
+     update(socket, :variables, fn vars ->
+       Enum.map(vars, fn v ->
+         if v.id == updated_variable.id, do: updated_variable, else: v
+       end)
+     end)}
   end
 
   @impl true
   def handle_event("toggle_key", %{"id" => variable_id}, socket) do
-    case Ash.get!(Revelo.Diagrams.Variable, variable_id) do
-      %Revelo.Diagrams.Variable{is_key?: is_key?} = variable ->
-        updated_variable =
-          if is_key?,
-            do: Revelo.Diagrams.unset_key_variable!(variable),
-            else: Revelo.Diagrams.set_key_variable!(variable)
+    updated_variable = Diagrams.toggle_key_variable!(variable_id)
 
-        {:noreply,
-         update(socket, :variables, fn vars ->
-           Enum.map(vars, fn v ->
-             if v.id == updated_variable.id, do: updated_variable, else: v
-           end)
-         end)}
-    end
+    {:noreply,
+     update(socket, :variables, fn vars ->
+       Enum.map(vars, fn v ->
+         if v.id == updated_variable.id, do: updated_variable, else: v
+       end)
+     end)}
   end
 
   @impl true

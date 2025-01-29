@@ -92,6 +92,12 @@ defmodule Revelo.VariableTest do
 
       variable = Revelo.Diagrams.unset_key_variable!(variable)
       assert variable.is_key? == false
+
+      variable = Revelo.Diagrams.toggle_key_variable!(variable)
+      assert variable.is_key? == true
+
+      variable = Revelo.Diagrams.toggle_key_variable!(variable)
+      assert variable.is_key? == false
     end
 
     test "can toggle hidden flag on variable" do
