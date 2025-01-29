@@ -1,6 +1,6 @@
 <.sidebar current_page={@live_action} session_id={(@session && @session.id) || nil} />
-<main class="px-4 py-20 sm:px-6 lg:px-8 ml-12 bg-dots min-h-svh">
-  <div class="mx-auto max-w-2xl">
+<main class="p-5 ml-14 bg-dots min-h-svh">
+  <div class="mx-auto max-w-screen-2xl">
     <.flash_group flash={@flash} />
     {@inner_content}
   </div>
