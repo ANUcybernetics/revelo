@@ -64,6 +64,25 @@ defmodule Revelo.VariableTest do
       assert renamed_var.name == new_name
     end
 
+    test "can destroy variable" do
+      variable = variable()
+
+      variable
+      |> Ash.Changeset.for_destroy(:destroy)
+      |> Ash.destroy!()
+
+      assert_raise Ash.Error.Invalid, fn ->
+        Ash.get!(Variable, variable.id)
+      end
+
+      variable = variable()
+      Revelo.Diagrams.destroy_variable!(variable)
+
+      assert_raise Ash.Error.Invalid, fn ->
+        Ash.get!(Variable, variable.id)
+      end
+    end
+
     test "can toggle key flag on variable" do
       variable = variable()
       assert variable.is_key? == false

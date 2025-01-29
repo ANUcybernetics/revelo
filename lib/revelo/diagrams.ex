@@ -5,6 +5,7 @@ defmodule Revelo.Diagrams do
   resources do
     resource Revelo.Diagrams.Variable do
       define :create_variable, args: [:name, :session], action: :create
+      define :destroy_variable, action: :destroy
       define :list_variables, args: [:session_id, {:optional, :include_hidden}], action: :list
       define :set_key_variable, action: :set_key
       define :unset_key_variable, action: :unset_key
