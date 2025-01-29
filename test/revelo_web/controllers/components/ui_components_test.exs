@@ -53,7 +53,7 @@ defmodule Revelo.UIComponentsTest do
   end
 
   test "variable_actions shows action buttons" do
-    variable = %{id: 1, is_key?: false, hidden: false}
+    variable = %{id: 1, is_key?: false, hidden?: false}
     html = render_component(&ReveloWeb.UIComponents.variable_actions/1, %{variable: variable})
     assert html =~ "Edit"
     assert html =~ "Make Key"
