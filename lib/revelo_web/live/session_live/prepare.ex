@@ -3,6 +3,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
   use ReveloWeb, :live_view
 
   alias Revelo.Diagrams.Variable
+  alias Revelo.Sessions.Session
 
   @impl true
   def render(assigns) do
@@ -138,8 +139,8 @@ defmodule ReveloWeb.SessionLive.Prepare do
   @impl true
   def handle_params(%{"session_id" => session_id}, _, socket) do
     user = socket.assigns.current_user
-    session = Ash.get!(Revelo.Sessions.Session, session_id, actor: user)
-    variables = Ash.read!(Revelo.Diagrams.Variable, actor: user)
+    session = Ash.get!(Session, session_id, actor: user)
+    variables = Ash.read!(Variable, actor: user)
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session_id}")
@@ -214,18 +215,8 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   @impl true
-  def handle_info({ReveloWeb.Presence, event}, socket) do
-    {:noreply,
-     case event do
-       {:join, presence} ->
-         stream_insert(socket, :participants, presence)
-
-       {:leave, presence} when presence.metas == [] ->
-         stream_delete(socket, :participants, presence)
-
-       {:leave, presence} ->
-         stream_insert(socket, :participants, presence)
-     end}
+  def handle_info({:participant_count, total_count}, socket) do
+    {:noreply, assign(socket, :participant_count, total_count)}
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"
