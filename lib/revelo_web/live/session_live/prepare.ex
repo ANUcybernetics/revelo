@@ -142,7 +142,8 @@ defmodule ReveloWeb.SessionLive.Prepare do
     variables = Ash.read!(Revelo.Diagrams.Variable, actor: user)
 
     if connected?(socket) do
-      ReveloWeb.Presence.track_participant(session.id, user.id)
+      Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session_id}")
+      ReveloWeb.Presence.track_participant(session_id, user.id)
     end
 
     {:noreply,
