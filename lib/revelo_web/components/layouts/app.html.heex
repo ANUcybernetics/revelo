@@ -1,4 +1,7 @@
-<.sidebar current_page={Atom.to_string(@socket.view)} />
+<.sidebar
+  current_page={Atom.to_string(@socket.view)}
+  session={(@session && @session.id) || elem(Enum.at(@streams.sessions.inserts, -1), 2).id}
+/>
 <main class="px-4 py-20 sm:px-6 lg:px-8 ml-12 bg-dots min-h-svh">
   <div class="mx-auto max-w-2xl">
     <.flash_group flash={@flash} />
