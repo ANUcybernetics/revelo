@@ -29,8 +29,8 @@ let params = {
     .getAttribute("content"),
 };
 
-if (localStorage.getItem("revelo_user_id")) {
-  params.revelo_user_id = localStorage.getItem("revelo_user_id");
+if (localStorage.getItem("revelo_anon_user_id")) {
+  params.anon_user_id = localStorage.getItem("revelo_anon_user_id");
 }
 
 let liveSocket = new LiveSocket("/live", Socket, {
