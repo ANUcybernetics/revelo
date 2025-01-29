@@ -140,8 +140,8 @@ defmodule ReveloWeb.SessionLive.Prepare do
   @impl true
   def handle_params(%{"session_id" => session_id}, _, socket) do
     user = socket.assigns.current_user
-    session = Ash.get!(Session, session_id, actor: user)
-    variables = Ash.read!(Variable, actor: user)
+    session = Ash.get!(Session, session_id)
+    variables = Diagrams.list_variables!(session_id, true)
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session_id}")
