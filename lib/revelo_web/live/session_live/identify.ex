@@ -28,7 +28,7 @@ defmodule ReveloWeb.SessionLive.Identify do
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session_id}")
-      ReveloWeb.Presence.track_participant(session_id, user.id)
+      ReveloWeb.Presence.track_participant(session_id, user.id, :waiting)
     end
 
     {:noreply,
