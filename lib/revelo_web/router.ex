@@ -43,12 +43,17 @@ defmodule ReveloWeb.Router do
 
     # these are the sessions used during a session, and as such have the "create anon user if not presetnt" on mount
     ash_authentication_live_session :session_routes,
-      on_mount: {ReveloWeb.LiveUserAuth, :live_user_create_anon} do
+      on_mount: {ReveloWeb.LiveUserAuth, :live_user_optional} do
       live "/sessions/:session_id/prepare", SessionLive.Prepare, :prepare
-      live "/sessions/:session_id/identify/", SessionLive.Identify, :identify
-      # live "/sessions/:session_id/relate/", SessionLive.Relate, :relate
-      # live "/sessions/:session_id/analyse/", SessionLive.Analyse, :analyse
+      live "/sessions/:session_id/identify", SessionLive.Identify, :identify
+      # live "/sessions/:session_id/relate", SessionLive.Relate, :relate
+      # live "/sessions/:session_id/analyse", SessionLive.Analyse, :analyse
     end
+  end
+
+  scope "/qr", ReveloWeb do
+    pipe_through :browser
+    get "/sessions/:session_id/:phase", QRController, :handle_qr
   end
 
   scope "/", ReveloWeb do
