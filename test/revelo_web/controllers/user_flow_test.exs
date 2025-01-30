@@ -16,9 +16,9 @@ defmodule ReveloWeb.UserFlowTest do
       password = "657]545asdflh"
       user = user_with_password(password)
 
-      static = log_in_user(conn, Ash.CiString.value(user.email), password)
+      browsing_session = log_in_user(conn, Ash.CiString.value(user.email), password)
 
-      assert static.conn.assigns.current_user.id == user.id
+      assert browsing_session.conn.assigns.current_user.id == user.id
     end
 
     test "can create a new session", %{conn: conn} do
@@ -40,26 +40,37 @@ defmodule ReveloWeb.UserFlowTest do
       user = user_with_password(password)
       session = session()
 
-      static =
+      browsing_session =
         conn
         |> log_in_user(Ash.CiString.value(user.email), password)
         |> Map.get(:conn)
         |> visit("/qr/sessions/#{session.id}/identify")
         |> assert_path("/sessions/#{session.id}/identify")
 
-      assert static.conn.assigns.current_user.id == user.id
+      assert browsing_session.conn.assigns.current_user.id == user.id
     end
 
     test "does happen with no logged-in user", %{conn: conn} do
       session = session()
 
-      static =
+      browsing_session =
         conn
         |> visit("/qr/sessions/#{session.id}/identify")
         |> assert_path("/sessions/#{session.id}/identify")
 
-      user = Ash.load!(static.conn.assigns.current_user, :anonymous?)
+      user = Ash.load!(browsing_session.conn.assigns.current_user, :anonymous?)
       assert user.anonymous?
+    end
+
+    test "anon user stays logged in as they navigate around", %{conn: conn} do
+      session = session()
+
+      browsing_session = visit(conn, "/qr/sessions/#{session.id}/identify")
+      user = browsing_session.conn.assigns.current_user
+
+      browsing_session = visit(browsing_session.conn, "/")
+      # check the previously-created anon user is still current user
+      assert browsing_session.conn.assigns.current_user.id == user.id
     end
   end
 end
