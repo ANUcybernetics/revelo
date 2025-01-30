@@ -21,7 +21,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
-import Hooks from "./hooks";
+// import Hooks from "./hooks";
 
 let params = {
   _csrf_token: document
@@ -34,7 +34,7 @@ if (localStorage.getItem("revelo_anon_user_id")) {
 }
 
 let liveSocket = new LiveSocket("/live", Socket, {
-  hooks: Hooks,
+  // hooks: Hooks,
   longPollFallbackMs: 2500,
   params: params,
 });
