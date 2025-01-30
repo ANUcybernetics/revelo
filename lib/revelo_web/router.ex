@@ -27,6 +27,7 @@ defmodule ReveloWeb.Router do
     storybook_assets()
   end
 
+  # TODO could scope this to "/sessions and remove that from the live routes
   scope "/", ReveloWeb do
     pipe_through :browser
 
