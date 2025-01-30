@@ -85,6 +85,35 @@ defmodule Revelo.Diagrams.Relationship do
     update :unhide do
       change set_attribute(:hidden?, false)
     end
+
+    action :enumerate, {:array, :struct} do
+      constraints items: [instance_of: __MODULE__]
+
+      argument :session, :struct do
+        constraints instance_of: Session
+        allow_nil? false
+      end
+
+      run fn input, _context ->
+        session = input.arguments.session
+        variables = Revelo.Diagrams.list_variables!(session.id)
+
+        relationships =
+          for src <- variables,
+              dst <- variables,
+              src.id != dst.id do
+            case Ash.get(Revelo.Diagrams.Relationship, src_id: src.id, dst_id: dst.id) do
+              {:ok, existing} ->
+                existing
+
+              {:error, _} ->
+                Revelo.Diagrams.create_relationship!(src, dst, session)
+            end
+          end
+
+        {:ok, relationships}
+      end
+    end
   end
 
   attributes do

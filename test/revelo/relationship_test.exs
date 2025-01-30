@@ -227,5 +227,61 @@ defmodule Revelo.RelationshipTest do
       assert rel2.vote_tally == %{reinforcing: 0, balancing: 1, no_relationship: 0}
       assert rel3.vote_tally == %{reinforcing: 1, balancing: 0, no_relationship: 0}
     end
+
+    test "enumerate_relationships creates all src->dst relationships" do
+      user = user()
+      session = session()
+      var1 = variable(user: user, session: session)
+      var2 = variable(user: user, session: session)
+      var3 = variable(user: user, session: session)
+
+      relationships = Revelo.Diagrams.enumerate_relationships!(session)
+
+      assert length(relationships) == 6
+
+      # verify all combinations are present
+      rel_pairs =
+        MapSet.new(relationships, fn rel -> {rel.src_id, rel.dst_id} end)
+
+      expected_pairs =
+        MapSet.new([
+          {var1.id, var2.id},
+          {var1.id, var3.id},
+          {var2.id, var1.id},
+          {var2.id, var3.id},
+          {var3.id, var1.id},
+          {var3.id, var2.id}
+        ])
+
+      assert rel_pairs == expected_pairs
+
+      # check the same invariants with four variables
+      var4 = variable(user: user, session: session)
+
+      relationships = Revelo.Diagrams.enumerate_relationships!(session)
+
+      assert length(relationships) == 12
+
+      rel_pairs =
+        MapSet.new(relationships, fn rel -> {rel.src_id, rel.dst_id} end)
+
+      expected_pairs =
+        MapSet.new([
+          {var1.id, var2.id},
+          {var1.id, var3.id},
+          {var1.id, var4.id},
+          {var2.id, var1.id},
+          {var2.id, var3.id},
+          {var2.id, var4.id},
+          {var3.id, var1.id},
+          {var3.id, var2.id},
+          {var3.id, var4.id},
+          {var4.id, var1.id},
+          {var4.id, var2.id},
+          {var4.id, var3.id}
+        ])
+
+      assert rel_pairs == expected_pairs
+    end
   end
 end
