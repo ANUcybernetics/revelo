@@ -2,6 +2,7 @@ defmodule ReveloTest.Generators do
   @moduledoc false
   use Ash.Generator
 
+  alias Revelo.Accounts.User
   alias Revelo.Diagrams.Variable
 
   def session do
@@ -17,12 +18,25 @@ defmodule ReveloTest.Generators do
   end
 
   def user do
-    %Revelo.Accounts.User{
+    %User{
       email: sequence(:unique_email, fn i -> "user#{i}@example.com" end),
       hashed_password: StreamData.string(:alphanumeric, min_length: 8)
     }
     |> seed_generator()
     |> generate()
+  end
+
+  def user_with_password(password) do
+    input = %{
+      email: :unique_email |> sequence(fn i -> "user#{i}@example.com" end) |> ExUnitProperties.pick(),
+      password: password,
+      password_confirmation: password
+    }
+
+    User
+    |> Ash.Changeset.for_create(:register_with_password, input)
+    |> Ash.Changeset.force_change_attribute(:confirmed_at, DateTime.utc_now())
+    |> Ash.create!(authorize?: false)
   end
 
   def variable(opts \\ []) do
