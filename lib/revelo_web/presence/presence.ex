@@ -9,12 +9,21 @@ defmodule ReveloWeb.Presence do
 
   @impl true
   def handle_metas("session_presence:" <> session_id, _diff, presences, state) do
-    # Calculate total number of connected clients
-    total_count = Enum.count(presences)
+    # Calculate both total and complete counts
+    total = Enum.count(presences)
 
-    # Broadcast only the count
-    msg = {:participant_count, total_count}
-    Phoenix.PubSub.local_broadcast(Revelo.PubSub, "session:#{session_id}", msg)
+    complete =
+      presences
+      |> Map.values()
+      |> Enum.count(fn presence ->
+        case presence do
+          %{metas: [%{status: status} | _]} -> status == :complete
+          _ -> false
+        end
+      end)
+
+    # Broadcast both counts
+    ReveloWeb.SessionServer.set_partipant_count(session_id, complete, total)
 
     {:ok, state}
   end
@@ -23,8 +32,14 @@ defmodule ReveloWeb.Presence do
     "session_presence:#{session_id}" |> list() |> Enum.map(fn {_id, presence} -> presence end)
   end
 
-  # TODO perhaps we should track (and update) the user's phase as well
-  def track_participant(session_id, user_id) do
-    track(self(), "session_presence:#{session_id}", user_id, %{session_id: session_id})
+  # these functions expect to be called from a LiveView module
+  def track_participant(session_id, user_id, status) do
+    track(self(), "session_presence:#{session_id}", user_id, %{status: status})
+  end
+
+  def update_status(session_id, user_id, status) do
+    update(self(), "session_presence:#{session_id}", user_id, fn meta ->
+      Map.put(meta, :status, status)
+    end)
   end
 end

@@ -3,48 +3,47 @@ defmodule ReveloWeb.SessionServer do
   Central Session GenServer responsible for maintaining state of Revelo
   workshop sessions.
 
-  Tracks participant presence, voting status, and facilitation controls during
-  interactive workshop sessions. Uses Phoenix.Presence for real-time participant
-  tracking and synchronization across distributed nodes.
+  The orchestration of the session is a co-ordinated dance between this module, the
+  ReveloWeb.Presence module, and the Phoenix.PubSub system.
 
-  Manages:
-  - Active participant list and status
-  - Voting and feedback collection
-  - Facilitation controls and workshop flow
+  Each session will have a single SessioServer process running (managed via a Registry)
+  and is the canonical source of the current phase & timeout info for the given session.
   """
   use GenServer
 
-  @phases [:prepare, :identify, :relate, :analyse]
-  @timer_interval :timer.seconds(1)
+  @timer_interval_sec 1
 
   # Client API
 
-  def start_link(session) do
-    GenServer.start_link(__MODULE__, session, name: via_tuple(session.id))
+  def start_link(session_id) do
+    GenServer.start_link(__MODULE__, session_id, name: via_tuple(session_id))
   end
 
   def get_state(session_id) do
     GenServer.call(via_tuple(session_id), :get_state)
   end
 
-  def transition_state(session_id, new_phase) when new_phase in @phases do
-    GenServer.cast(via_tuple(session_id), {:transition, new_phase})
+  def get_phase(session_id) do
+    GenServer.call(via_tuple(session_id), :get_phase)
   end
 
-  def set_timer(session_id, seconds) do
-    GenServer.cast(via_tuple(session_id), {:set_timer, seconds})
+  def set_partipant_count(session_id, complete, total) do
+    GenServer.call(via_tuple(session_id), {:participant_count, complete, total})
+  end
+
+  def transition_to(session_id, phase) do
+    GenServer.call(via_tuple(session_id), {:transition_to, phase})
   end
 
   # Server Callbacks
 
   @impl true
-  def init(session) do
-    schedule_tick()
-
+  def init(session_id) do
     state = %{
-      session: session,
-      phase: :prepare,
-      time_left: 0
+      session_id: session_id,
+      # start in :identify, because it's the start of the real thing
+      phase: :identify,
+      timer: 0
     }
 
     {:ok, state}
@@ -56,64 +55,79 @@ defmodule ReveloWeb.SessionServer do
   end
 
   @impl true
-  def handle_cast({:transition, new_phase}, state) do
-    on_exit(state.phase, state)
-    new_phase = on_enter(new_phase, state)
-    {:noreply, %{state | phase: new_phase}}
+  def handle_call(:get_phase, _from, state) do
+    {:reply, state.phase, state}
   end
 
   @impl true
-  def handle_cast({:set_timer, seconds}, state) do
-    {:noreply, %{state | time_left: seconds}}
+  def handle_call({:transition_to, phase}, _from, state) do
+    broadcast_transition(state.session_id, phase)
+    {:reply, :ok, %{state | phase: phase}}
   end
 
   @impl true
-  def handle_info(:tick, %{time_left: 0} = state) do
-    schedule_tick()
-    {:noreply, state}
+  def handle_call({:participant_count, complete, total}, _from, state) do
+    case {complete, state.phase} do
+      # if complete == total, we're done and let's move on
+      {^total, :identify} ->
+        broadcast_transition(state.session_id, :relate)
+
+        schedule_tick()
+        {:reply, :ok, %{state | phase: :relate, timer: 60}}
+
+      {^total, :relate} ->
+        broadcast_transition(state.session_id, :analyse)
+        {:reply, :ok, %{state | phase: :analyse}}
+
+      {_, phase} when phase in [:identify, :relate] ->
+        Phoenix.PubSub.broadcast(
+          Revelo.PubSub,
+          "session:#{state.session_id}",
+          {:participant_count, complete, total}
+        )
+
+        {:reply, :ok, state}
+
+      _ ->
+        {:reply, :ok, state}
+    end
   end
 
   @impl true
   def handle_info(:tick, state) do
-    on_timer(state)
-    schedule_tick()
-    {:noreply, Map.update!(state, :time_left, &(&1 - 1))}
+    case {state.phase, state.timer} do
+      {:relate, 0} ->
+        broadcast_transition(state.session_id, :analyse)
+        {:noreply, %{state | phase: :analyse}}
+
+      {:relate, timer} ->
+        Phoenix.PubSub.broadcast(
+          Revelo.PubSub,
+          "session:#{state.session_id}",
+          {:timer, timer}
+        )
+
+        schedule_tick()
+        {:noreply, %{state | timer: timer - @timer_interval_sec}}
+
+      _ ->
+        {:noreply, state}
+    end
   end
-
-  # Game State Lifecycle Callbacks
-
-  defp on_enter(new_phase, state) do
-    Phoenix.PubSub.broadcast(
-      Revelo.PubSub,
-      "session:#{state.session.id}",
-      {:state_changed, new_phase}
-    )
-
-    state
-  end
-
-  defp on_exit(_old_state, state) do
-    Phoenix.PubSub.broadcast(Revelo.PubSub, "session:#{state.session.id}", :state_exiting)
-    state
-  end
-
-  defp on_timer(state) do
-    Phoenix.PubSub.broadcast(
-      Revelo.PubSub,
-      "session:#{state.session.id}",
-      {:timer_update, state.time_left}
-    )
-
-    :ok
-  end
-
-  # Private Helpers
 
   defp schedule_tick do
-    Process.send_after(self(), :tick, @timer_interval)
+    Process.send_after(self(), :tick, :timer.seconds(@timer_interval_sec))
   end
 
   defp via_tuple(session_id) do
     {:via, Registry, {Revelo.SessionRegistry, session_id}}
+  end
+
+  defp broadcast_transition(session_id, phase) do
+    Phoenix.PubSub.broadcast(
+      Revelo.PubSub,
+      "session:#{session_id}",
+      {:transition, phase}
+    )
   end
 end

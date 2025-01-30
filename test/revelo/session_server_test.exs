@@ -7,46 +7,42 @@ defmodule ReveloWeb.SessionServerTest do
 
   setup do
     session = session()
-    {:ok, pid} = SessionServer.start_link(session)
+    {:ok, pid} = SessionServer.start_link(session.id)
     {:ok, pid: pid, session: session}
   end
 
-  test "initial state is set correctly", %{pid: pid, session: session} do
-    state = GenServer.call(pid, :get_state)
-    assert state.session == session
-    assert state.phase == :prepare
-    assert state.time_left == 0
+  test "initial state is set correctly", %{session: session} do
+    state = SessionServer.get_state(session.id)
+    assert state.session_id == session.id
+    assert state.phase == :identify
+    assert state.timer == 0
   end
 
-  test "set_timer updates the time_left", %{pid: pid, session: session} do
-    SessionServer.set_timer(session.id, 10)
-    state = GenServer.call(pid, :get_state)
-    assert state.time_left == 10
-  end
-
-  test "timer ticks decrease time_left", %{pid: pid, session: session} do
-    SessionServer.set_timer(session.id, 2)
-    # Wait for 2 seconds to allow the timer to tick
-    :timer.sleep(2500)
-    state = GenServer.call(pid, :get_state)
-    assert state.time_left == 0
-  end
-
-  test "pubsub broadcasts on state transition", %{session: session} do
+  test "tracks participant progress and transitions phase", %{session: session} do
     Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
 
-    SessionServer.transition_state(session.id, :identify)
-    assert_receive {:state_changed, :identify}
+    # Move to identify phase
+    SessionServer.set_partipant_count(session.id, 3, 3)
+    assert_receive {:transition, :relate}
+    assert SessionServer.get_phase(session.id) == :relate
+
+    # Move to analyse phase
+    SessionServer.set_partipant_count(session.id, 3, 3)
+    assert_receive {:transition, :analyse}
+    assert SessionServer.get_phase(session.id) == :analyse
   end
 
-  test "pubsub broadcasts on timer update", %{session: session} do
+  test "relates phase has timer countdown", %{session: session} do
     Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
 
-    SessionServer.set_timer(session.id, 2)
-    # Wait for 1 second to allow the timer to tick
-    :timer.sleep(1000)
-    assert_receive {:timer_update, 2}
-    :timer.sleep(1000)
-    assert_receive {:timer_update, 1}
+    # Move to relate phase
+    SessionServer.set_partipant_count(session.id, 3, 3)
+    assert_receive {:transition, :relate}
+    state = SessionServer.get_state(session.id)
+    assert state.timer == 60
+
+    Process.sleep(2000)
+    assert_receive {:timer, 60}
+    assert_receive {:timer, 59}
   end
 end
