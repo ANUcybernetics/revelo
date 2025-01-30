@@ -649,8 +649,8 @@ defmodule ReveloWeb.UIComponents do
         {@text
         |> QRCode.create(:high)
         |> QRCode.render(:svg, %QRCode.Render.SvgSettings{
-          qrcode_color: {24, 24, 27},
-          background_color: {216, 180, 254}
+          qrcode_color: "black",
+          background_color: "white"
         })
         # unwrap the tuple
         |> elem(1)
