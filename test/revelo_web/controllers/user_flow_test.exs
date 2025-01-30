@@ -1,4 +1,4 @@
-defmodule ReveloWeb.LoginTest do
+defmodule ReveloWeb.UserFlowTest do
   use ReveloWeb.ConnCase
 
   import ReveloTest.Generators
