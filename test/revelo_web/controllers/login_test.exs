@@ -18,7 +18,9 @@ defmodule ReveloWeb.LoginTest do
     test "can create a new session", %{conn: conn} do
       conn
       |> create_session_with_user()
-      |> assert_has("h1", text: "Phoenix Framework")
+      |> assert_has("h1", text: "Revelo")
+      |> click_link("Sessions")
+      |> click_link("New Session")
     end
   end
 end
