@@ -6,32 +6,39 @@ defmodule ReveloWeb.SessionLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
+      <.header class="mb-6">
         {@title}
         <:subtitle>Use this form to manage session records in your database.</:subtitle>
       </.header>
 
-      <.simple_form
+      <.form
+        :let={f}
         for={@form}
         id="session-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+        class="w-2/3 space-y-6"
       >
         <%= if @form.source.type == :create do %>
-          <.input field={@form[:name]} type="text" label="Name" /><.input
-            field={@form[:description]}
-            type="text"
-            label="Description"
-          />
+          <.form_item>
+            <.form_label error={not Enum.empty?(f[:name].errors)}>Name</.form_label>
+            <.input field={@form[:name]} type="text" phx-debounce="500" required />
+            <.form_message field={f[:name]} />
+          </.form_item>
+
+          <.form_item>
+            <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
+            <.input field={@form[:description]} type="text" phx-debounce="500" required />
+            <.form_message field={f[:description]} />
+          </.form_item>
         <% end %>
+
         <%= if @form.source.type == :update do %>
         <% end %>
 
-        <:actions>
-          <.button phx-disable-with="Saving...">Save Session</.button>
-        </:actions>
-      </.simple_form>
+        <.button type="submit" phx-disable-with="Saving...">Save Session</.button>
+      </.form>
     </div>
     """
   end
