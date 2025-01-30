@@ -65,6 +65,7 @@ defmodule Revelo.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:instructor_lite, "~> 0.3.0"},
+      {:qr_code, "~> 3.1"},
       {:req, "~> 0.5"},
       {:faker, "~> 0.18", only: :test},
       {:styler, "~> 1.2", only: [:dev, :test], runtime: false},

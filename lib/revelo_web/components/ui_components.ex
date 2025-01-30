@@ -636,4 +636,27 @@ defmodule ReveloWeb.UIComponents do
     </div>
     """
   end
+
+  @doc """
+  Renders a modal containing a QR code.
+  """
+  attr :text, :string, required: true, doc: "the text data to encode in the QR code"
+
+  def qr_code(assigns) do
+    ~H"""
+    <div class="flex flex-col items-center">
+      <div>
+        {@text
+        |> QRCode.create(:high)
+        |> QRCode.render(:svg, %QRCode.Render.SvgSettings{
+          qrcode_color: {24, 24, 27},
+          background_color: {216, 180, 254}
+        })
+        # unwrap the tuple
+        |> elem(1)
+        |> Phoenix.HTML.raw()}
+      </div>
+    </div>
+    """
+  end
 end

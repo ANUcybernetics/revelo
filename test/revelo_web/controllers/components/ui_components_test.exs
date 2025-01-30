@@ -137,4 +137,10 @@ defmodule Revelo.UIComponentsTest do
 
     assert html =~ "Modal content"
   end
+
+  test "qr_code creates QR code" do
+    assigns = %{text: "https://example.com"}
+    html = render_component(&ReveloWeb.UIComponents.qr_code/1, assigns)
+    assert html =~ "<svg"
+  end
 end
