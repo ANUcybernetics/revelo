@@ -3,6 +3,11 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
+- a few tests (the user flow ones) are currently failing, because the presence
+  code is being triggered in the PhoenixTest code (that's good!) but that fires
+  off a call to the session server, which currently hasn't been started. So I
+  need to add the logic for that.
+
 - faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
   example of doing just this we could use as a staring point)
