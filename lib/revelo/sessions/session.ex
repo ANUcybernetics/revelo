@@ -14,7 +14,7 @@ defmodule Revelo.Sessions.Session do
   end
 
   actions do
-    defaults [:destroy, update: :*]
+    defaults [:destroy]
 
     read :list do
       primary? true
@@ -30,6 +30,11 @@ defmodule Revelo.Sessions.Session do
       end
 
       change set_attribute(:name, arg(:name))
+    end
+
+    update :update do
+      accept [:name, :description]
+      primary? true
     end
 
     update :add_participant do

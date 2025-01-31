@@ -45,6 +45,7 @@ defmodule ReveloWeb.Router do
     ash_authentication_live_session :session_routes,
       on_mount: {ReveloWeb.LiveUserAuth, :live_user_optional} do
       live "/sessions/:session_id/prepare", SessionLive.Prepare, :prepare
+      live "/sessions/:session_id/prepare/edit", SessionLive.Prepare, :edit
       live "/sessions/:session_id/identify", SessionLive.Identify, :identify
       # live "/sessions/:session_id/relate", SessionLive.Relate, :relate
       # live "/sessions/:session_id/analyse", SessionLive.Analyse, :analyse

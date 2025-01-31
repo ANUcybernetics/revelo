@@ -35,6 +35,17 @@ defmodule ReveloWeb.SessionLive.FormComponent do
         <% end %>
 
         <%= if @form.source.type == :update do %>
+          <.form_item>
+            <.form_label error={not Enum.empty?(f[:name].errors)}>Name</.form_label>
+            <.input field={@form[:name]} type="text" phx-debounce="500" required />
+            <.form_message field={f[:name]} />
+          </.form_item>
+
+          <.form_item>
+            <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
+            <.input field={@form[:description]} type="text" phx-debounce="500" required />
+            <.form_message field={f[:description]} />
+          </.form_item>
         <% end %>
 
         <.button type="submit" phx-disable-with="Saving...">Save Session</.button>
