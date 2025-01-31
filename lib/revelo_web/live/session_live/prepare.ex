@@ -188,7 +188,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   defp sort_variables(variables) do
     variables
-    |> Enum.sort_by(& &1.inserted_at, {:desc, DateTime})
+    |> Enum.sort_by(& &1.inserted_at, {:asc, DateTime})
     |> Enum.sort_by(& &1.is_key?, :desc)
   end
 
