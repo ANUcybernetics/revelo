@@ -248,6 +248,16 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   @impl true
+  def handle_event("delete_variable", %{"id" => variable_id}, socket) do
+    Diagrams.destroy_variable!(variable_id)
+
+    {:noreply,
+     update(socket, :variables, fn vars ->
+       Enum.filter(vars, fn v -> v.id != variable_id end)
+     end)}
+  end
+
+  @impl true
   def handle_info({ReveloWeb.SessionLive.FormComponent, {:saved, session}}, socket) do
     {:noreply, stream_insert(socket, :sessions, session)}
   end
