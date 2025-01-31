@@ -13,15 +13,36 @@ defmodule ReveloWeb.SessionLive.Prepare do
       <.card class="h-full col-span-2">
         <.card_header class="flex flex-row justify-between">
           <.card_title>Prepare your variables</.card_title>
-          <.button
-            phx-click={show_modal("variable-modal")}
-            type="button"
-            variant="outline"
-            size="sm"
-            class="!mt-0"
-          >
-            <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
-          </.button>
+          <div class="flex gap-2">
+            <.button
+              phx-click={show_modal("variable-modal")}
+              type="button"
+              variant="outline"
+              size="sm"
+              class="!mt-0"
+            >
+              <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
+            </.button>
+            <div class="flex gap-0">
+              <.button
+                type="button"
+                variant="outline"
+                size="sm"
+                class="!mt-0  rounded-none rounded-l-md"
+              >
+                <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" /> Generate Variables
+              </.button>
+              <.input
+                id="input-basic-inputs-number"
+                label="Number input"
+                type="number"
+                placeholder="0"
+                min="0"
+                max="20"
+                class="rounded-none rounded-r-md text-xs h-8 border-l-0 w-12 pr-[2px]"
+              />
+            </div>
+          </div>
         </.card_header>
         <.card_content>
           <.table>
