@@ -146,14 +146,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
               <.form_label>Add Variable</.form_label>
               <.input field={f[:name]} type="text" required />
             </div>
-
-            <div class="form_item">
-              <div class="flex items-center space-x-2">
-                <.checkbox id="key" field={f[:is_key?]} />
-                <.label for="key">Is Key?</.label>
-              </div>
-            </div>
-
             <.button type="submit" phx-click={hide_modal("variable-modal")}>
               Save
             </.button>
@@ -292,7 +284,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
            Variable,
            %{
              name: params["name"],
-             is_key?: params["is_key?"] == "true",
+             is_key?: false,
              hidden?: false,
              session: session
            },
@@ -320,14 +312,25 @@ defmodule ReveloWeb.SessionLive.Prepare do
      end)}
   end
 
-  @impl true
   def handle_event("toggle_key", %{"id" => variable_id}, socket) do
     updated_variable = Diagrams.toggle_key_variable!(variable_id)
 
-    sorted_variables =
-      socket.assigns.variables
-      |> Enum.map(fn v -> if v.id == updated_variable.id, do: updated_variable, else: v end)
-      |> sort_variables()
+    if_result =
+      if updated_variable.is_key? do
+        Enum.map(socket.assigns.variables, fn v ->
+          if v.id == updated_variable.id do
+            updated_variable
+          else
+            Diagrams.unset_key_variable!(v.id)
+          end
+        end)
+      else
+        Enum.map(socket.assigns.variables, fn v ->
+          if v.id == updated_variable.id, do: updated_variable, else: v
+        end)
+      end
+
+    sorted_variables = sort_variables(if_result)
 
     {:noreply, assign(socket, :variables, sorted_variables)}
   end
