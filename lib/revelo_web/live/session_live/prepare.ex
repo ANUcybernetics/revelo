@@ -13,7 +13,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
       <.card class="h-full col-span-2">
         <.card_header class="flex flex-row justify-between">
           <.card_title>Prepare your variables</.card_title>
-          <div class="flex gap-2">
+          <div class="flex gap-2 !mt-0">
             <.button
               phx-click={show_modal("variable-modal")}
               type="button"
