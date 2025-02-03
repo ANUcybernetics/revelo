@@ -13,44 +13,43 @@ defmodule ReveloWeb.SessionLive.Prepare do
     <div class="h-full flex flex-col">
       <div class="grid grid-cols-4 w-full grow gap-5">
         <.card class="h-full col-span-3 flex flex-col">
-          <.card_header class="flex flex-row justify-between">
-            <.card_title>Prepare your variables</.card_title>
-            <div class="flex gap-2 !mt-0">
-              <.button
-                phx-click={show_modal("variable-modal")}
-                type="button"
-                variant="outline"
-                size="sm"
-                class="!mt-0"
-              >
-                <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
-              </.button>
-              <div class="flex gap-0">
-                <.button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  class="!mt-0 rounded-none rounded-l-md"
-                  phx-click={JS.push("generate_variables")}
-                  phx-value-count={@variable_count}
-                  id="generate_variables_button"
-                >
-                  <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" />
-                  Generate Variables
-                </.button>
-                <.input
-                  id="input-basic-inputs-number"
-                  name="variable_count"
-                  label="Number input"
-                  type="number"
-                  placeholder="0"
-                  min="0"
-                  max="20"
-                  class="rounded-none rounded-r-md text-xs h-8 border-l-0 w-12 pr-[2px]"
-                  phx-hook="UpdateGenerateValue"
-                />
-              </div>
-            </div>
+          <.card_header class="w-full">
+            <.header class="flex flex-row justify-between !items-start">
+              <.card_title class="grow">Prepare your variables</.card_title>
+              <:actions>
+                <div class="flex flex-row gap-4">
+                  <.link patch={~p"/sessions/#{@session.id}/prepare/new_variable"}>
+                    <.button type="button" variant="outline" size="sm" class="!mt-0">
+                      <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
+                    </.button>
+                  </.link>
+                  <div class="flex gap-0">
+                    <.button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      class="!mt-0 rounded-none rounded-l-md"
+                      phx-click={JS.push("generate_variables")}
+                      phx-value-count={@variable_count}
+                      id="generate_variables_button"
+                    >
+                      <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" />
+                      Generate Variables
+                    </.button>
+                    <.input
+                      id="input-basic-inputs-number"
+                      name="variable_count"
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      max="20"
+                      class="rounded-none rounded-r-md text-xs h-8 border-l-0 w-12 pr-[2px]"
+                      phx-hook="UpdateGenerateValue"
+                    />
+                  </div>
+                </div>
+              </:actions>
+            </.header>
           </.card_header>
           <.scroll_area class="h-20 grow rounded-md">
             <.card_content>
@@ -133,7 +132,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
         </div>
       </div>
 
-      <.modal id="variable-modal">
+      <%!-- <.modal id="variable-modal">
         <div>
           <.form
             :let={f}
@@ -151,6 +150,23 @@ defmodule ReveloWeb.SessionLive.Prepare do
             </.button>
           </.form>
         </div>
+      </.modal> --%>
+
+      <.modal
+        :if={@live_action in [:new_variable, :edit_variable]}
+        id="variable-modal"
+        show
+        on_cancel={JS.patch(~p"/sessions/#{@session.id}/prepare/")}
+      >
+        <.live_component
+          module={ReveloWeb.SessionLive.VariableFormComponent}
+          id={(@session && @session.id) || :edit}
+          title={@page_title}
+          current_user={@current_user}
+          action={@live_action}
+          session={@session}
+          patch={~p"/sessions/#{@session.id}/prepare/"}
+        />
       </.modal>
 
       <.modal
@@ -205,6 +221,19 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
     socket
     |> assign(:page_title, "Edit Session")
+    |> assign(:session, session)
+    |> assign(:variables, sorted_variables)
+    |> assign(:variable_count, 0)
+  end
+
+  defp apply_action(socket, :new_variable, params) do
+    session = Ash.get!(Session, params["session_id"])
+    variables = Diagrams.list_variables!(params["session_id"], true)
+
+    sorted_variables = sort_variables(variables)
+
+    socket
+    |> assign(:page_title, "New Variable")
     |> assign(:session, session)
     |> assign(:variables, sorted_variables)
     |> assign(:variable_count, 0)
@@ -275,30 +304,30 @@ defmodule ReveloWeb.SessionLive.Prepare do
     end
   end
 
-  @impl true
-  def handle_event("save_variable", %{"variable" => params}, socket) do
-    session = socket.assigns.session
-    actor = socket.assigns.current_user
+  # @impl true
+  # def handle_event("save_variable", %{"variable" => params}, socket) do
+  #   session = socket.assigns.session
+  #   actor = socket.assigns.current_user
 
-    case Ash.create(
-           Variable,
-           %{
-             name: params["name"],
-             is_key?: false,
-             hidden?: false,
-             session: session
-           },
-           actor: actor
-         ) do
-      {:ok, variable} ->
-        sorted_variables = sort_variables(socket.assigns.variables ++ [variable])
+  #   case Ash.create(
+  #          Variable,
+  #          %{
+  #            name: params["name"],
+  #            is_key?: false,
+  #            hidden?: false,
+  #            session: session
+  #          },
+  #          actor: actor
+  #        ) do
+  #     {:ok, variable} ->
+  #       sorted_variables = sort_variables(socket.assigns.variables ++ [variable])
 
-        {:noreply, assign(socket, :variables, sorted_variables)}
+  #       {:noreply, assign(socket, :variables, sorted_variables)}
 
-      {:error, changeset} ->
-        {:noreply, put_flash(socket, :error, "Failed to save variable: #{inspect(changeset.errors)}")}
-    end
-  end
+  #     {:error, changeset} ->
+  #       {:noreply, put_flash(socket, :error, "Failed to save variable: #{inspect(changeset.errors)}")}
+  #   end
+  # end
 
   @impl true
   def handle_event("toggle_hidden", %{"id" => variable_id}, socket) do
@@ -347,6 +376,11 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   @impl true
   def handle_info({ReveloWeb.SessionLive.FormComponent, {:saved, session}}, socket) do
+    {:noreply, stream_insert(socket, :sessions, session)}
+  end
+
+  @impl true
+  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, session}}, socket) do
     {:noreply, stream_insert(socket, :sessions, session)}
   end
 
