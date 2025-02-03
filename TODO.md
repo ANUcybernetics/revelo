@@ -3,19 +3,29 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- a few tests (the user flow ones) are currently failing, because the presence
-  code is being triggered in the PhoenixTest code (that's good!) but that fires
-  off a call to the session server, which currently hasn't been started. So I
-  need to add the logic for that.
+- add tests to user flow which test the Presence stuff (but probably not until
+  the route refactor described below)
 
 - faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
   example of doing just this we could use as a staring point)
 
-- add the required logic to SessionServer to actually manage the session's
-  progress
-
 - add policies/authorizations
+
+## Route/LiveView re-org
+
+The plan is:
+
+- have a single `ReveloWeb.SessionLive.Prepare` LiveView module
+- each `/sessions/:session_id/PHASE_NAME` route will use this module, with the
+  specific phase specified as the live_action
+- for the add/edit variable modals can use the same route, but include a
+  `new_variable=` or `edit_variable=` query param, and the in `handle_params` we
+  check for the existence of this param and (conditionally) display the modal
+
+@Schmidty there are pros and cons to this approach vs the one you took, but I
+think this is better - can explain in person (can't be arsed writing it out
+here).
 
 ## Libraries we'll use
 
@@ -53,5 +63,3 @@ mix ash.gen.resource \
 - data model-wise, maybe we don't actually want a session -> participants (or
   even session -> users) relationship? could just get that info from the list of
   variables (via their :creator attribute)
-
-- should we add phoenix storybook?
