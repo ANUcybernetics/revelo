@@ -407,7 +407,13 @@ defmodule ReveloWeb.UIComponents do
 
   def countdown(assigns) do
     ~H"""
-    <.card class="w-[350px] overflow-hidden">
+    <.card class={
+      [
+        "w-[350px] overflow-hidden",
+        if(@time_left == 0, do: "bg-red-600 border-red-200 text-red-200")
+      ]
+      |> Enum.join(" ")
+    }>
       <.card_content class="border-gray-300 p-0 flex justify-between items-center h-full">
         <%= if @type == "left_button" or @type == "both_buttons" do %>
           <ReveloWeb.Component.Button.button
