@@ -20,19 +20,42 @@ defmodule ReveloWeb.SessionServer do
   end
 
   def get_state(session_id) do
+    get_session(session_id)
     GenServer.call(via_tuple(session_id), :get_state)
   end
 
   def get_phase(session_id) do
+    get_session(session_id)
     GenServer.call(via_tuple(session_id), :get_phase)
   end
 
   def set_partipant_count(session_id, {complete, total}) do
+    get_session(session_id)
     GenServer.call(via_tuple(session_id), {:participant_count, {complete, total}})
   end
 
   def transition_to(session_id, phase) do
+    get_session(session_id)
     GenServer.call(via_tuple(session_id), {:transition_to, phase})
+  end
+
+  defp get_session(session_id) do
+    case GenServer.whereis(via_tuple(session_id)) do
+      nil ->
+        case Revelo.SessionSupervisor.start_session(session_id) do
+          {:ok, _pid} ->
+            :ok
+
+          {:error, {:already_started, _pid}} ->
+            :ok
+
+          {:error, reason} ->
+            raise "Failed to start session: #{inspect(reason)}"
+        end
+
+      _pid ->
+        :ok
+    end
   end
 
   # Server Callbacks
