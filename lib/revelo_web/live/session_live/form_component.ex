@@ -18,7 +18,7 @@ defmodule ReveloWeb.SessionLive.FormComponent do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
-        class="w-2/3 space-y-6"
+        class="w-full space-y-6"
       >
         <%= if @form.source.type == :create do %>
           <.form_item>
@@ -29,7 +29,12 @@ defmodule ReveloWeb.SessionLive.FormComponent do
 
           <.form_item>
             <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
-            <.input field={@form[:description]} type="text" phx-debounce="500" required />
+            <.textarea
+              name={f[:description].name}
+              value={f[:description].value}
+              placeholder="Session description"
+              class="min-h-[200px]"
+            />
             <.form_message field={f[:description]} />
           </.form_item>
         <% end %>
@@ -43,7 +48,12 @@ defmodule ReveloWeb.SessionLive.FormComponent do
 
           <.form_item>
             <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
-            <.input field={@form[:description]} type="text" phx-debounce="500" required />
+            <.textarea
+              name={f[:description].name}
+              value={f[:description].value}
+              placeholder="Session description"
+              class="min-h-[200px]"
+            />
             <.form_message field={f[:description]} />
           </.form_item>
         <% end %>
