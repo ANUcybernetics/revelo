@@ -51,7 +51,7 @@ defmodule ReveloWeb.SessionLive.Identify do
             </div>
             <.progress
               class="w-full h-2"
-              value={round(elem(@participant_count, 0) / max(elem(@participant_count, 1), 1) * 100)}
+              value={round(elem(@participant_count, 0) / elem(@participant_count, 1) * 100)}
             />
             <.button class="w-full mt-4">All Done</.button>
           </.card_footer>
@@ -78,7 +78,7 @@ defmodule ReveloWeb.SessionLive.Identify do
 
     {:noreply,
      socket
-     |> assign(:participant_count, {0, 0})
+     |> assign(:participant_count, {0, 1})
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:session, session)}
   end
