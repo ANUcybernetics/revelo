@@ -3,6 +3,13 @@ defmodule ReveloWeb.UserFlowTest do
 
   import ReveloTest.Generators
 
+  setup do
+    _registry_pid = start_supervised({Registry, keys: :unique, name: Revelo.SessionRegistry})
+    session = session()
+    {:ok, pid} = ReveloWeb.SessionServer.start_link(session.id)
+    {:ok, pid: pid, session: session}
+  end
+
   def log_in_user(conn, email, password) do
     conn
     |> visit("/sign-in/")
@@ -50,9 +57,7 @@ defmodule ReveloWeb.UserFlowTest do
       assert browsing_session.conn.assigns.current_user.id == user.id
     end
 
-    test "does happen with no logged-in user", %{conn: conn} do
-      session = session()
-
+    test "does happen with no logged-in user", %{conn: conn, session: session} do
       browsing_session =
         conn
         |> visit("/qr/sessions/#{session.id}/identify")

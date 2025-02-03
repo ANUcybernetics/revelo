@@ -46,10 +46,13 @@ defmodule ReveloWeb.SessionLive.Identify do
           </.card_content>
           <.card_footer class="flex flex-col items-center gap-2">
             <div>
-              <span class="font-bold text-4xl">0.5/{@participant_count}</span>
+              <span class="font-bold text-4xl">{elem(@participant_count, 0)}</span>
               <span class="text-gray-600">completed</span>
             </div>
-            <.progress class="w-full h-2" value={round(0.5 / @participant_count * 100)} />
+            <.progress
+              class="w-full h-2"
+              value={round(elem(@participant_count, 0) / max(elem(@participant_count, 1), 1) * 100)}
+            />
             <.button class="w-full mt-4">All Done</.button>
           </.card_footer>
         </.card>
@@ -75,14 +78,14 @@ defmodule ReveloWeb.SessionLive.Identify do
 
     {:noreply,
      socket
-     |> assign(:participant_count, 1)
+     |> assign(:participant_count, {0, 0})
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:session, session)}
   end
 
   @impl true
-  def handle_info({:participant_count, total_count}, socket) do
-    {:noreply, assign(socket, :participant_count, total_count)}
+  def handle_info({:participant_count, counts}, socket) do
+    {:noreply, assign(socket, :participant_count, counts)}
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"

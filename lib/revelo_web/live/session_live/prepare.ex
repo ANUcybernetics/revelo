@@ -349,8 +349,8 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   @impl true
-  def handle_info({:participant_count, total_count}, socket) do
-    {:noreply, assign(socket, :participant_count, total_count)}
+  def handle_info({:participant_count, counts}, socket) do
+    {:noreply, assign(socket, :participant_count, counts)}
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"

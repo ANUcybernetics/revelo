@@ -27,8 +27,8 @@ defmodule ReveloWeb.SessionServer do
     GenServer.call(via_tuple(session_id), :get_phase)
   end
 
-  def set_partipant_count(session_id, complete, total) do
-    GenServer.call(via_tuple(session_id), {:participant_count, complete, total})
+  def set_partipant_count(session_id, {complete, total}) do
+    GenServer.call(via_tuple(session_id), {:participant_count, {complete, total}})
   end
 
   def transition_to(session_id, phase) do
@@ -66,7 +66,7 @@ defmodule ReveloWeb.SessionServer do
   end
 
   @impl true
-  def handle_call({:participant_count, complete, total}, _from, state) do
+  def handle_call({:participant_count, {complete, total}}, _from, state) do
     case {complete, state.phase} do
       # if complete == total, we're done and let's move on
       {^total, :identify} ->
@@ -83,7 +83,7 @@ defmodule ReveloWeb.SessionServer do
         Phoenix.PubSub.broadcast(
           Revelo.PubSub,
           "session:#{state.session_id}",
-          {:participant_count, complete, total}
+          {:participant_count, {complete, total}}
         )
 
         {:reply, :ok, state}

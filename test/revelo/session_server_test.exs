@@ -22,12 +22,12 @@ defmodule ReveloWeb.SessionServerTest do
     Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
 
     # Move to identify phase
-    SessionServer.set_partipant_count(session.id, 3, 3)
+    SessionServer.set_partipant_count(session.id, {3, 3})
     assert_receive {:transition, :relate}
     assert SessionServer.get_phase(session.id) == :relate
 
     # Move to analyse phase
-    SessionServer.set_partipant_count(session.id, 3, 3)
+    SessionServer.set_partipant_count(session.id, {3, 3})
     assert_receive {:transition, :analyse}
     assert SessionServer.get_phase(session.id) == :analyse
   end
@@ -36,7 +36,7 @@ defmodule ReveloWeb.SessionServerTest do
     Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
 
     # Move to relate phase
-    SessionServer.set_partipant_count(session.id, 3, 3)
+    SessionServer.set_partipant_count(session.id, {3, 3})
     assert_receive {:transition, :relate}
     state = SessionServer.get_state(session.id)
     assert state.timer == 60

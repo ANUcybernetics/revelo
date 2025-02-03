@@ -23,7 +23,7 @@ defmodule ReveloWeb.Presence do
       end)
 
     # Broadcast both counts
-    ReveloWeb.SessionServer.set_partipant_count(session_id, complete, total)
+    ReveloWeb.SessionServer.set_partipant_count(session_id, {complete, total})
 
     {:ok, state}
   end
