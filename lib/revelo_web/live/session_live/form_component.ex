@@ -8,7 +8,6 @@ defmodule ReveloWeb.SessionLive.FormComponent do
     <div>
       <.header class="mb-6">
         {@title}
-        <:subtitle>Use this form to manage session records in your database.</:subtitle>
       </.header>
 
       <.form
