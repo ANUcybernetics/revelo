@@ -139,26 +139,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
         </div>
       </div>
 
-      <%!-- <.modal id="variable-modal">
-        <div>
-          <.form
-            :let={f}
-            for={%{}}
-            as={:variable}
-            phx-submit={JS.push("save_variable")}
-            class="space-y-6"
-          >
-            <div class="form_item">
-              <.form_label>Add Variable</.form_label>
-              <.input field={f[:name]} type="text" required />
-            </div>
-            <.button type="submit" phx-click={hide_modal("variable-modal")}>
-              Save
-            </.button>
-          </.form>
-        </div>
-      </.modal> --%>
-
       <.modal
         :if={@live_action in [:new_variable, :edit_variable]}
         id="variable-modal"
@@ -275,26 +255,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
     |> assign(:variable_count, 0)
   end
 
-  # @impl true
-  # def handle_params(%{"session_id" => session_id}, _, socket) do
-  #   user = socket.assigns.current_user
-  #   session = Ash.get!(Session, session_id)
-  #   variables = Diagrams.list_variables!(session_id, true)
-  #   dbg()
-
-  #   if connected?(socket) do
-  #     Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session_id}")
-  #     ReveloWeb.Presence.track_participant(session_id, user.id, :waiting)
-  #   end
-
-  #   {:noreply,
-  #    socket
-  #    |> assign(:page_title, page_title(socket.assigns.live_action))
-  #    |> assign(:time_remaining, session)
-  #    |> assign(:variables, variables)
-  #    |> assign(:session, session)}
-  # end
-  #
   @impl true
   def handle_event("generate_variables", %{"count" => count}, socket) do
     description = socket.assigns.session.description
@@ -327,31 +287,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
         {:noreply, put_flash(socket, :error, "Failed to generate variables")}
     end
   end
-
-  # @impl true
-  # def handle_event("save_variable", %{"variable" => params}, socket) do
-  #   session = socket.assigns.session
-  #   actor = socket.assigns.current_user
-
-  #   case Ash.create(
-  #          Variable,
-  #          %{
-  #            name: params["name"],
-  #            is_key?: false,
-  #            hidden?: false,
-  #            session: session
-  #          },
-  #          actor: actor
-  #        ) do
-  #     {:ok, variable} ->
-  #       sorted_variables = sort_variables(socket.assigns.variables ++ [variable])
-
-  #       {:noreply, assign(socket, :variables, sorted_variables)}
-
-  #     {:error, changeset} ->
-  #       {:noreply, put_flash(socket, :error, "Failed to save variable: #{inspect(changeset.errors)}")}
-  #   end
-  # end
 
   @impl true
   def handle_event("toggle_hidden", %{"id" => variable_id}, socket) do
