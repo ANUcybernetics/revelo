@@ -53,7 +53,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
           </.card_header>
           <.scroll_area class="h-20 grow rounded-md">
             <.card_content>
-              <.table>
+              <.table class="text-base">
                 <.table_header>
                   <.table_row>
                     <.table_head>Name</.table_head>
@@ -100,9 +100,16 @@ defmodule ReveloWeb.SessionLive.Prepare do
             </.card_header>
             <.scroll_area class="h-20 grow rounded-md">
               <.card_content>
-                <p><b>Title:</b> {@session.name}
-                  <br /><br />
-                  {@session.description}</p>
+                <div class="grid gap-4">
+                  <div>
+                    <span class="font-bold">Title</span>
+                    <p>{@session.name}</p>
+                  </div>
+                  <div>
+                    <span class="font-bold">Description</span>
+                    <p class="whitespace-pre-line">{@session.description}</p>
+                  </div>
+                </div>
               </.card_content>
             </.scroll_area>
           </.card>
