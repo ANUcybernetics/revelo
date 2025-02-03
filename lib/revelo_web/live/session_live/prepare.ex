@@ -73,7 +73,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
                         <% end %>
                       </.table_cell>
                       <.table_cell>
-                        <.variable_actions variable={variable} />
+                        <.variable_actions variable={variable} session={@session} />
                       </.table_cell>
                     </.table_row>
                   <% end %>
@@ -161,6 +161,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
         <.live_component
           module={ReveloWeb.SessionLive.VariableFormComponent}
           id={(@session && @session.id) || :edit}
+          variable={@variable}
           title={@page_title}
           current_user={@current_user}
           action={@live_action}
@@ -237,6 +238,22 @@ defmodule ReveloWeb.SessionLive.Prepare do
     |> assign(:session, session)
     |> assign(:variables, sorted_variables)
     |> assign(:variable_count, 0)
+    |> assign(:variable, nil)
+  end
+
+  defp apply_action(socket, :edit_variable, params) do
+    session = Ash.get!(Session, params["session_id"])
+    variables = Diagrams.list_variables!(params["session_id"], true)
+    variable_id = params["variable_id"]
+    variable = Enum.find(variables, &(&1.id == variable_id))
+    sorted_variables = sort_variables(variables)
+
+    socket
+    |> assign(:page_title, "Edit Variable")
+    |> assign(:session, session)
+    |> assign(:variables, sorted_variables)
+    |> assign(:variable_count, 0)
+    |> assign(:variable, variable)
   end
 
   defp apply_action(socket, :prepare, params) do

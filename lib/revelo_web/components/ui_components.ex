@@ -179,12 +179,14 @@ defmodule ReveloWeb.UIComponents do
     <div class="flex gap-2">
       <.tooltip>
         <tooltip_trigger>
-          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
-            <.icon name="hero-pencil-square" class="h-4 w-4 transition-all" />
-            <span class="sr-only">
-              Edit
-            </span>
-          </button>
+          <.link patch={"/sessions/#{@session.id}/prepare/edit_variable/#{@variable.id}"}>
+            <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+              <.icon name="hero-pencil-square" class="h-4 w-4 transition-all" />
+              <span class="sr-only">
+                Edit
+              </span>
+            </button>
+          </.link>
         </tooltip_trigger>
         <.tooltip_content side="top">
           Edit

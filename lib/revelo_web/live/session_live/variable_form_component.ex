@@ -15,7 +15,7 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
       <.form
         :let={f}
         for={@form}
-        id="variable-form"
+        id="session-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
@@ -24,13 +24,16 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
         <.form_item>
           <.form_label error={not Enum.empty?(f[:name].errors)}>Variable Name</.form_label>
           <.input field={@form[:name]} type="text" phx-debounce="500" required />
-          <%!-- <.input type="hidden" field={@form[:session_id]} value={@session.id} /> --%>
-          <.input type="hidden" field={@form[:is_key?]} value="false" />
-          <.input type="hidden" field={@form[:hidden?]} value="false" />
+          <%= if f.source.type == :create do %>
+            <.input type="hidden" field={@form[:is_key?]} value="false" />
+            <.input type="hidden" field={@form[:hidden?]} value="false" />
+          <% end %>
           <.form_message field={f[:name]} />
         </.form_item>
 
-        <.button type="submit" phx-disable-with="Saving...">Save Variable</.button>
+        <.button type="submit" phx-disable-with="Saving...">
+          {if f.source.type == :create, do: "Create", else: "Update"} Variable
+        </.button>
       </.form>
     </div>
     """
@@ -87,14 +90,24 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 
-  defp assign_form(%{assigns: %{session: _session}} = socket) do
+  defp assign_form(%{assigns: %{variable: variable}} = socket) do
     form =
-      AshPhoenix.Form.for_create(
-        Variable,
-        :create,
-        as: "variable",
-        actor: socket.assigns.current_user
-      )
+      if variable do
+        AshPhoenix.Form.for_update(
+          variable,
+          :rename,
+          as: "variable",
+          actor: socket.assigns.current_user,
+          params: %{name: variable.name}
+        )
+      else
+        AshPhoenix.Form.for_create(
+          Variable,
+          :create,
+          as: "variable",
+          actor: socket.assigns.current_user
+        )
+      end
 
     assign(socket, form: to_form(form))
   end
