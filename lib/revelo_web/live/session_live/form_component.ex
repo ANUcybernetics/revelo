@@ -29,10 +29,12 @@ defmodule ReveloWeb.SessionLive.FormComponent do
           <.form_item>
             <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
             <.textarea
+              id="session-description"
               name={f[:description].name}
               value={f[:description].value}
               placeholder="Session description"
               class="min-h-[200px]"
+              phx-update="ignore"
             />
             <.form_message field={f[:description]} />
           </.form_item>
@@ -48,10 +50,12 @@ defmodule ReveloWeb.SessionLive.FormComponent do
           <.form_item>
             <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
             <.textarea
+              id="session-description"
               name={f[:description].name}
               value={f[:description].value}
               placeholder="Session description"
               class="min-h-[200px]"
+              phx-update="ignore"
             />
             <.form_message field={f[:description]} />
           </.form_item>
