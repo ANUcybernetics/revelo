@@ -5,14 +5,56 @@ defmodule ReveloWeb.SessionLive.Identify do
   @impl true
   def render(assigns) do
     ~H"""
-    <.header>
-      Identify: {@session.name}
-      <:subtitle>{@session.description}</:subtitle>
-    </.header>
+    <div class="h-full flex flex-col">
+      <div class="grid grid-cols-5 w-full grow gap-5">
+        <.card class="h-full col-span-3 flex flex-col text-4xl">
+          <.card_header class="w-full">
+            <.header class="flex flex-row justify-between !items-start">
+              <.card_title class="grow text-4xl">Identify relationships</.card_title>
+            </.header>
+          </.card_header>
+          <.card_content>
+            <ol class="list-decimal p-5 space-y-12">
+              <li>Scan the QR code with your phone camera.
+                Note the key variable shown at the top (this is your main system outcome)</li>
+              <li>
+                Choose variables that are important parts of your system:
+                <ul class="list-disc ml-8">
+                  <li>They may directly affect your key variable.</li>
+                  <li>They could relate to other important variables</li>
+                  <li>They may help tell your system's story</li>
+                </ul>
+              </li>
+              <li>Click 'Done' when finished (we'll discuss your choices next)</li>
+            </ol>
+          </.card_content>
+        </.card>
 
-    <p class="mt-6">
-      {@participant_count} participant(s)
-    </p>
+        <.card class="h-full col-span-2 flex flex-col text-2xl justify-between">
+          <.card_header class="w-full">
+            <.header class="flex flex-row justify-between !items-start">
+              <.card_title class="grow text-4xl">Scan QR Code</.card_title>
+              <.card_description class="text-xl mt-4">
+                Scan this code with your phone to join the session
+              </.card_description>
+            </.header>
+          </.card_header>
+          <.card_content>
+            <div class="flex justify-center items-center flex-col border aspect-square rounded-xl w-full">
+              <.qr_code text="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
+            </div>
+          </.card_content>
+          <.card_footer class="flex flex-col items-center gap-2">
+            <div>
+              <span class="font-bold text-4xl">0.5/{@participant_count}</span>
+              <span class="text-gray-600">completed</span>
+            </div>
+            <.progress class="w-full h-2" value={round(0.5 / @participant_count * 100)} />
+            <.button class="w-full mt-4">All Done</.button>
+          </.card_footer>
+        </.card>
+      </div>
+    </div>
     """
   end
 
@@ -28,7 +70,7 @@ defmodule ReveloWeb.SessionLive.Identify do
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session_id}")
-      ReveloWeb.Presence.track_participant(session_id, user.id, :waiting)
+      # ReveloWeb.Presence.track_participant(session_id, user.id, :waiting)
     end
 
     {:noreply,
