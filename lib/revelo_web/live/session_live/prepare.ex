@@ -125,9 +125,10 @@ defmodule ReveloWeb.SessionLive.Prepare do
     session = socket.assigns.session
     actor = socket.assigns.current_user
     variables = Diagrams.list_variables!(socket.assigns.session.id, true)
-    key_variable = Enum.at(variables, 0)
+    variable_names = Enum.map(variables, & &1.name)
+    key_variable = Enum.find(variables, fn v -> v.is_key? end)
 
-    case LLM.generate_variables(description, key_variable.name, count) do
+    case LLM.generate_variables(description, key_variable.name, count, variable_names) do
       {:ok, %LLM.VariableList{variables: var_list}} ->
         created_variables =
           var_list

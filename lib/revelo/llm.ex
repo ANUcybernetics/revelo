@@ -26,7 +26,7 @@ defmodule Revelo.LLM do
   alias Revelo.LLM.Story
   alias Revelo.LLM.VariableList
 
-  def generate_variables(description, key_variable, count) do
+  def generate_variables(description, key_variable, count, variables) do
     InstructorLite.instruct(
       %{
         messages: [
@@ -47,11 +47,14 @@ defmodule Revelo.LLM do
             A key variable will also be provided, which we are interested to track the influence of.
 
             You will also be provided with a number N, and you will generate N different variable names that follow all the rules above.
+
+            Finally, you will be provided with a list of existing variables. Try to generate variables that are unlike the exisiting ones.
             """
           },
           %{
             role: "user",
-            content: "System Description: #{description}, Key Variable: #{key_variable}, N: #{count}"
+            content:
+              "System Description: #{description}, Key Variable: #{key_variable}, N: #{count}, Existing variables: #{variables}"
           }
         ]
       },

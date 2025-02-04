@@ -9,7 +9,8 @@ defmodule Revelo.LLMTest do
         Revelo.LLM.generate_variables(
           "The hobbits in hobbiton are wondering what actions they should take.",
           "Level of Sauron's power",
-          5
+          5,
+          ["Number of orcs"]
         )
 
       assert variable_list
