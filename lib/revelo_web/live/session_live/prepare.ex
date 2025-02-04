@@ -12,76 +12,12 @@ defmodule ReveloWeb.SessionLive.Prepare do
     ~H"""
     <div class="h-full flex flex-col">
       <div class="grid grid-cols-4 w-full grow gap-5">
-        <.card class="h-full col-span-3 flex flex-col">
-          <.card_header class="w-full">
-            <.header class="flex flex-row justify-between !items-start">
-              <.card_title class="grow">Prepare your variables</.card_title>
-              <:actions>
-                <div class="flex flex-row gap-4">
-                  <.link patch={~p"/sessions/#{@session.id}/prepare/new_variable"}>
-                    <.button type="button" variant="outline" size="sm" class="!mt-0">
-                      <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
-                    </.button>
-                  </.link>
-                  <div class="flex gap-0">
-                    <.button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      class="!mt-0 rounded-none rounded-l-md"
-                      phx-click={JS.push("generate_variables")}
-                      phx-value-count={@variable_count}
-                      id="generate_variables_button"
-                    >
-                      <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" />
-                      Generate Variables
-                    </.button>
-                    <.input
-                      id="input-basic-inputs-number"
-                      name="variable_count"
-                      type="number"
-                      placeholder="0"
-                      min="0"
-                      max="20"
-                      class="rounded-none rounded-r-md text-xs h-8 border-l-0 w-12 pr-[2px]"
-                      phx-hook="UpdateGenerateValue"
-                    />
-                  </div>
-                </div>
-              </:actions>
-            </.header>
-          </.card_header>
-          <.scroll_area class="h-20 grow rounded-md">
-            <.card_content>
-              <.table class="text-base">
-                <.table_header>
-                  <.table_row>
-                    <.table_head>Name</.table_head>
-                    <.table_head>Type</.table_head>
-                    <.table_head>Actions</.table_head>
-                  </.table_row>
-                </.table_header>
-                <.table_body>
-                  <%= for variable <- @variables do %>
-                    <.table_row class={if variable.hidden?, do: "opacity-40"}>
-                      <.table_cell>{variable.name}</.table_cell>
-                      <.table_cell>
-                        <%= if variable.is_key? do %>
-                          <.badge_key>
-                            Key Variable
-                          </.badge_key>
-                        <% end %>
-                      </.table_cell>
-                      <.table_cell>
-                        <.variable_actions variable={variable} session={@session} />
-                      </.table_cell>
-                    </.table_row>
-                  <% end %>
-                </.table_body>
-              </.table>
-            </.card_content>
-          </.scroll_area>
-        </.card>
+        <.variable_table
+          class="col-span-3"
+          session={@session}
+          variable_count={@variable_count}
+          variables={@variables}
+        />
 
         <div class="flex gap-5 flex-col">
           <.card class="flex flex-col grow">

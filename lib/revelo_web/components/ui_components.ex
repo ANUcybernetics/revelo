@@ -6,15 +6,18 @@ defmodule ReveloWeb.UIComponents do
   use Gettext, backend: ReveloWeb.Gettext
 
   import ReveloWeb.Component.Badge
+  import ReveloWeb.Component.Button
   import ReveloWeb.Component.Card
   import ReveloWeb.Component.Checkbox
   import ReveloWeb.Component.DropdownMenu
+  import ReveloWeb.Component.Input
   import ReveloWeb.Component.Menu
   import ReveloWeb.Component.Progress
   import ReveloWeb.Component.RadioGroup
   import ReveloWeb.Component.ScrollArea
+  import ReveloWeb.Component.Table
   import ReveloWeb.Component.Tooltip
-  import ReveloWeb.CoreComponents
+  import ReveloWeb.CoreComponents, except: [table: 1, button: 1, input: 1]
 
   alias Phoenix.LiveView.JS
 
@@ -665,6 +668,89 @@ defmodule ReveloWeb.UIComponents do
         |> Phoenix.HTML.raw()}
       </div>
     </div>
+    """
+  end
+
+  @doc """
+  Renders the variable table.
+  """
+  attr :session, :map, required: true, doc: "the session containing the variables"
+  attr :variables, :list, required: true, doc: "the list of variables to display"
+  attr :variable_count, :integer, required: true, doc: "the number of variables to generate"
+  attr :class, :string, default: "", doc: "additional class to apply to the card"
+
+  def variable_table(assigns) do
+    ~H"""
+    <.card class={["h-full flex flex-col", @class] |> Enum.join(" ")}>
+      <.card_header class="w-full">
+        <.header class="flex flex-row justify-between !items-start">
+          <.card_title class="grow">Prepare your variables</.card_title>
+          <:actions>
+            <div class="flex flex-row gap-4">
+              <.link patch={"/sessions/#{@session.id}/prepare/new_variable"}>
+                <.button type="button" variant="outline" size="sm" class="!mt-0">
+                  <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
+                </.button>
+              </.link>
+              <div class="flex gap-0">
+                <.button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  class="!mt-0 rounded-none rounded-l-md"
+                  phx-click={JS.push("generate_variables")}
+                  phx-value-count={@variable_count}
+                  id="generate_variables_button"
+                >
+                  <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" />
+                  Generate Variables
+                </.button>
+                <.input
+                  id="input-basic-inputs-number"
+                  name="variable_count"
+                  type="number"
+                  placeholder="0"
+                  min="0"
+                  max="20"
+                  class="rounded-none rounded-r-md text-xs h-8 border-l-0 w-12 pr-[2px]"
+                  phx-hook="UpdateGenerateValue"
+                />
+              </div>
+            </div>
+          </:actions>
+        </.header>
+      </.card_header>
+      <.scroll_area class="h-20 grow rounded-md">
+        <.card_content>
+          <.table class="text-base">
+            <.table_header>
+              <.table_row>
+                <.table_head>Name</.table_head>
+                <.table_head>Type</.table_head>
+                <.table_head>Actions</.table_head>
+              </.table_row>
+            </.table_header>
+            <.table_body>
+              <%= for variable <- @variables do %>
+                <.table_row class={if variable.hidden?, do: "opacity-40"}>
+                  <.table_cell>{variable.name}</.table_cell>
+                  <.table_cell>
+                    <%= if variable.is_key? do %>
+                      <.badge_key>
+                        Key Variable
+                      </.badge_key>
+                    <% end %>
+                  </.table_cell>
+                  <.table_cell>
+                    <.variable_actions variable={variable} session={@session} />
+                  </.table_cell>
+                </.table_row>
+              <% end %>
+            </.table_body>
+          </.table>
+        </.card_content>
+      </.scroll_area>
+    </.card>
     """
   end
 end
