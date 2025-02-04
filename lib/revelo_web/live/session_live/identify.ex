@@ -7,7 +7,10 @@ defmodule ReveloWeb.SessionLive.Identify do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="h-full flex flex-col hidden md:block">
+    <div
+      :if={@current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false}
+      class="h-full flex flex-col"
+    >
       <div class="grid grid-cols-5 w-full grow gap-10">
         <.instructions title="Identify relationships">
           <ol class="list-decimal p-10 space-y-12">
@@ -26,14 +29,16 @@ defmodule ReveloWeb.SessionLive.Identify do
         </.instructions>
 
         <.qr_code_card
-          url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+          url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/relate"}
           participant_count={@participant_count}
           complete_url={"/sessions/#{@session.id}/relate"}
         />
       </div>
     </div>
-
-    <div class="h-full flex flex-col md:hidden items-center justify-center">
+    <div
+      :if={@current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == true}
+      class="h-full flex flex-col items-center justify-center"
+    >
       <div :if={@live_action in [:identify]} class="flex flex-col items-center gap-4">
         <.variable_voting variables={@variables} votes={@votes} user_id={@current_user.id} />
         <.button type="submit" form="variable-voting-form" class="w-fit px-24" phx-submit="vote">
@@ -64,7 +69,7 @@ defmodule ReveloWeb.SessionLive.Identify do
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{params["session_id"]}")
-      # ReveloWeb.Presence.track_participant(session_id, user.id, :waiting)
+      ReveloWeb.Presence.track_participant(params["session_id"], user.id, :waiting)
     end
 
     socket =
