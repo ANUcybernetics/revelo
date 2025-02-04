@@ -19,6 +19,8 @@ defmodule Revelo.Diagrams.Variable do
                   id
                 )
               )
+
+    calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
   end
 
   sqlite do
