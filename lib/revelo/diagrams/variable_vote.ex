@@ -17,7 +17,7 @@ defmodule Revelo.Diagrams.VariableVote do
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy]
 
     read :list do
       argument :session_id, :uuid do
