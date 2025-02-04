@@ -6,56 +6,28 @@ defmodule ReveloWeb.SessionLive.Identify do
   def render(assigns) do
     ~H"""
     <div class="h-full flex flex-col">
-      <div class="grid grid-cols-5 w-full grow gap-5">
-        <.card class="h-full col-span-3 flex flex-col text-4xl">
-          <.card_header class="w-full">
-            <.header class="flex flex-row justify-between !items-start">
-              <.card_title class="grow text-4xl">Identify relationships</.card_title>
-            </.header>
-          </.card_header>
-          <.card_content>
-            <ol class="list-decimal p-5 space-y-12">
-              <li>Scan the QR code with your phone camera.
-                Note the key variable shown at the top (this is your main system outcome)</li>
-              <li>
-                Choose variables that are important parts of your system:
-                <ul class="list-disc ml-8">
-                  <li>They may directly affect your key variable.</li>
-                  <li>They could relate to other important variables</li>
-                  <li>They may help tell your system's story</li>
-                </ul>
-              </li>
-              <li>Click 'Done' when finished (we'll discuss your choices next)</li>
-            </ol>
-          </.card_content>
-        </.card>
+      <div class="grid grid-cols-5 w-full grow gap-10">
+        <.instructions title="Identify relationships">
+          <ol class="list-decimal p-10 space-y-12">
+            <li>Scan the QR code with your phone camera.
+              Note the key variable shown at the top (this is your main system outcome)</li>
+            <li>
+              Choose variables that are important parts of your system:
+              <ul class="list-disc ml-8">
+                <li>They may directly affect your key variable.</li>
+                <li>They could relate to other important variables</li>
+                <li>They may help tell your system's story</li>
+              </ul>
+            </li>
+            <li>Click 'Done' when finished (we'll discuss your choices next)</li>
+          </ol>
+        </.instructions>
 
-        <.card class="h-full col-span-2 flex flex-col text-2xl justify-between">
-          <.card_header class="w-full">
-            <.header class="flex flex-row justify-between !items-start">
-              <.card_title class="grow text-4xl">Scan QR Code</.card_title>
-              <.card_description class="text-xl mt-4">
-                Scan this code with your phone to join the session
-              </.card_description>
-            </.header>
-          </.card_header>
-          <.card_content>
-            <div class="flex justify-center items-center flex-col border aspect-square rounded-xl w-full">
-              <.qr_code text="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
-            </div>
-          </.card_content>
-          <.card_footer class="flex flex-col items-center gap-2">
-            <div>
-              <span class="font-bold text-4xl">{elem(@participant_count, 0)}</span>
-              <span class="text-gray-600">completed</span>
-            </div>
-            <.progress
-              class="w-full h-2"
-              value={round(elem(@participant_count, 0) / elem(@participant_count, 1) * 100)}
-            />
-            <.button class="w-full mt-4">All Done</.button>
-          </.card_footer>
-        </.card>
+        <.qr_code_card
+          url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+          participant_count={@participant_count}
+          complete_url={"/sessions/#{@session.id}/relate"}
+        />
       </div>
     </div>
     """
