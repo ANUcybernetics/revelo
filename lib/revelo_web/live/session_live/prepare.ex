@@ -76,22 +76,15 @@ defmodule ReveloWeb.SessionLive.Prepare do
      |> assign_new(:current_user, fn -> nil end)}
   end
 
-  defp sort_variables(variables) do
-    variables
-    |> Enum.sort_by(& &1.inserted_at, {:asc, DateTime})
-    |> Enum.sort_by(& &1.is_key?, :desc)
-  end
-
   @impl true
   def handle_params(params, _url, socket) do
     session = Ash.get!(Session, params["session_id"])
     variables = Diagrams.list_variables!(params["session_id"], true)
-    sorted_variables = sort_variables(variables)
 
     socket =
       socket
       |> assign(:session, session)
-      |> assign(:variables, sorted_variables)
+      |> assign(:variables, variables)
       |> assign(:variable_count, 0)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
@@ -144,9 +137,9 @@ defmodule ReveloWeb.SessionLive.Prepare do
           end)
           |> Enum.reject(&is_nil/1)
 
-        sorted_variables = sort_variables(socket.assigns.variables ++ created_variables)
+        variables = socket.assigns.variables ++ created_variables
 
-        {:noreply, assign(socket, :variables, sorted_variables)}
+        {:noreply, assign(socket, :variables, variables)}
 
       {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Failed to generate variables")}
@@ -169,24 +162,19 @@ defmodule ReveloWeb.SessionLive.Prepare do
   def handle_event("toggle_key", %{"id" => variable_id}, socket) do
     updated_variable = Diagrams.toggle_key_variable!(variable_id)
 
-    if_result =
-      if updated_variable.is_key? do
-        Enum.map(socket.assigns.variables, fn v ->
-          if v.id == updated_variable.id do
-            updated_variable
-          else
-            Diagrams.unset_key_variable!(v.id)
-          end
-        end)
-      else
-        Enum.map(socket.assigns.variables, fn v ->
-          if v.id == updated_variable.id, do: updated_variable, else: v
-        end)
-      end
+    if updated_variable.is_key? do
+      socket.assigns.variables
+      |> Enum.filter(&(&1.id != updated_variable.id))
+      |> Enum.filter(& &1.is_key?)
+      |> Enum.each(fn var ->
+        Diagrams.unset_key_variable!(var.id)
+      end)
+    end
 
-    sorted_variables = sort_variables(if_result)
-
-    {:noreply, assign(socket, :variables, sorted_variables)}
+    {:noreply,
+     update(socket, :variables, fn _vars ->
+       Diagrams.list_variables!(socket.assigns.session.id, true)
+     end)}
   end
 
   @impl true
