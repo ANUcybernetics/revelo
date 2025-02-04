@@ -147,7 +147,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
         {:noreply, assign(socket, :variables, sorted_variables)}
 
-      {:error} ->
+      {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Failed to generate variables")}
     end
   end
