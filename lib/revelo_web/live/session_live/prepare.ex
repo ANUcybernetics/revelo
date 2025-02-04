@@ -11,15 +11,15 @@ defmodule ReveloWeb.SessionLive.Prepare do
   def render(assigns) do
     ~H"""
     <div class="h-full flex flex-col">
-      <div class="grid grid-cols-4 w-full grow gap-5">
+      <div class="grid grid-cols-12 w-full grow gap-5">
         <.variable_table
-          class="col-span-3"
+          class="md:col-span-8 col-span-12"
           session={@session}
           variable_count={@variable_count}
           variables={@variables}
         />
 
-        <div class="flex gap-5 flex-col">
+        <div class="flex gap-5 flex-col col-span-12 md:col-span-4">
           <.session_details session={@session} />
           <.session_start session={@session} variables={@variables} />
         </div>
