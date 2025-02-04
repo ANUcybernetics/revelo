@@ -753,4 +753,78 @@ defmodule ReveloWeb.UIComponents do
     </.card>
     """
   end
+
+  @doc """
+  Renders a session details card showing title and description with edit functionality.
+  """
+  attr :session, :map, required: true, doc: "the session containing name and description"
+  attr :class, :string, default: "", doc: "additional class to apply to the card"
+
+  def session_details(assigns) do
+    ~H"""
+    <.card class={["flex flex-col grow", @class] |> Enum.join(" ")}>
+      <.card_header>
+        <.header class="flex flex-row justify-between !items-start">
+          <.card_title>Your Session</.card_title>
+          <:actions>
+            <.link patch={"/sessions/#{@session.id}/prepare/edit"}>
+              <.button type="button" variant="outline" size="sm" class="!mt-0">
+                <.icon name="hero-pencil-square-mini" class="h-4 w-4 mr-2 transition-all" /> Edit
+              </.button>
+            </.link>
+          </:actions>
+        </.header>
+      </.card_header>
+      <.scroll_area class="h-20 grow rounded-md">
+        <.card_content>
+          <div class="grid gap-4">
+            <div>
+              <span class="font-bold">Title</span>
+              <p>{@session.name}</p>
+            </div>
+            <div>
+              <span class="font-bold">Description</span>
+              <p class="whitespace-pre-line">{@session.description}</p>
+            </div>
+          </div>
+        </.card_content>
+      </.scroll_area>
+    </.card>
+    """
+  end
+
+  @doc """
+  Renders a session state card showing variable count and start session button.
+  """
+  attr :session, :map, required: true, doc: "the session to start"
+  attr :variables, :list, required: true, doc: "the list of variables to count"
+  attr :class, :string, default: "", doc: "additional class to apply to the card"
+
+  def session_start(assigns) do
+    ~H"""
+    <.card class={@class}>
+      <.card_header>
+        <.card_title>Session State</.card_title>
+      </.card_header>
+      <.card_content>
+        <div class="flex justify-between items-end gap-4">
+          <div>
+            <div>
+              <span class="text-2xl font-semibold leading-none tracking-tight">
+                {length(@variables)}
+              </span>
+              <span>variable{if length(@variables) != 1, do: "s"}</span>
+            </div>
+            <span class="text-muted-foreground">30-50 reccomended</span>
+          </div>
+          <div>
+            <.link href={"/sessions/#{@session.id}/identify"}>
+              <.button>Start Session</.button>
+            </.link>
+          </div>
+        </div>
+      </.card_content>
+    </.card>
+    """
+  end
 end

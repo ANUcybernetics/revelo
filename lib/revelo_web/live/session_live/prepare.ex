@@ -20,58 +20,8 @@ defmodule ReveloWeb.SessionLive.Prepare do
         />
 
         <div class="flex gap-5 flex-col">
-          <.card class="flex flex-col grow">
-            <.card_header>
-              <.header class="flex flex-row justify-between !items-start">
-                <.card_title>Your Session</.card_title>
-                <:actions>
-                  <.link patch={~p"/sessions/#{@session.id}/prepare/edit"}>
-                    <.button type="button" variant="outline" size="sm" class="!mt-0">
-                      <.icon name="hero-pencil-square-mini" class="h-4 w-4 mr-2 transition-all" />
-                      Edit
-                    </.button>
-                  </.link>
-                </:actions>
-              </.header>
-            </.card_header>
-            <.scroll_area class="h-20 grow rounded-md">
-              <.card_content>
-                <div class="grid gap-4">
-                  <div>
-                    <span class="font-bold">Title</span>
-                    <p>{@session.name}</p>
-                  </div>
-                  <div>
-                    <span class="font-bold">Description</span>
-                    <p class="whitespace-pre-line">{@session.description}</p>
-                  </div>
-                </div>
-              </.card_content>
-            </.scroll_area>
-          </.card>
-          <.card>
-            <.card_header>
-              <.card_title>System State</.card_title>
-            </.card_header>
-            <.card_content>
-              <div class="flex justify-between items-end gap-4">
-                <div>
-                  <div>
-                    <span class="text-2xl font-semibold leading-none tracking-tight">
-                      {length(@variables)}
-                    </span>
-                    <span>variable{if length(@variables) != 1, do: "s"}</span>
-                  </div>
-                  <span class="text-muted-foreground">30-50 reccomended</span>
-                </div>
-                <div>
-                  <.link href={~p"/sessions/#{@session.id}/identify"}>
-                    <.button>Start Session</.button>
-                  </.link>
-                </div>
-              </div>
-            </.card_content>
-          </.card>
+          <.session_details session={@session} />
+          <.session_start session={@session} variables={@variables} />
         </div>
       </div>
 
