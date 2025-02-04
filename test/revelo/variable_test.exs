@@ -132,6 +132,24 @@ defmodule Revelo.VariableTest do
       assert hidden_var.id in Enum.map(variables, & &1.id)
     end
 
+    test "key variable is returned first by list_variables!" do
+      user = user()
+      session = session()
+      variable1 = variable(name: "abc", user: user, session: session)
+      variable2 = variable(name: "xyz", user: user, session: session)
+
+      # Make variable2 a key variable even though it's later alphabetically
+      variable2 = Revelo.Diagrams.set_key_variable!(variable2)
+      assert variable2.is_key? == true
+
+      variables = Revelo.Diagrams.list_variables!(session.id)
+      assert length(variables) == 2
+
+      [first, second] = variables
+      assert first.id == variable2.id
+      assert second.id == variable1.id
+    end
+
     test "enforces uniqueness of names within session" do
       user = user()
       session = session()
