@@ -11,7 +11,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
   def render(assigns) do
     ~H"""
     <div class="h-full flex flex-col">
-      <div class="grid grid-cols-12 w-full grow gap-5">
+      <div class="grid grid-cols-12 w-full grow gap-10">
         <.variable_table
           class="md:col-span-8 col-span-12"
           session={@session}
@@ -164,6 +164,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
      end)}
   end
 
+  @impl true
   def handle_event("toggle_key", %{"id" => variable_id}, socket) do
     updated_variable = Diagrams.toggle_key_variable!(variable_id)
 

@@ -827,4 +827,67 @@ defmodule ReveloWeb.UIComponents do
     </.card>
     """
   end
+
+  @doc """
+  Renders a set of instructions for users.
+  """
+  attr :title, :string, required: true, doc: "the title of the instructions"
+  slot :inner_block, required: true
+
+  def instructions(assigns) do
+    ~H"""
+    <.card class="h-full col-span-3 flex flex-col text-4xl">
+      <.card_header class="w-full">
+        <.header class="flex flex-row justify-between !items-start">
+          <.card_title class="grow text-4xl">{@title}</.card_title>
+        </.header>
+      </.card_header>
+      <.card_content>
+        <div class="space-y-12">
+          {render_slot(@inner_block)}
+        </div>
+      </.card_content>
+    </.card>
+    """
+  end
+
+  @doc """
+    Renders a QR code card with participant counter and completion button.
+  """
+  attr :url, :string, required: true
+  attr :participant_count, :map, required: true
+  attr :complete_url, :string, default: nil
+
+  def qr_code_card(assigns) do
+    ~H"""
+    <.card class="h-full col-span-2 flex flex-col text-2xl justify-between">
+      <.card_header class="w-full">
+        <.header class="flex flex-row justify-between !items-start">
+          <.card_title class="grow text-4xl">Scan QR Code</.card_title>
+          <.card_description class="text-xl mt-4">
+            Scan this code with your phone to join the session
+          </.card_description>
+        </.header>
+      </.card_header>
+      <.card_content>
+        <div class="flex justify-center items-center flex-col border aspect-square rounded-xl w-full">
+          <.qr_code text={@url} />
+        </div>
+      </.card_content>
+      <.card_footer class="flex flex-col items-center gap-2">
+        <div>
+          <span class="font-bold text-4xl">{elem(@participant_count, 0)}</span>
+          <span class="text-gray-600">completed</span>
+        </div>
+        <.progress
+          class="w-full h-2"
+          value={round(elem(@participant_count, 0) / elem(@participant_count, 1) * 100)}
+        />
+        <.link href={@complete_url} class="w-full">
+          <.button class="w-full mt-4">All Done</.button>
+        </.link>
+      </.card_footer>
+    </.card>
+    """
+  end
 end
