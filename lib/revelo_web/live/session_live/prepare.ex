@@ -3,7 +3,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
   use ReveloWeb, :live_view
 
   alias Revelo.Diagrams
-  alias Revelo.Diagrams.Variable
   alias Revelo.LLM
   alias Revelo.Sessions.Session
 
@@ -114,31 +113,17 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   @impl true
   def handle_event("generate_variables", %{"count" => count}, socket) do
-    description = socket.assigns.session.description
-    session = socket.assigns.session
-    actor = socket.assigns.current_user
-    variables = Diagrams.list_variables!(socket.assigns.session.id, true)
-    variable_names = Enum.map(variables, & &1.name)
-    key_variable = Enum.find(variables, fn v -> v.is_key? end)
+    %{session: session, current_user: actor, variables: existing_variables} = socket.assigns
+    variable_names = Enum.map(existing_variables, & &1.name)
+    key_variable = Enum.find(existing_variables, & &1.is_key?)
 
-    case LLM.generate_variables(description, key_variable.name, count, variable_names) do
+    case LLM.generate_variables(session.description, key_variable.name, count, variable_names) do
       {:ok, %LLM.VariableList{variables: var_list}} ->
-        created_variables =
-          var_list
-          |> Enum.map(fn name ->
-            case Ash.create(
-                   Variable,
-                   %{name: name, is_key?: false, hidden?: false, session: session},
-                   actor: actor
-                 ) do
-              {:ok, variable} -> variable
-              {:error, _changeset} -> nil
-            end
-          end)
-          |> Enum.reject(&is_nil/1)
+        Enum.each(var_list, fn name ->
+          Diagrams.create_variable!(name, session, actor: actor)
+        end)
 
-        variables = socket.assigns.variables ++ created_variables
-
+        variables = Diagrams.list_variables!(session.id, true)
         {:noreply, assign(socket, :variables, variables)}
 
       {:error, _error} ->
