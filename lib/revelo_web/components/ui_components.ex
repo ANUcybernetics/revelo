@@ -124,7 +124,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_key(assigns) do
     ~H"""
-    <.badge class="bg-sky-200 text-sky-950 hover:bg-sky-300 w-fit border-none">
+    <.badge class="bg-sky-200 text-sky-950 hover:bg-sky-300 w-fit border-none shrink-0 h-fit">
       <.icon name="hero-key-mini" class="h-4 w-4 mr-1" /> Key Variable
     </.badge>
     """
@@ -137,7 +137,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_vote(assigns) do
     ~H"""
-    <.badge class="bg-emerald-200 text-emerald-900 hover:bg-emerald-300 w-fit border-none">
+    <.badge class="bg-emerald-200 text-emerald-900 hover:bg-emerald-300 w-fit border-none shrink-0 h-fit">
       <.icon name="hero-hand-thumb-up-mini" class="h-4 w-4 mr-1" /> Important
     </.badge>
     """
@@ -145,7 +145,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_no_vote(assigns) do
     ~H"""
-    <.badge class="bg-rose-200 text-rose-900 hover:bg-rose-300 w-fit border-none">
+    <.badge class="bg-rose-200 text-rose-900 hover:bg-rose-300 w-fit border-none shrink-0 h-fit">
       <.icon name="hero-hand-thumb-down-mini" class="h-4 w-4 mr-1" /> Not Important
     </.badge>
     """
@@ -158,7 +158,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_reinforcing(assigns) do
     ~H"""
-    <.badge class="bg-yellow-200 text-yellow-900 hover:bg-yellow-300 w-fit border-none">
+    <.badge class="bg-yellow-200 text-yellow-900 hover:bg-yellow-300 w-fit border-none shrink-0 h-fit">
       <.icon name="hero-arrows-pointing-out-mini" class="h-4 w-4 mr-1" /> Reinforcing
     </.badge>
     """
@@ -166,7 +166,7 @@ defmodule ReveloWeb.UIComponents do
 
   def badge_balancing(assigns) do
     ~H"""
-    <.badge class="bg-fuchsia-200 text-fuchsia-900 hover:bg-fuchsia-300 w-fit border-none">
+    <.badge class="bg-fuchsia-200 text-fuchsia-900 hover:bg-fuchsia-300 w-fit border-none shrink-0 h-fit">
       <.icon name="hero-arrows-pointing-in-mini" class="h-4 w-4 mr-1" /> Balancing
     </.badge>
     """
@@ -288,6 +288,9 @@ defmodule ReveloWeb.UIComponents do
   """
 
   def variable_voting(assigns) do
+    assigns =
+      assign_new(assigns, :votes, fn -> [] end)
+
     ~H"""
     <.card class="w-[350px] overflow-hidden">
       <.card_header>
@@ -295,9 +298,9 @@ defmodule ReveloWeb.UIComponents do
       </.card_header>
 
       <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
-        <div class="flex justify-between w-full">
-          <span>
-            {Enum.at(@variables, @key_variable).name}
+        <div class="flex justify-between w-full items-center">
+          <span :if={length(@variables) >= 1 && Enum.find(@variables, & &1.is_key?)}>
+            {Enum.find(@variables, & &1.is_key?).name}
           </span>
           <.badge_key />
         </div>
@@ -305,14 +308,20 @@ defmodule ReveloWeb.UIComponents do
 
       <.scroll_area class="h-72">
         <.card_content class="p-0">
-          <%= for variable <- Enum.reject(@variables, fn v -> v.id == Enum.at(@variables, @key_variable).id end) do %>
-            <.label for={"var" <> Integer.to_string(variable.id)}>
-              <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
-                <.checkbox id={"var" <> Integer.to_string(variable.id)} />
-                {variable.name}
-              </div>
-            </.label>
-          <% end %>
+          <form phx-submit="vote" id="variable-voting-form">
+            <%= for variable <- Enum.reject(@variables, & &1.is_key?) do %>
+              <.label for={"var" <> variable.id}>
+                <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
+                  <.checkbox
+                    id={"var" <> variable.id}
+                    name={"var" <> variable.id}
+                    value={Enum.any?(@votes, fn vote -> vote.variable.id == variable.id end)}
+                  />
+                  {variable.name}
+                </div>
+              </.label>
+            <% end %>
+          </form>
         </.card_content>
       </.scroll_area>
     </.card>
@@ -331,9 +340,9 @@ defmodule ReveloWeb.UIComponents do
       </.card_header>
 
       <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
-        <div class="flex justify-between w-full">
-          <span>
-            {Enum.find(@variables, fn variable -> variable.is_key? end).name}
+        <div class="flex justify-between w-full items-center">
+          <span :if={length(@variables) >= 1 && Enum.find(@variables, & &1.is_key?)}>
+            {Enum.find(@variables, & &1.is_key?).name}
           </span>
           <.badge_key />
         </div>
@@ -344,16 +353,16 @@ defmodule ReveloWeb.UIComponents do
           <%= for variable <-
               Enum.reject(@variables, fn variable -> variable.is_key? end)
               |> Enum.sort_by(fn variable ->
-                if Enum.find(@votes, fn vote -> vote.id == variable.id and vote.voter_id == @user_id end) do
+                if Enum.find(@votes, fn vote -> vote.variable.id == variable.id and vote.voter_id == @user_id end) do
                   0 # Voted items go to the top
                 else
                   1 # Non-voted items go to the bottom
                 end
               end) do %>
-            <div class="flex items-center justify-between py-4 px-6 gap-2">
+            <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
               <span>{variable.name}</span>
               <%= if Enum.find(@votes, fn vote ->
-                  vote.id == variable.id and vote.voter_id == @user_id
+                  vote.variable.id == variable.id and vote.voter_id == @user_id
                 end) do %>
                 <.badge_vote />
               <% else %>
