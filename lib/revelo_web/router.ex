@@ -47,8 +47,8 @@ defmodule ReveloWeb.Router do
       live "/sessions/:session_id/prepare", SessionLive.Prepare, :prepare
       live "/sessions/:session_id/prepare/edit", SessionLive.Prepare, :edit
       live "/sessions/:session_id/prepare/new_variable", SessionLive.Prepare, :new_variable
-      live "/sessions/:session_id/identify", SessionLive.Identify, :identify
-      live "/sessions/:session_id/identify/done", SessionLive.Identify, :done
+      live "/sessions/:session_id/identify", SessionLive.Prepare, :identify
+      live "/sessions/:session_id/identify/done", SessionLive.Prepare, :done
 
       live "/sessions/:session_id/prepare/edit_variable/:variable_id",
            SessionLive.Prepare,

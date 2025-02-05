@@ -40,6 +40,50 @@ defmodule ReveloWeb.UserFlowTest do
     end
   end
 
+  describe "Identify page actions" do
+    test "anon user sees participant content on identify page", %{conn: conn} do
+      session = session()
+
+      conn
+      |> visit("/qr/sessions/#{session.id}/identify")
+      |> assert_path("/sessions/#{session.id}/identify")
+      |> assert_has("div", text: "Which of these are important parts of your system?")
+    end
+
+    test "anon user can vote for variables", %{conn: conn} do
+      user = user()
+      session = session()
+      var1 = variable(user: user, session: session, name: "Test Variable 1")
+      var2 = variable(user: user, session: session, name: "Test Variable 2")
+
+      conn
+      |> visit("/qr/sessions/#{session.id}/identify")
+      |> assert_path("/sessions/#{session.id}/identify")
+      |> check("Test Variable 1")
+      |> click_button("Done")
+      |> assert_has("span", text: var1.name)
+      |> assert_has("div.inline-flex.bg-emerald-200", text: "Important", exact: true)
+      |> assert_has("span", text: var2.name)
+      |> assert_has("div.inline-flex.bg-rose-200", text: "Not Important", exact: true)
+    end
+
+    test "facilitator sees facilitator content on identify page", %{conn: conn} do
+      session = session()
+      password = "657]545asdflh"
+      user = user_with_password(password)
+
+      browsing_session =
+        conn
+        |> log_in_user(Ash.CiString.value(user.email), password)
+        |> Map.get(:conn)
+        |> visit("/qr/sessions/#{session.id}/identify")
+        |> assert_path("/sessions/#{session.id}/identify")
+        |> assert_has("h3", text: "Identify relationships")
+
+      assert browsing_session.conn.assigns.current_user.id == user.id
+    end
+  end
+
   describe "QR-code anon-user-creation" do
     test "doesn't happen if non-anon user is already logged in", %{conn: conn} do
       password = "657]545asdflh"
