@@ -40,13 +40,13 @@ defmodule ReveloWeb.SessionLive.Identify do
       class="h-full flex flex-col items-center justify-center"
     >
       <div :if={@live_action in [:identify]} class="flex flex-col items-center gap-4">
-        <.variable_voting variables={@variables} votes={@votes} user_id={@current_user.id} />
+        <.variable_voting variables={@variables} user={@current_user} />
         <.button type="submit" form="variable-voting-form" class="w-fit px-24" phx-submit="vote">
           Done
         </.button>
       </div>
       <div :if={@live_action in [:done]} class="flex flex-col items-center gap-4">
-        <.variable_confirmation variables={@variables} votes={@votes} user_id={@current_user.id} />
+        <.variable_confirmation variables={@variables} user={@current_user} />
         <.link patch={"/sessions/#{@session.id}/identify/"}>
           <.button class="w-fit px-24">Back</.button>
         </.link>
@@ -64,8 +64,7 @@ defmodule ReveloWeb.SessionLive.Identify do
   def handle_params(params, _url, socket) do
     user = socket.assigns.current_user
     session = Ash.get!(Revelo.Sessions.Session, params["session_id"], actor: user)
-    variables = Diagrams.list_variables!(params["session_id"], true)
-    votes = Diagrams.list_variable_votes!(params["session_id"])
+    variables = Diagrams.list_variables!(params["session_id"], true, actor: user)
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{params["session_id"]}")
@@ -78,7 +77,6 @@ defmodule ReveloWeb.SessionLive.Identify do
       |> assign(:page_title, page_title(socket.assigns.live_action))
       |> assign(:session, session)
       |> assign(:variables, variables)
-      |> assign(:votes, votes)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
@@ -105,41 +103,36 @@ defmodule ReveloWeb.SessionLive.Identify do
       |> Enum.reject(& &1.is_key?)
       |> Enum.map(& &1.id)
 
-    new_votes =
-      Enum.reduce(variable_ids, socket.assigns.votes, fn var_id, votes ->
-        checkbox_name = "var" <> var_id
-        is_checked = Map.get(params, checkbox_name) == "true"
+    Enum.each(variable_ids, fn var_id ->
+      checkbox_name = "var" <> var_id
+      is_checked = Map.get(params, checkbox_name) == "true"
 
-        IO.inspect(is_checked, label: "meme")
+      variable = Enum.find(socket.assigns.variables, &(&1.id == var_id))
+      has_vote = variable.voted?
 
-        has_vote =
-          Enum.any?(votes, fn vote ->
-            vote.variable_id == var_id && vote.voter_id == user.id
-          end)
+      cond do
+        is_checked and not has_vote ->
+          Diagrams.variable_vote!(variable, actor: user)
 
-        cond do
-          is_checked and not has_vote ->
-            variable = Enum.find(socket.assigns.variables, &(&1.id == var_id))
-            vote = Diagrams.variable_vote!(variable, actor: user)
-            [vote | votes]
+        not is_checked and has_vote ->
+          vote =
+            Enum.find(
+              Diagrams.list_variable_votes!(socket.assigns.session.id),
+              &(&1.variable.id == var_id)
+            )
 
-          not is_checked and has_vote ->
-            vote =
-              Enum.find(votes, fn vote ->
-                vote.variable_id == var_id && vote.voter_id == user.id
-              end)
+          Diagrams.destroy_variable_vote!(vote, actor: user)
 
-            Diagrams.destroy_variable_vote!(vote, actor: user)
-            Enum.reject(votes, &(&1.variable_id == vote.variable_id))
+        true ->
+          :ok
+      end
+    end)
 
-          true ->
-            votes
-        end
-      end)
+    updated_variables = Diagrams.list_variables!(socket.assigns.session.id, true, actor: user)
 
     socket =
       socket
-      |> assign(:votes, new_votes)
+      |> assign(:variables, updated_variables)
       |> push_navigate(to: "/sessions/#{socket.assigns.session.id}/identify/done")
 
     {:noreply, socket}

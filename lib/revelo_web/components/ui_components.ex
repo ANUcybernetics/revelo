@@ -288,9 +288,6 @@ defmodule ReveloWeb.UIComponents do
   """
 
   def variable_voting(assigns) do
-    assigns =
-      assign_new(assigns, :votes, fn -> [] end)
-
     ~H"""
     <.card class="w-[350px] overflow-hidden">
       <.card_header>
@@ -315,7 +312,7 @@ defmodule ReveloWeb.UIComponents do
                   <.checkbox
                     id={"var" <> variable.id}
                     name={"var" <> variable.id}
-                    value={Enum.any?(@votes, fn vote -> vote.variable.id == variable.id end)}
+                    value={variable.voted?}
                   />
                   {variable.name}
                 </div>
@@ -353,7 +350,7 @@ defmodule ReveloWeb.UIComponents do
           <%= for variable <-
               Enum.reject(@variables, fn variable -> variable.is_key? end)
               |> Enum.sort_by(fn variable ->
-                if Enum.find(@votes, fn vote -> vote.variable.id == variable.id and vote.voter_id == @user_id end) do
+                if variable.voted? do
                   0 # Voted items go to the top
                 else
                   1 # Non-voted items go to the bottom
@@ -361,9 +358,7 @@ defmodule ReveloWeb.UIComponents do
               end) do %>
             <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
               <span>{variable.name}</span>
-              <%= if Enum.find(@votes, fn vote ->
-                  vote.variable.id == variable.id and vote.voter_id == @user_id
-                end) do %>
+              <%= if variable.voted? do %>
                 <.badge_vote />
               <% else %>
                 <.badge_no_vote />
