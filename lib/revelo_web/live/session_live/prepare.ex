@@ -13,7 +13,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
       :if={@current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false}
       class="h-full flex flex-col"
     >
-      <div :if={@live_action in [:prepare]} class="grid grid-cols-12 w-full grow gap-10">
+      <div :if={@live_action in [:prepare, :new_variable, :edit_variable]} class="grid grid-cols-12 w-full grow gap-10">
         <.variable_table
           class="md:col-span-8 col-span-12"
           session={@session}
@@ -26,7 +26,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
           <.session_start session={@session} variables={@variables} />
         </div>
       </div>
-      <div :if={@live_action in [:prepare]}>
+      <div :if={@live_action in [:prepare, :new_variable, :edit_variable]}>
         <.back navigate={~p"/sessions"}>Back to Sessions</.back>
       </div>
 
@@ -132,13 +132,31 @@ defmodule ReveloWeb.SessionLive.Prepare do
       Diagrams.list_variables!(params["session_id"], true, actor: params["current_user"])
 
     socket =
+      if params["edit_variable"] do
+        assign(socket, :live_action, :edit_variable)
+      else
+        socket
+      end
+
+    socket =
       socket
       |> assign(:session, session)
       |> assign(:variables, variables)
       |> assign(:variable_count, 0)
       |> assign(:participant_count, {0, 1})
+      |> apply_action(socket.assigns.live_action, params)
 
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    {:noreply, socket}
+  end
+
+  defp apply_action(socket, params) do
+    cond do
+      params["edit_variable"] ->
+        apply_action(socket, :edit_variable, params)
+
+      true ->
+        apply_action(socket, socket.assigns.live_action, params)
+    end
   end
 
   defp apply_action(socket, :edit, _params) do
@@ -152,7 +170,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   defp apply_action(socket, :edit_variable, params) do
-    variable = Enum.find(socket.assigns.variables, &(&1.id == params["variable_id"]))
+    variable = Enum.find(socket.assigns.variables, &(&1.id == params["edit_variable"]))
 
     socket
     |> assign(:page_title, "Edit Variable")
@@ -165,7 +183,9 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   defp apply_action(socket, :identify, _params) do
     variables =
-      Diagrams.list_variables!(socket.assigns.session.id, true, actor: socket.assigns.current_user)
+      Diagrams.list_variables!(socket.assigns.session.id, true,
+        actor: socket.assigns.current_user
+      )
 
     socket
     |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -174,7 +194,9 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   defp apply_action(socket, :done, _params) do
     variables =
-      Diagrams.list_variables!(socket.assigns.session.id, true, actor: socket.assigns.current_user)
+      Diagrams.list_variables!(socket.assigns.session.id, true,
+        actor: socket.assigns.current_user
+      )
 
     socket
     |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -283,7 +305,10 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   @impl true
-  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, session}}, socket) do
+  def handle_info(
+        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, session}},
+        socket
+      ) do
     {:noreply, stream_insert(socket, :sessions, session)}
   end
 
