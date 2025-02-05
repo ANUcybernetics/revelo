@@ -259,16 +259,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   @impl true
   def handle_event("toggle_key", %{"id" => variable_id}, socket) do
-    updated_variable = Diagrams.toggle_key_variable!(variable_id)
-
-    if updated_variable.is_key? do
-      socket.assigns.variables
-      |> Enum.filter(&(&1.id != updated_variable.id))
-      |> Enum.filter(& &1.is_key?)
-      |> Enum.each(fn var ->
-        Diagrams.unset_key_variable!(var.id)
-      end)
-    end
+    _updated_variable = Diagrams.toggle_key_variable!(variable_id)
 
     {:noreply,
      update(socket, :variables, fn _vars ->

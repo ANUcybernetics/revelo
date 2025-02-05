@@ -87,12 +87,6 @@ defmodule Revelo.VariableTest do
       variable = variable()
       assert variable.is_key? == false
 
-      variable = Revelo.Diagrams.set_key_variable!(variable)
-      assert variable.is_key? == true
-
-      variable = Revelo.Diagrams.unset_key_variable!(variable)
-      assert variable.is_key? == false
-
       variable = Revelo.Diagrams.toggle_key_variable!(variable)
       assert variable.is_key? == true
 
@@ -139,7 +133,7 @@ defmodule Revelo.VariableTest do
       variable2 = variable(name: "xyz", user: user, session: session)
 
       # Make variable2 a key variable even though it's later alphabetically
-      variable2 = Revelo.Diagrams.set_key_variable!(variable2)
+      variable2 = Revelo.Diagrams.toggle_key_variable!(variable2)
       assert variable2.is_key? == true
 
       variables = Revelo.Diagrams.list_variables!(session.id)
@@ -148,6 +142,22 @@ defmodule Revelo.VariableTest do
       [first, second] = variables
       assert first.id == variable2.id
       assert second.id == variable1.id
+    end
+
+    test "toggling key variable on unsets other key variables in the session" do
+      user = user()
+      session = session()
+      variable1 = variable(user: user, session: session)
+      variable2 = variable(user: user, session: session)
+
+      variable1 = Revelo.Diagrams.toggle_key_variable!(variable1)
+      assert variable1.is_key? == true
+
+      variable2 = Revelo.Diagrams.toggle_key_variable!(variable2)
+      assert variable2.is_key? == true
+
+      variable1 = Ash.get!(Variable, variable1.id)
+      assert variable1.is_key? == false
     end
 
     test "enforces uniqueness of names within session" do

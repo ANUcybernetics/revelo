@@ -70,10 +70,6 @@ defmodule Revelo.Diagrams.Variable do
       change set_attribute(:name, arg(:name))
     end
 
-    update :set_key do
-      change set_attribute(:is_key?, true)
-    end
-
     update :unset_key do
       change set_attribute(:is_key?, false)
     end
@@ -83,6 +79,22 @@ defmodule Revelo.Diagrams.Variable do
         current_value = Ash.Changeset.get_attribute(changeset, :is_key?)
         Ash.Changeset.force_change_attribute(changeset, :is_key?, !current_value)
       end
+
+      # ensure there's only one key variable in any session
+      change after_action(fn changeset, variable, _context ->
+               if Ash.Changeset.get_attribute(changeset, :is_key?) do
+                 # Get the session ID from the variable
+                 session_id = variable.session_id
+
+                 # unset all other key variables in session
+                 session_id
+                 |> Revelo.Diagrams.list_variables!()
+                 |> Enum.filter(fn v -> v.is_key? && v.id != variable.id end)
+                 |> Revelo.Diagrams.unset_key_variable!()
+               end
+
+               {:ok, variable}
+             end)
     end
 
     update :hide do
