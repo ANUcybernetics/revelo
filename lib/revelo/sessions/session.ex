@@ -14,10 +14,9 @@ defmodule Revelo.Sessions.Session do
   end
 
   actions do
-    defaults [:destroy]
+    defaults [:read, :destroy]
 
     read :list do
-      primary? true
       prepare build(sort: [inserted_at: :desc])
     end
 
