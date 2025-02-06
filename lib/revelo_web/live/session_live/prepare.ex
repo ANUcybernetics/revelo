@@ -114,7 +114,11 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) do
+      Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{params["session_id"]}")
+    end
+
     {:ok,
      socket
      |> stream(
@@ -127,6 +131,15 @@ defmodule ReveloWeb.SessionLive.Prepare do
   @impl true
   def handle_params(params, _url, socket) do
     session = Ash.get!(Session, params["session_id"])
+
+    # Only broadcast if this is the main user
+    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false do
+      Phoenix.PubSub.broadcast(
+        Revelo.PubSub,
+        "session:#{session.id}",
+        {:view_changed, socket.assigns.live_action}
+      )
+    end
 
     variables =
       Diagrams.list_variables!(params["session_id"], true, actor: params["current_user"])
@@ -151,6 +164,27 @@ defmodule ReveloWeb.SessionLive.Prepare do
       |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:view_changed, new_action}, socket) do
+    # Only handle the message if this is an anonymous user
+    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) do
+      {:noreply,
+       socket
+       |> push_patch(to: build_path_for_action(new_action, socket.assigns.session.id))}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  defp build_path_for_action(action, session_id) do
+    case action do
+      :prepare -> ~p"/sessions/#{session_id}/prepare"
+      :identify -> ~p"/sessions/#{session_id}/identify"
+      :done -> ~p"/sessions/#{session_id}/identify/done"
+      _ -> ~p"/sessions/#{session_id}/prepare"
+    end
   end
 
   defp apply_action(socket, :edit, _params) do
