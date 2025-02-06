@@ -667,20 +667,18 @@ defmodule ReveloWeb.UIComponents do
   Renders a modal containing a QR code.
   """
   attr :text, :string, required: true, doc: "the text data to encode in the QR code"
+  attr :scale, :string, default: "1", doc: "optional scale factor to apply to the QR code"
 
   def qr_code(assigns) do
     ~H"""
-    <div class="flex flex-col items-center">
+    <div class={"flex flex-col items-center scale-[#{@scale}]"}>
       <div>
-        {@text
-        |> QRCode.create(:high)
-        |> QRCode.render(:svg, %QRCode.Render.SvgSettings{
-          qrcode_color: "black",
-          background_color: "white"
-        })
-        # unwrap the tuple
-        |> elem(1)
-        |> Phoenix.HTML.raw()}
+        <img src={"data:image/png;base64," <>
+          (@text
+          |> QRCode.create(:high)
+          |> QRCode.render(:png)
+          |> elem(1)
+          |> Base.encode64())} />
       </div>
     </div>
     """
@@ -847,14 +845,15 @@ defmodule ReveloWeb.UIComponents do
   Renders a set of instructions for users.
   """
   attr :title, :string, required: true, doc: "the title of the instructions"
+  attr :class, :string, default: "", doc: "additional class to apply to the card"
   slot :inner_block, required: true
 
   def instructions(assigns) do
     ~H"""
-    <.card class="h-full col-span-3 flex flex-col text-4xl">
+    <.card class={["flex flex-col text-3xl", @class] |> Enum.join(" ")}>
       <.card_header class="w-full">
         <.header class="flex flex-row justify-between !items-start">
-          <.card_title class="grow text-4xl">{@title}</.card_title>
+          <.card_title class="grow text-3xl">{@title}</.card_title>
         </.header>
       </.card_header>
       <.card_content>
@@ -872,21 +871,22 @@ defmodule ReveloWeb.UIComponents do
   attr :url, :string, required: true
   attr :participant_count, :map, required: true
   attr :complete_url, :string, default: nil
+  attr :class, :string, default: "", doc: "additional class to apply to the card"
 
   def qr_code_card(assigns) do
     ~H"""
-    <.card class="h-full col-span-2 flex flex-col text-2xl justify-between">
+    <.card class={["shrink h-full flex flex-col text-2xl justify-between", @class] |> Enum.join(" ")}>
       <.card_header class="w-full">
         <.header class="flex flex-row justify-between !items-start">
-          <.card_title class="grow text-4xl">Scan QR Code</.card_title>
+          <.card_title class="grow text-3xl">Scan QR Code</.card_title>
           <.card_description class="text-xl mt-4">
             Scan this code with your phone to join the session
           </.card_description>
         </.header>
       </.card_header>
       <.card_content>
-        <div class="flex justify-center items-center flex-col border aspect-square rounded-xl w-full">
-          <.qr_code text={@url} />
+        <div class="flex justify-center items-center flex-col border aspect-square rounded-xl w-full p-4">
+          <.qr_code text={@url}/>
         </div>
       </.card_content>
       <.card_footer class="flex flex-col items-center gap-2">

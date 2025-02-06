@@ -13,25 +13,27 @@ defmodule ReveloWeb.SessionLive.Prepare do
       :if={@current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false}
       class="h-full flex flex-col"
     >
-      <div :if={@live_action in [:prepare, :new_variable, :edit_variable]} class="grid grid-cols-12 w-full grow gap-10">
+      <div class="grid grid-cols-12 w-full grow gap-10">
         <.variable_table
-          class="md:col-span-8 col-span-12"
+        :if={@live_action in [:prepare, :new_variable] or @show_variables == true}
+        class={"#{if(@show_variables == true, do: "md:col-span-12", else: "md:col-span-8")} col-span-12"}
           session={@session}
           variable_count={@variable_count}
           variables={@variables}
         />
 
-        <div class="flex gap-5 flex-col col-span-12 md:col-span-4">
+        <div
+        :if={@live_action in [:prepare, :new_variable]}
+        class="flex gap-5 flex-col col-span-12 md:col-span-4">
           <.session_details session={@session} />
           <.session_start session={@session} variables={@variables} />
         </div>
-      </div>
-      <div :if={@live_action in [:prepare, :new_variable, :edit_variable]}>
-        <.back navigate={~p"/sessions"}>Back to Sessions</.back>
-      </div>
 
-      <div :if={@live_action in [:identify]} class="grid grid-cols-5 w-full grow gap-10">
-        <.instructions title="Identify relationships">
+        <.instructions
+        :if={@live_action in [:identify] and @show_variables != true}
+        title="Identify relationships"
+        class="col-span-8"
+        >
           <ol class="list-decimal p-10 space-y-12">
             <li>Scan the QR code with your phone camera.
               Note the key variable shown at the top (this is your main system outcome)</li>
@@ -48,10 +50,24 @@ defmodule ReveloWeb.SessionLive.Prepare do
         </.instructions>
 
         <.qr_code_card
-          url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/relate"}
+        :if={@live_action in [:identify] and @show_variables != true}
+          url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify"}
           participant_count={@participant_count}
-          complete_url={"/sessions/#{@session.id}/relate"}
+          complete_url={"/sessions/#{@session.id}/identify?show_variables=true"}
+          class="col-span-4"
         />
+      </div>
+
+      <div>
+        <.back :if={@live_action in [:prepare, :new_variable]} navigate={~p"/sessions"}>
+          Back to Sessions
+        </.back>
+        <.back :if={@live_action == :identify and @show_variables == true} navigate={~p"/sessions/#{@session.id}/identify"}>
+          Back to Voting
+        </.back>
+        <.back :if={@live_action == :identify and @show_variables != true} navigate={~p"/sessions/#{@session.id}/prepare"}>
+          Back to Prepare
+        </.back>
       </div>
 
       <.modal
@@ -156,6 +172,13 @@ defmodule ReveloWeb.SessionLive.Prepare do
       end
 
     socket =
+      if params["show_variables"] == "true" do
+        assign(socket, :show_variables, true)
+      else
+        assign(socket, :show_variables, false)
+      end
+
+    socket =
       socket
       |> assign(:session, session)
       |> assign(:variables, variables)
@@ -164,27 +187,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
       |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
-  end
-
-  @impl true
-  def handle_info({:view_changed, new_action}, socket) do
-    # Only handle the message if this is an anonymous user
-    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) do
-      {:noreply,
-       socket
-       |> push_patch(to: build_path_for_action(new_action, socket.assigns.session.id))}
-    else
-      {:noreply, socket}
-    end
-  end
-
-  defp build_path_for_action(action, session_id) do
-    case action do
-      :prepare -> ~p"/sessions/#{session_id}/prepare"
-      :identify -> ~p"/sessions/#{session_id}/identify"
-      :done -> ~p"/sessions/#{session_id}/identify/done"
-      _ -> ~p"/sessions/#{session_id}/prepare"
-    end
   end
 
   defp apply_action(socket, :edit, _params) do
@@ -340,6 +342,27 @@ defmodule ReveloWeb.SessionLive.Prepare do
   @impl true
   def handle_info({:participant_count, counts}, socket) do
     {:noreply, assign(socket, :participant_count, counts)}
+  end
+
+  @impl true
+  def handle_info({:view_changed, new_action}, socket) do
+    # Only handle the message if this is an anonymous user
+    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) do
+      {:noreply,
+       socket
+       |> push_patch(to: build_path_for_action(new_action, socket.assigns.session.id))}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  defp build_path_for_action(action, session_id) do
+    case action do
+      :prepare -> ~p"/sessions/#{session_id}/prepare"
+      :identify -> ~p"/sessions/#{session_id}/identify"
+      :done -> ~p"/sessions/#{session_id}/identify/done"
+      _ -> ~p"/sessions/#{session_id}/prepare"
+    end
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"
