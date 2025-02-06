@@ -100,7 +100,7 @@ defmodule Revelo.Repo.Migrations.InitialMigration do
           primary_key: true,
           null: false
 
-      add :facilitator, :boolean
+      add :facilitator?, :boolean
     end
 
     create table(:relationships, primary_key: false) do

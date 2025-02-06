@@ -42,7 +42,7 @@ defmodule Revelo.Sessions.Session do
         allow_nil? false
       end
 
-      argument :facilitator, :boolean, default: false
+      argument :facilitator?, :boolean, default: false
 
       change manage_relationship(:participant, :participants, type: :append)
 
@@ -55,7 +55,7 @@ defmodule Revelo.Sessions.Session do
                  participant_id: participant_id
                )
                |> Ash.Changeset.for_update(:set_facilitation_status, %{
-                 facilitator: changeset.arguments.facilitator
+                 facilitator?: changeset.arguments.facilitator?
                })
                |> Ash.update!()
 

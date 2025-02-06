@@ -4,7 +4,7 @@
       "default": "nil",
       "size": null,
       "type": "boolean",
-      "source": "facilitator",
+      "source": "facilitator?",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -62,7 +62,7 @@
     }
   ],
   "table": "session_participants",
-  "hash": "CC8E067D2ED2265C818B0D48421714CB03A56202EDAFFE607010720643AC2558",
+  "hash": "05C91002121177C8C8FE923487820F9DA4851670CB58CD8B2B3BE6EC925486FA",
   "multitenancy": {
     "global": null,
     "attribute": null,

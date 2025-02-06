@@ -14,17 +14,17 @@ defmodule Revelo.Sessions.SessionParticipants do
     defaults [:read, :destroy, create: :*, update: :*]
 
     update :set_facilitation_status do
-      accept [:facilitator]
+      accept [:facilitator?]
     end
 
     update :set_as_facilitator do
       accept []
-      change set_attribute(:facilitator, true)
+      change set_attribute(:facilitator?, true)
     end
   end
 
   attributes do
-    attribute :facilitator, :boolean, default: false
+    attribute :facilitator?, :boolean, default: false
   end
 
   relationships do

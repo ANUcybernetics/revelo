@@ -138,13 +138,13 @@ defmodule Revelo.UserTest do
       Revelo.Sessions.add_participant!(session, user)
 
       session
-      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator: true}, authorize?: false)
+      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator?: true}, authorize?: false)
       |> Ash.update!()
 
       user_with_calculation =
-        Ash.load!(user, facilitator: [session_id: session.id])
+        Ash.load!(user, facilitator?: [session_id: session.id])
 
-      assert user_with_calculation.facilitator
+      assert user_with_calculation.facilitator?
     end
 
     test "facilitator calculation returns false when user is not facilitator" do
@@ -153,13 +153,13 @@ defmodule Revelo.UserTest do
       Revelo.Sessions.add_participant!(session, user)
 
       session
-      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator: false}, authorize?: false)
+      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator?: false}, authorize?: false)
       |> Ash.update!()
 
       user_with_calculation =
-        Ash.load!(user, facilitator: [session_id: session.id])
+        Ash.load!(user, facilitator?: [session_id: session.id])
 
-      refute user_with_calculation.facilitator
+      refute user_with_calculation.facilitator?
     end
   end
 end

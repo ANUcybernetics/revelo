@@ -21,7 +21,7 @@ defmodule Revelo.Accounts.User do
   end
 
   calculations do
-    calculate :facilitator, :boolean do
+    calculate :facilitator?, :boolean do
       argument :session_id, :uuid do
         allow_nil? false
       end
@@ -34,7 +34,7 @@ defmodule Revelo.Accounts.User do
               participant_id: user.id
             )
 
-          participant.facilitator
+          participant.facilitator?
         end)
       end
     end
