@@ -15,25 +15,30 @@ defmodule ReveloWeb.SessionLive.Prepare do
     >
       <div class="grid grid-cols-12 w-full grow gap-10">
         <.variable_table
-        :if={@live_action in [:prepare, :new_variable] or @show_variables == true}
-        class={"#{if(@show_variables == true, do: "md:col-span-12", else: "md:col-span-8")} col-span-12"}
+          :if={@live_action in [:prepare, :new_variable] or @show_variables == true}
+          class={"#{if(@show_variables == true, do: "md:col-span-12", else: "md:col-span-8")} col-span-12"}
           session={@session}
           variable_count={@variable_count}
           variables={@variables}
-          title={if @live_action in [:prepare, :new_variable], do: "Prepare your variables", else: if(@show_variables, do: "Variable Votes", else: nil)}
+          title={
+            if @live_action in [:prepare, :new_variable],
+              do: "Prepare your variables",
+              else: if(@show_variables, do: "Variable Votes", else: nil)
+          }
         />
 
         <div
-        :if={@live_action in [:prepare, :new_variable]}
-        class="flex gap-5 flex-col col-span-12 md:col-span-4">
+          :if={@live_action in [:prepare, :new_variable]}
+          class="flex gap-5 flex-col col-span-12 md:col-span-4"
+        >
           <.session_details session={@session} />
           <.session_start session={@session} variables={@variables} />
         </div>
 
         <.instructions
-        :if={@live_action in [:identify] and @show_variables != true}
-        title="Identify relationships"
-        class="col-span-8"
+          :if={@live_action in [:identify] and @show_variables != true}
+          title="Identify relationships"
+          class="col-span-8"
         >
           <ol class="list-decimal p-10 space-y-12">
             <li>Scan the QR code with your phone camera.
@@ -51,7 +56,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
         </.instructions>
 
         <.qr_code_card
-        :if={@live_action in [:identify] and @show_variables != true}
+          :if={@live_action in [:identify] and @show_variables != true}
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify"}
           participant_count={@participant_count}
           complete_url={"/sessions/#{@session.id}/identify?show_variables=true"}
@@ -60,13 +65,19 @@ defmodule ReveloWeb.SessionLive.Prepare do
       </div>
 
       <div>
-        <.back :if={@live_action in [:prepare, :new_variable]} navigate={~p"/sessions"}>
+        <.back :if={@live_action in [:prepare, :new_variable]} patch={~p"/sessions"}>
           Back to Sessions
         </.back>
-        <.back :if={@live_action == :identify and @show_variables == true} navigate={~p"/sessions/#{@session.id}/identify"}>
+        <.back
+          :if={@live_action == :identify and @show_variables == true}
+          patch={~p"/sessions/#{@session.id}/identify"}
+        >
           Back to Voting
         </.back>
-        <.back :if={@live_action == :identify and @show_variables != true} navigate={~p"/sessions/#{@session.id}/prepare"}>
+        <.back
+          :if={@live_action == :identify and @show_variables != true}
+          patch={~p"/sessions/#{@session.id}/prepare"}
+        >
           Back to Prepare
         </.back>
       </div>
@@ -206,9 +217,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   defp apply_action(socket, :identify, _params) do
     variables =
-      Diagrams.list_variables!(socket.assigns.session.id, true,
-        actor: socket.assigns.current_user
-      )
+      Diagrams.list_variables!(socket.assigns.session.id, true, actor: socket.assigns.current_user)
 
     socket
     |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -217,9 +226,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   defp apply_action(socket, :done, _params) do
     variables =
-      Diagrams.list_variables!(socket.assigns.session.id, true,
-        actor: socket.assigns.current_user
-      )
+      Diagrams.list_variables!(socket.assigns.session.id, true, actor: socket.assigns.current_user)
 
     socket
     |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -328,10 +335,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   @impl true
-  def handle_info(
-        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, session}},
-        socket
-      ) do
+  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, session}}, socket) do
     {:noreply, stream_insert(socket, :sessions, session)}
   end
 
@@ -349,9 +353,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
   def handle_info({:view_changed, new_action}, socket) do
     # Only handle the message if this is an anonymous user
     if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) do
-      {:noreply,
-       socket
-       |> push_patch(to: build_path_for_action(new_action, socket.assigns.session.id))}
+      {:noreply, push_patch(socket, to: build_path_for_action(new_action, socket.assigns.session.id))}
     else
       {:noreply, socket}
     end

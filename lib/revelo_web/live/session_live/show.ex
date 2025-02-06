@@ -20,7 +20,7 @@ defmodule ReveloWeb.SessionLive.Show do
       <:item title="Id">{@session.id}</:item>
     </.list>
 
-    <.back navigate={~p"/sessions"}>Back to Sessions</.back>
+    <.back patch={~p"/sessions"}>Back to Sessions</.back>
 
     <.modal
       :if={@live_action == :edit}
