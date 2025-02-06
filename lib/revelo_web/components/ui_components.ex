@@ -235,7 +235,7 @@ defmodule ReveloWeb.UIComponents do
           {if @variable.hidden?, do: "Show", else: "Hide"}
         </.tooltip_content>
       </.tooltip>
-      <.tooltip>
+      <.tooltip :if={@variable.vote_tally == 0}>
         <tooltip_trigger>
           <button
             class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
@@ -250,6 +250,17 @@ defmodule ReveloWeb.UIComponents do
         </tooltip_trigger>
         <.tooltip_content side="top">
           Delete
+        </.tooltip_content>
+      </.tooltip>
+      <.tooltip :if={@variable.vote_tally > 0}>
+        <tooltip_trigger>
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground flex-col">
+            {@variable.vote_tally}
+            <span class="text-[10px] leading-[.5]">vote{if @variable.vote_tally != 1, do: "s"}</span>
+          </div>
+        </tooltip_trigger>
+        <.tooltip_content side="top">
+          Vote Count
         </.tooltip_content>
       </.tooltip>
     </div>
