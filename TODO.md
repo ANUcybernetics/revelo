@@ -63,3 +63,10 @@ mix ash.gen.resource \
 - data model-wise, maybe we don't actually want a session -> participants (or
   even session -> users) relationship? could just get that info from the list of
   variables (via their :creator attribute)
+
+
+## adrian's gross things
+
+- Removing a vote is kind of gross at the moment, as you need to pass the whole vote
+  to the destroy function. This is particularly annoying in the identify phase, as we
+  the votes aren't loaded at any point before needing to destroy them.
