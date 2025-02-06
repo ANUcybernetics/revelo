@@ -691,13 +691,14 @@ defmodule ReveloWeb.UIComponents do
   attr :variables, :list, required: true, doc: "the list of variables to display"
   attr :variable_count, :integer, required: true, doc: "the number of variables to generate"
   attr :class, :string, default: "", doc: "additional class to apply to the card"
+  attr :title, :string, default: "Prepare your variables", doc: "optional title for the table"
 
   def variable_table(assigns) do
     ~H"""
     <.card class={["h-full flex flex-col", @class] |> Enum.join(" ")}>
       <.card_header class="w-full">
         <.header class="flex flex-row justify-between !items-start">
-          <.card_title class="grow">Prepare your variables</.card_title>
+          <.card_title class="grow">{@title}</.card_title>
           <:actions>
             <div class="flex flex-row gap-4">
               <.link patch={"/sessions/#{@session.id}/prepare/new_variable"}>

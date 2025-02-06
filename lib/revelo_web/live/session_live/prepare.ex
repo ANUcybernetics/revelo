@@ -20,6 +20,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
           session={@session}
           variable_count={@variable_count}
           variables={@variables}
+          title={if @live_action in [:prepare, :new_variable], do: "Prepare your variables", else: if(@show_variables, do: "Variable Votes", else: nil)}
         />
 
         <div
