@@ -55,7 +55,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
       </div>
 
       <.modal
-        :if={@live_action in [:new_variable, :edit_variable]}
+        :if={@live_action in [:new_variable] or @modal}
         id="variable-modal"
         show
         on_cancel={JS.patch(~p"/sessions/#{@session.id}/prepare/")}
@@ -133,9 +133,13 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
     socket =
       if params["edit_variable"] do
-        assign(socket, :live_action, :edit_variable)
-      else
+        variable = Enum.find(variables, &(&1.id == params["edit_variable"]))
+
         socket
+        |> assign(:variable, variable)
+        |> assign(:modal, params["edit_variable"])
+      else
+        assign(socket, :modal, nil)
       end
 
     socket =
@@ -149,16 +153,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
     {:noreply, socket}
   end
 
-  defp apply_action(socket, params) do
-    cond do
-      params["edit_variable"] ->
-        apply_action(socket, :edit_variable, params)
-
-      true ->
-        apply_action(socket, socket.assigns.live_action, params)
-    end
-  end
-
   defp apply_action(socket, :edit, _params) do
     assign(socket, :page_title, "Edit Session")
   end
@@ -167,14 +161,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
     socket
     |> assign(:page_title, "New Variable")
     |> assign(:variable, nil)
-  end
-
-  defp apply_action(socket, :edit_variable, params) do
-    variable = Enum.find(socket.assigns.variables, &(&1.id == params["edit_variable"]))
-
-    socket
-    |> assign(:page_title, "Edit Variable")
-    |> assign(:variable, variable)
   end
 
   defp apply_action(socket, :prepare, _params) do
