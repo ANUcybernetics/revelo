@@ -62,3 +62,5 @@ mix ash.gen.resource \
   vote to the destroy function. This is particularly annoying in the identify
   phase, as we the votes aren't loaded at any point before needing to destroy
   them.
+
+- Generate variables breaks if there isn't a key variable
