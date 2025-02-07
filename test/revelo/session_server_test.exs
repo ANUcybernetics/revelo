@@ -1,9 +1,9 @@
-defmodule ReveloWeb.SessionServerTest do
+defmodule Revelo.SessionServerTest do
   use Revelo.DataCase
 
   import ReveloTest.Generators
 
-  alias ReveloWeb.SessionServer
+  alias Revelo.SessionServer
 
   setup do
     user = user()

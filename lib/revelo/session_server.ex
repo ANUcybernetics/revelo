@@ -1,4 +1,4 @@
-defmodule ReveloWeb.SessionServer do
+defmodule Revelo.SessionServer do
   @moduledoc """
   Central Session GenServer responsible for maintaining state of Revelo
   workshop sessions.
