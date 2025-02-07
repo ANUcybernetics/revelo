@@ -1,9 +1,9 @@
 <.sidebar
-  :if={@current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false}
+  :if={@current_user.facilitator?}
   current_page={@live_action}
   session_id={(@session && @session.id) || nil}
 />
-<main class={"p-10 #{if @current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false, do: "ml-14"} bg-dots h-svh"}>
+<main class={"p-10 #{if @current_user.facilitator?, do: "ml-14"} bg-dots h-svh"}>
   <div class="mx-auto max-w-screen-3xl h-full">
     <.flash_group flash={@flash} />
     {@inner_content}
