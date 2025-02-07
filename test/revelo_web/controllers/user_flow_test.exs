@@ -42,7 +42,8 @@ defmodule ReveloWeb.UserFlowTest do
 
   describe "Identify page actions" do
     test "anon user sees participant content on identify page", %{conn: conn} do
-      session = session()
+      user = user()
+      session = session(user)
 
       conn
       |> visit("/qr/sessions/#{session.id}/identify")
@@ -52,7 +53,7 @@ defmodule ReveloWeb.UserFlowTest do
 
     test "anon user can vote for variables", %{conn: conn} do
       user = user()
-      session = session()
+      session = session(user)
       var1 = variable(user: user, session: session, name: "Test Variable 1")
       var2 = variable(user: user, session: session, name: "Test Variable 2")
 
@@ -68,9 +69,9 @@ defmodule ReveloWeb.UserFlowTest do
     end
 
     test "facilitator sees facilitator content on identify page", %{conn: conn} do
-      session = session()
       password = "657]545asdflh"
       user = user_with_password(password)
+      session = session(user)
 
       browsing_session =
         conn
@@ -88,7 +89,7 @@ defmodule ReveloWeb.UserFlowTest do
     test "doesn't happen if non-anon user is already logged in", %{conn: conn} do
       password = "657]545asdflh"
       user = user_with_password(password)
-      session = session()
+      session = session(user)
 
       browsing_session =
         conn
@@ -101,7 +102,8 @@ defmodule ReveloWeb.UserFlowTest do
     end
 
     test "does happen with no logged-in user", %{conn: conn} do
-      session = session()
+      user = user()
+      session = session(user)
 
       browsing_session =
         conn
@@ -113,7 +115,8 @@ defmodule ReveloWeb.UserFlowTest do
     end
 
     test "anon user stays logged in as they navigate around", %{conn: conn} do
-      session = session()
+      creator = user()
+      session = session(creator)
 
       browsing_session = visit(conn, "/qr/sessions/#{session.id}/identify")
       user = browsing_session.conn.assigns.current_user

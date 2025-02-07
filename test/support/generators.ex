@@ -5,7 +5,7 @@ defmodule ReveloTest.Generators do
   alias Revelo.Accounts.User
   alias Revelo.Diagrams.Variable
 
-  def session do
+  def session(creator) do
     input =
       %{
         name: sequence(:title, &"Session #{&1}"),
@@ -14,7 +14,9 @@ defmodule ReveloTest.Generators do
       |> StreamData.fixed_map()
       |> ExUnitProperties.pick()
 
-    Revelo.Sessions.Session |> Ash.Changeset.for_create(:create, input) |> Ash.create!()
+    Revelo.Sessions.Session
+    |> Ash.Changeset.for_create(:create, input, actor: creator)
+    |> Ash.create!()
   end
 
   def user do
@@ -41,7 +43,7 @@ defmodule ReveloTest.Generators do
 
   def variable(opts \\ []) do
     {user, opts} = Keyword.pop_lazy(opts, :user, fn -> user() end)
-    {session, opts} = Keyword.pop_lazy(opts, :session, fn -> session() end)
+    {session, opts} = Keyword.pop_lazy(opts, :session, fn -> session(user) end)
 
     input =
       %{
@@ -57,7 +59,7 @@ defmodule ReveloTest.Generators do
 
   def relationship(opts \\ []) do
     {user, opts} = Keyword.pop_lazy(opts, :user, fn -> user() end)
-    {session, opts} = Keyword.pop_lazy(opts, :session, fn -> session() end)
+    {session, opts} = Keyword.pop_lazy(opts, :session, fn -> session(user) end)
     {src, opts} = Keyword.pop_lazy(opts, :src, fn -> variable(session: session, user: user) end)
     {dst, opts} = Keyword.pop_lazy(opts, :dst, fn -> variable(session: session, user: user) end)
 
@@ -79,7 +81,7 @@ defmodule ReveloTest.Generators do
   def loop do
     # a simple loop of length 3 (in future we might make this generator more sophisticated)
     user = user()
-    session = session()
+    session = session(user)
     variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
 
     relationships =

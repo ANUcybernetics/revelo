@@ -9,19 +9,17 @@ defmodule ReveloWeb.SessionLive.Prepare do
   @impl true
   def render(assigns) do
     ~H"""
-    <div
-      :if={@current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false}
-      class="h-full flex flex-col"
-    >
+    <div :if={@current_user.facilitator?} class="h-full flex flex-col">
       <div class="grid grid-cols-12 w-full grow gap-10">
         <.variable_table
-          :if={@live_action in [:prepare, :new_variable] or @show_variables == true}
+          :if={@live_action in [:prepare] or @show_variables == true}
           class={"#{if(@show_variables == true, do: "md:col-span-12", else: "md:col-span-8")} col-span-12"}
+          live_action={@live_action}
           session={@session}
-          variable_count={@variable_count}
+          variable_count={assigns[:variable_count] || 10}
           variables={@variables}
           title={
-            if @live_action in [:prepare, :new_variable],
+            if @live_action in [:prepare],
               do: "Prepare your variables",
               else: if(@show_variables, do: "Variable Votes", else: nil)
           }
@@ -76,33 +74,33 @@ defmodule ReveloWeb.SessionLive.Prepare do
         </.back>
         <.back
           :if={@live_action == :identify and @show_variables != true}
-          patch={~p"/sessions/#{@session.id}/prepare"}
+          patch={~p"/sessions/#{@session.id}/identify"}
         >
           Back to Prepare
         </.back>
       </div>
 
       <.modal
-        :if={@live_action in [:new_variable] or @modal}
+        :if={@modal}
         id="variable-modal"
         show
-        on_cancel={JS.patch(~p"/sessions/#{@session.id}/prepare/")}
+        on_cancel={JS.patch(~p"/sessions/#{@session.id}/#{@live_action}")}
       >
         <.live_component
           module={ReveloWeb.SessionLive.VariableFormComponent}
-          id={(@session && @session.id) || :edit}
-          variable={@variable}
+          id="variable-modal-component"
+          variable={@modal}
           title={@page_title}
           current_user={@current_user}
           action={@live_action}
           session={@session}
-          patch={~p"/sessions/#{@session.id}/prepare/"}
+          patch={~p"/sessions/#{@session.id}/#{@live_action}"}
         />
       </.modal>
 
       <.modal
         :if={@live_action in [:edit]}
-        id="session-modal"
+        id="edit-session-modal"
         show
         on_cancel={JS.patch(~p"/sessions/#{@session.id}/prepare/")}
       >
@@ -118,10 +116,7 @@ defmodule ReveloWeb.SessionLive.Prepare do
       </.modal>
     </div>
 
-    <div
-      :if={@current_user |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == true}
-      class="h-full flex flex-col items-center justify-center"
-    >
+    <div :if={!@current_user.facilitator?} class="h-full flex flex-col items-center justify-center">
       <div :if={@live_action in [:identify]} class="flex flex-col items-center gap-4">
         <.variable_voting variables={@variables} user={@current_user} />
         <.button type="submit" form="variable-voting-form" class="w-fit px-24" phx-submit="vote">
@@ -142,95 +137,36 @@ defmodule ReveloWeb.SessionLive.Prepare do
   end
 
   @impl true
-  def mount(params, _session, socket) do
-    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) do
-      Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{params["session_id"]}")
-    end
-
-    {:ok,
-     socket
-     |> stream(
-       :sessions,
-       Ash.read!(Session, actor: socket.assigns[:current_user])
-     )
-     |> assign_new(:current_user, fn -> nil end)}
+  def mount(_params, _session, socket) do
+    {:ok, socket}
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    session = Ash.get!(Session, params["session_id"])
-
-    # Only broadcast if this is the main user
-    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) == false do
-      Phoenix.PubSub.broadcast(
-        Revelo.PubSub,
-        "session:#{session.id}",
-        {:view_changed, socket.assigns.live_action}
-      )
-    end
+  def handle_params(%{"session_id" => session_id} = params, _url, socket) do
+    session = Ash.get!(Session, session_id)
+    current_user = Ash.load!(socket.assigns.current_user, facilitator?: [session_id: session_id])
 
     variables =
-      Diagrams.list_variables!(params["session_id"], true, actor: params["current_user"])
+      Diagrams.list_variables!(session_id, true, actor: current_user)
 
-    socket =
-      if params["edit_variable"] do
-        variable = Enum.find(variables, &(&1.id == params["edit_variable"]))
-
-        socket
-        |> assign(:variable, variable)
-        |> assign(:modal, params["edit_variable"])
-      else
-        assign(socket, :modal, nil)
-      end
-
-    socket =
-      if params["show_variables"] == "true" do
-        assign(socket, :show_variables, true)
-      else
-        assign(socket, :show_variables, false)
+    modal =
+      case params do
+        %{"variable_id" => "new"} -> :new
+        %{"variable_id" => variable_id} -> Ash.get!(Revelo.Diagrams.Variable, variable_id)
+        _ -> false
       end
 
     socket =
       socket
+      |> assign(:current_user, current_user)
       |> assign(:session, session)
       |> assign(:variables, variables)
-      |> assign(:variable_count, 0)
+      |> assign(:show_variables, Map.get(params, "show_variables", false))
+      |> assign(:modal, modal)
       |> assign(:participant_count, {0, 1})
-      |> apply_action(socket.assigns.live_action, params)
+      |> assign(:page_title, page_title(socket.assigns.live_action))
 
     {:noreply, socket}
-  end
-
-  defp apply_action(socket, :edit, _params) do
-    assign(socket, :page_title, "Edit Session")
-  end
-
-  defp apply_action(socket, :new_variable, _params) do
-    socket
-    |> assign(:page_title, "New Variable")
-    |> assign(:variable, nil)
-  end
-
-  defp apply_action(socket, :prepare, _params) do
-    assign(socket, :page_title, page_title(socket.assigns.live_action))
-  end
-
-  defp apply_action(socket, :identify, _params) do
-    variables =
-      Diagrams.list_variables!(socket.assigns.session.id, true, actor: socket.assigns.current_user)
-
-    socket
-    |> assign(:page_title, page_title(socket.assigns.live_action))
-    |> assign(:variables, variables)
-  end
-
-  defp apply_action(socket, :done, _params) do
-    variables =
-      Diagrams.list_variables!(socket.assigns.session.id, true, actor: socket.assigns.current_user)
-
-    socket
-    |> assign(:page_title, page_title(socket.assigns.live_action))
-    |> assign(:variables, variables)
   end
 
   @impl true
@@ -331,12 +267,12 @@ defmodule ReveloWeb.SessionLive.Prepare do
 
   @impl true
   def handle_info({ReveloWeb.SessionLive.FormComponent, {:saved, session}}, socket) do
-    {:noreply, stream_insert(socket, :sessions, session)}
+    {:noreply, assign(socket, :session, session)}
   end
 
   @impl true
-  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, session}}, socket) do
-    {:noreply, stream_insert(socket, :sessions, session)}
+  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, _variable}}, socket) do
+    {:noreply, socket}
   end
 
   @impl true
@@ -347,25 +283,6 @@ defmodule ReveloWeb.SessionLive.Prepare do
   @impl true
   def handle_info({:participant_count, counts}, socket) do
     {:noreply, assign(socket, :participant_count, counts)}
-  end
-
-  @impl true
-  def handle_info({:view_changed, new_action}, socket) do
-    # Only handle the message if this is an anonymous user
-    if socket.assigns[:current_user] |> Ash.load!(:anonymous?) |> Map.get(:anonymous?) do
-      {:noreply, push_patch(socket, to: build_path_for_action(new_action, socket.assigns.session.id))}
-    else
-      {:noreply, socket}
-    end
-  end
-
-  defp build_path_for_action(action, session_id) do
-    case action do
-      :prepare -> ~p"/sessions/#{session_id}/prepare"
-      :identify -> ~p"/sessions/#{session_id}/identify"
-      :done -> ~p"/sessions/#{session_id}/identify/done"
-      _ -> ~p"/sessions/#{session_id}/prepare"
-    end
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"

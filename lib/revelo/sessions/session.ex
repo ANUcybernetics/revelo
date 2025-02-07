@@ -8,6 +8,8 @@ defmodule Revelo.Sessions.Session do
   alias Revelo.Accounts.User
   alias Revelo.Sessions.SessionParticipants
 
+  require Logger
+
   sqlite do
     table "sessions"
     repo Revelo.Repo
@@ -20,6 +22,7 @@ defmodule Revelo.Sessions.Session do
       prepare build(sort: [inserted_at: :desc])
     end
 
+    # TODO: ensure that anonymous users can't create sessions
     create :create do
       accept [:description, :report]
       primary? true
@@ -29,6 +32,13 @@ defmodule Revelo.Sessions.Session do
       end
 
       change set_attribute(:name, arg(:name))
+
+      change after_action(fn _changeset, session, context ->
+               session =
+                 Revelo.Sessions.add_participant!(session, context.actor, true)
+
+               {:ok, session}
+             end)
     end
 
     update :update do
@@ -46,20 +56,28 @@ defmodule Revelo.Sessions.Session do
 
       change manage_relationship(:participant, :participants, type: :append)
 
-      change after_transaction(fn changeset, {:ok, session}, _context ->
-               participant_id = changeset.arguments.participant.id
+      change after_transaction(fn
+               changeset, {:ok, session}, _context ->
+                 participant_id = changeset.arguments.participant.id
 
-               SessionParticipants
-               |> Ash.get!(
-                 session_id: session.id,
-                 participant_id: participant_id
-               )
-               |> Ash.Changeset.for_update(:set_facilitation_status, %{
-                 facilitator?: changeset.arguments.facilitator?
-               })
-               |> Ash.update!()
+                 SessionParticipants
+                 |> Ash.get!(
+                   session_id: session.id,
+                   participant_id: participant_id
+                 )
+                 |> Ash.Changeset.for_update(:set_facilitation_status, %{
+                   facilitator?: changeset.arguments.facilitator?
+                 })
+                 |> Ash.update!()
 
-               {:ok, session}
+                 {:ok, session}
+
+               changeset, {:error, reason}, _context ->
+                 Logger.debug(
+                   "Failed to execute transaction for action #{changeset.action.name} on #{inspect(changeset.resource)}, reason: #{inspect(reason)}"
+                 )
+
+                 {:error, reason}
              end)
     end
   end

@@ -133,33 +133,34 @@ defmodule Revelo.UserTest do
 
   describe "calculated facilitator attribute" do
     test "facilitator calculation returns true when user is facilitator" do
-      session = session()
-      user = user()
-      Revelo.Sessions.add_participant!(session, user)
+      creator = user()
+      # creator is automatically added to session as facilitator
+      session = session(creator)
 
-      session
-      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator?: true}, authorize?: false)
-      |> Ash.update!()
+      creator =
+        Ash.load!(creator, facilitator?: [session_id: session.id])
 
-      user_with_calculation =
-        Ash.load!(user, facilitator?: [session_id: session.id])
-
-      assert user_with_calculation.facilitator?
+      assert creator.facilitator?
     end
 
     test "facilitator calculation returns false when user is not facilitator" do
-      session = session()
-      user = user()
-      Revelo.Sessions.add_participant!(session, user)
+      creator = user()
+      session = session(creator)
+      participant = user()
+      Revelo.Sessions.add_participant!(session, participant)
 
       session
-      |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator?: false}, authorize?: false)
+      |> Ash.Changeset.for_update(
+        :add_participant,
+        %{participant: participant, facilitator?: false},
+        authorize?: false
+      )
       |> Ash.update!()
 
-      user_with_calculation =
-        Ash.load!(user, facilitator?: [session_id: session.id])
+      participant_with_calculation =
+        Ash.load!(participant, facilitator?: [session_id: session.id])
 
-      refute user_with_calculation.facilitator?
+      refute participant_with_calculation.facilitator?
     end
   end
 end

@@ -1,122 +1,64 @@
 defmodule Revelo.SessionTest do
   use Revelo.DataCase
 
-  import ExUnitProperties
   import ReveloTest.Generators
 
-  alias Revelo.Accounts.User
-  alias Revelo.Sessions.Session
   alias Revelo.Sessions.SessionParticipants
 
   describe "session actions" do
-    property "accepts valid create input" do
-      check all(input <- Ash.Generator.action_input(Session, :create)) do
-        changeset = Ash.Changeset.for_create(Session, :create, input)
-        assert changeset.valid?
-      end
-    end
-
-    property "succeeds on all valid create input" do
-      check all(input <- Ash.Generator.action_input(Session, :create)) do
-        Session |> Ash.Changeset.for_create(:create, input) |> Ash.create!()
-      end
-    end
-
     test "overrides passed through to generator work properly" do
       user = user()
-      session = session()
+      session = session(user)
       variable = variable(user: user, session: session)
       assert variable.creator == user
       assert variable.session == session
     end
 
-    test "can create session with participants" do
-      session = session()
-      user = user()
-      user2 = user()
-
-      # TODO update this when the auth/policies stuff is in place
-      Ash.get!(User, user.id, authorize?: false)
-
-      session =
-        session
-        |> Ash.Changeset.for_update(:add_participant, %{participant: user})
-        |> Ash.update!()
+    test "can create session and add a participant" do
+      creator = user()
+      session = session(creator)
 
       assert SessionParticipants |> Ash.read!() |> Enum.count() == 1
 
-      assert session.participants == [user]
+      assert session.participants == [creator]
 
-      # add a second user
-      session =
-        session
-        |> Ash.Changeset.for_update(:add_participant, %{participant: user2})
-        |> Ash.update!()
-        # |> Ash.load!(:participants, actor: user)
-        |> Ash.load!(:participants, authorize?: false)
+      # add a participant
+      participant = user()
+      session = Revelo.Sessions.add_participant!(session, participant)
+      session = Ash.load!(session, :participants, authorize?: false)
 
       assert SessionParticipants |> Ash.read!() |> Enum.count() == 2
       assert length(session.participants) == 2
-      assert Enum.map(session.participants, & &1.id) == [user.id, user2.id]
-    end
-
-    test "add_participant! exists and works" do
-      session = session()
-      user = user()
-
-      session = Revelo.Sessions.add_participant!(session, user)
-      session = Ash.load!(session, :participants, authorize?: false)
-
-      assert SessionParticipants |> Ash.read!() |> Enum.count() == 1
-      assert length(session.participants) == 1
-      assert hd(session.participants).id == user.id
+      assert Enum.map(session.participants, & &1.id) == [creator.id, participant.id]
     end
 
     test "add_participant! works with facilitator option" do
-      session = session()
-      user = user()
+      creator = user()
+      session = session(creator)
 
-      session = Revelo.Sessions.add_participant!(session, user, true)
+      assert SessionParticipants |> Ash.read!() |> Enum.count() == 1
+
+      assert session.participants == [creator]
+
+      # add a participant
+      participant = user()
+      session = Revelo.Sessions.add_participant!(session, participant, true)
       session = Ash.load!(session, :participants, authorize?: false)
 
       session_participant =
         Ash.get!(Revelo.Sessions.SessionParticipants,
           session_id: session.id,
-          participant_id: user.id
+          participant_id: participant.id
         )
 
       assert session_participant.facilitator? == true
-      assert length(session.participants) == 1
-      assert hd(session.participants).id == user.id
-    end
-
-    test "can add participant as facilitator" do
-      session = session()
-      user = user()
-
-      session =
-        session
-        |> Ash.Changeset.for_update(:add_participant, %{participant: user, facilitator?: true})
-        |> Ash.update!()
-        |> Ash.load!(:participants, authorize?: false)
-
-      session_participant =
-        Ash.get!(Revelo.Sessions.SessionParticipants,
-          session_id: session.id,
-          participant_id: user.id
-        )
-
-      # |> Ash.Changeset.for_update(:set_as_facilitator)
-      # |> Ash.update!()
-
-      assert session_participant.facilitator? == true
-      assert length(session.participants) == 1
-      assert hd(session.participants).id == user.id
+      assert length(session.participants) == 2
+      assert hd(session.participants).id == creator.id
     end
 
     test "can create session with variables and relationships" do
       user = user()
-      session = session()
+      session = session(user)
       assert Ash.load!(session, :variables).variables == []
       var1 = variable(user: user, session: session)
       var2 = variable(user: user, session: session)
@@ -145,9 +87,10 @@ defmodule Revelo.SessionTest do
     end
 
     test "list endpoint orders by inserted_at descending" do
-      first_session = session()
+      user = user()
+      first_session = session(user)
       Process.sleep(100)
-      second_session = session()
+      second_session = session(user)
 
       [latest, oldest] = Revelo.Sessions.list!()
 

@@ -11,7 +11,7 @@ defmodule Revelo.VariableTest do
   describe "property-based variable tests" do
     property "accepts valid create input" do
       user = user()
-      session = session()
+      session = session(user)
 
       check all(
               input <-
@@ -28,7 +28,7 @@ defmodule Revelo.VariableTest do
 
     property "succeeds on all valid create input" do
       user = user()
-      session = session()
+      session = session(user)
 
       check all(input <- Ash.Generator.action_input(Variable, :create)) do
         input = Map.put(input, :session, session)
@@ -107,7 +107,7 @@ defmodule Revelo.VariableTest do
 
     test "Revelo.Diagrams.list! returns only unhidden variables" do
       user = user()
-      session = session()
+      session = session(user)
       visible_var = variable(user: user, session: session)
       hidden_var = variable(user: user, session: session)
 
@@ -128,7 +128,7 @@ defmodule Revelo.VariableTest do
 
     test "key variable is returned first by list_variables!" do
       user = user()
-      session = session()
+      session = session(user)
       variable1 = variable(name: "abc", user: user, session: session)
       variable2 = variable(name: "xyz", user: user, session: session)
 
@@ -146,7 +146,7 @@ defmodule Revelo.VariableTest do
 
     test "toggling key variable on unsets other key variables in the session" do
       user = user()
-      session = session()
+      session = session(user)
       variable1 = variable(user: user, session: session)
       variable2 = variable(user: user, session: session)
 
@@ -162,7 +162,7 @@ defmodule Revelo.VariableTest do
 
     test "enforces uniqueness of names within session" do
       user = user()
-      session = session()
+      session = session(user)
 
       input = %{name: "test", session: session}
 
@@ -253,7 +253,7 @@ defmodule Revelo.VariableTest do
     test "list_variable_votes shows all votes sorted by variable name" do
       user1 = user()
       user2 = user()
-      session = session()
+      session = session(user1)
       variable1 = variable(name: "abc", user: user1, session: session)
       variable2 = variable(name: "xyz", user: user1, session: session)
 

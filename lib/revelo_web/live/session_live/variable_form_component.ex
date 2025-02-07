@@ -92,20 +92,20 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
 
   defp assign_form(%{assigns: %{variable: variable}} = socket) do
     form =
-      if variable do
+      if variable == :new do
+        AshPhoenix.Form.for_create(
+          Variable,
+          :create,
+          as: "variable",
+          actor: socket.assigns.current_user
+        )
+      else
         AshPhoenix.Form.for_update(
           variable,
           :rename,
           as: "variable",
           actor: socket.assigns.current_user,
           params: %{name: variable.name}
-        )
-      else
-        AshPhoenix.Form.for_create(
-          Variable,
-          :create,
-          as: "variable",
-          actor: socket.assigns.current_user
         )
       end
 

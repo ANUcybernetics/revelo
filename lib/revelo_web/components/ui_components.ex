@@ -182,7 +182,7 @@ defmodule ReveloWeb.UIComponents do
     <div class="flex gap-2">
       <.tooltip>
         <tooltip_trigger>
-          <.link patch={"/sessions/#{@session.id}/prepare?edit_variable=#{@variable.id}"}>
+          <.link patch={"/sessions/#{@session.id}/#{@live_action}/variables/#{@variable.id}"}>
             <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
               <.icon name="hero-pencil-square" class="h-4 w-4 transition-all" />
               <span class="sr-only">
@@ -688,6 +688,7 @@ defmodule ReveloWeb.UIComponents do
   Renders the variable table.
   """
   attr :session, :map, required: true, doc: "the session containing the variables"
+  attr :live_action, :atom, required: true, doc: "current live action"
   attr :variables, :list, required: true, doc: "the list of variables to display"
   attr :variable_count, :integer, required: true, doc: "the number of variables to generate"
   attr :class, :string, default: "", doc: "additional class to apply to the card"
@@ -701,7 +702,7 @@ defmodule ReveloWeb.UIComponents do
           <.card_title class="grow">{@title}</.card_title>
           <:actions>
             <div class="flex flex-row gap-4">
-              <.link patch={"/sessions/#{@session.id}/prepare/new_variable"}>
+              <.link patch={"/sessions/#{@session.id}/#{@live_action}/variables/new"}>
                 <.button type="button" variant="outline" size="sm" class="!mt-0">
                   <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
                 </.button>
@@ -756,7 +757,11 @@ defmodule ReveloWeb.UIComponents do
                     <% end %>
                   </.table_cell>
                   <.table_cell>
-                    <.variable_actions variable={variable} session={@session} />
+                    <.variable_actions
+                      variable={variable}
+                      session={@session}
+                      live_action={@live_action}
+                    />
                   </.table_cell>
                 </.table_row>
               <% end %>
@@ -887,7 +892,7 @@ defmodule ReveloWeb.UIComponents do
       </.card_header>
       <.card_content>
         <div class="flex justify-center items-center flex-col border aspect-square rounded-xl w-full p-4">
-          <.qr_code text={@url}/>
+          <.qr_code text={@url} />
         </div>
       </.card_content>
       <.card_footer class="flex flex-col items-center gap-2">

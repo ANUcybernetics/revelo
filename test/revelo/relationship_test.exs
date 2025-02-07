@@ -9,7 +9,7 @@ defmodule Revelo.RelationshipTest do
   describe "relationship actions" do
     test "succeeds on valid create input" do
       user = user()
-      session = session()
+      session = session(user)
       src = variable(session: session, user: user)
       dst = variable(session: session, user: user)
 
@@ -35,7 +35,7 @@ defmodule Revelo.RelationshipTest do
 
     test "get with unique_relationship identity" do
       user = user()
-      session = session()
+      session = session(user)
       src = variable(user: user, session: session)
       dst = variable(user: user, session: session)
 
@@ -49,7 +49,7 @@ defmodule Revelo.RelationshipTest do
 
     test "Revelo.Diagrams.list! returns only unhidden relationships" do
       user = user()
-      session = session()
+      session = session(user)
       var1 = variable(user: user, session: session)
       var2 = variable(user: user, session: session)
       visible_rel = relationship(user: user, session: session, src: var1, dst: var2)
@@ -72,7 +72,7 @@ defmodule Revelo.RelationshipTest do
 
     test "no duplicate relationships" do
       user = user()
-      session = session()
+      session = session(user)
       src = variable(user: user, session: session)
       dst = variable(user: user, session: session)
 
@@ -85,7 +85,7 @@ defmodule Revelo.RelationshipTest do
 
     test "can create relationship vote" do
       user = user()
-      session = session()
+      session = session(user)
       var1 = variable(user: user, session: session)
       var2 = variable(user: user, session: session)
       relationship = relationship(user: user, session: session, src: var1, dst: var2)
@@ -108,7 +108,7 @@ defmodule Revelo.RelationshipTest do
 
     test "can create votes for multiple relationships with same user" do
       user = user()
-      session = session()
+      session = session(user)
       var1 = variable(user: user, session: session)
       var2 = variable(user: user, session: session)
       var3 = variable(user: user, session: session)
@@ -154,9 +154,9 @@ defmodule Revelo.RelationshipTest do
     end
 
     test "multiple users can vote on same relationship" do
-      user1 = generate(user())
-      user2 = generate(user())
-      session = session()
+      user1 = user()
+      user2 = user()
+      session = session(user1)
       var1 = variable(user: user1, session: session)
       var2 = variable(user: user1, session: session)
       relationship = relationship(user: user1, session: session, src: var1, dst: var2)
@@ -196,7 +196,7 @@ defmodule Revelo.RelationshipTest do
 
     test "list_relationship_votes returns all votes sorted by source/dest variable name" do
       user = user()
-      session = session()
+      session = session(user)
       var1 = variable(user: user, session: session, name: "A")
       var2 = variable(user: user, session: session, name: "B")
       var3 = variable(user: user, session: session, name: "C")
@@ -230,7 +230,7 @@ defmodule Revelo.RelationshipTest do
 
     test "enumerate_relationships creates all src->dst relationships" do
       user = user()
-      session = session()
+      session = session(user)
       var1 = variable(user: user, session: session)
       var2 = variable(user: user, session: session)
       var3 = variable(user: user, session: session)

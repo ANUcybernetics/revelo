@@ -12,8 +12,14 @@ defmodule ReveloWeb.QRController do
         _ -> Revelo.Accounts.register_anonymous_user!(authorize?: false)
       end
 
+    user = Ash.load!(user, :anonymous?)
+
     case Ash.get(Revelo.Sessions.Session, session_id) do
-      {:ok, _session} ->
+      {:ok, session} ->
+        # alternately, could check if they're not already a user... not sure which is
+        # semantically better for our UX
+        if user.anonymous?, do: Revelo.Sessions.add_participant!(session, user)
+
         conn
         |> AshAuthentication.Plug.Helpers.store_in_session(user)
         |> redirect(to: ~p"/sessions/#{session_id}/identify")

@@ -6,7 +6,9 @@ defmodule Revelo.UIComponentsTest do
   import ReveloTest.Generators
 
   test "sidebar contains icons (with links) for all stages of the session" do
-    assigns = %{session_id: session().id, current_page: :prepare}
+    user = user()
+    session = session(user)
+    assigns = %{session_id: session.id, current_page: :prepare}
     html = render_component(&ReveloWeb.UIComponents.sidebar/1, assigns)
 
     assert html =~ "Add Session"
@@ -53,13 +55,15 @@ defmodule Revelo.UIComponentsTest do
   end
 
   test "variable_actions shows action buttons" do
-    session = session()
+    user = user()
+    session = session(user)
     variable = %{id: 1, is_key?: false, hidden?: false, vote_tally: 0}
 
     html =
       render_component(&ReveloWeb.UIComponents.variable_actions/1, %{
         variable: variable,
-        session: session
+        session: session,
+        live_action: :prepare
       })
 
     assert html =~ "Edit"

@@ -6,7 +6,8 @@ defmodule ReveloWeb.SessionServerTest do
   alias ReveloWeb.SessionServer
 
   setup do
-    session = session()
+    user = user()
+    session = session(user)
     {:ok, pid} = SessionServer.start_link(session.id)
     {:ok, pid: pid, session: session}
   end

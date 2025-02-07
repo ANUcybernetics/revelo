@@ -14,7 +14,7 @@ defmodule Revelo.LoopTest do
   describe "loop actions" do
     test "can create loop" do
       user = user()
-      session = session()
+      session = session(user)
       variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
 
       relationships =
@@ -44,7 +44,7 @@ defmodule Revelo.LoopTest do
 
     test "can create multiple loops sharing relationships" do
       user = user()
-      session = session()
+      session = session(user)
 
       # Create variables for both loops
       variables = Enum.map(1..4, fn _ -> variable(session: session, user: user) end)
@@ -95,7 +95,7 @@ defmodule Revelo.LoopTest do
 
     test "creating duplicate loop returns error" do
       user = user()
-      session = session()
+      session = session(user)
       variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
 
       relationships =
@@ -133,7 +133,7 @@ defmodule Revelo.LoopTest do
   describe "cycle detection" do
     test "find_loops should find simple cycles" do
       user = user()
-      session = session()
+      session = session(user)
       vars = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
       [var1, var2, var3] = vars
 
@@ -151,7 +151,7 @@ defmodule Revelo.LoopTest do
 
     test "find_loops should find intersecting cycles" do
       user = user()
-      session = session()
+      session = session(user)
       vars = Enum.map(1..4, fn _ -> variable(session: session, user: user) end)
       [var1, var2, var3, var4] = vars
 
@@ -169,7 +169,7 @@ defmodule Revelo.LoopTest do
 
     test "find_loops should handle edge cases" do
       user = user()
-      session = session()
+      session = session(user)
       vars = Enum.map(1..4, fn _ -> variable(session: session, user: user) end)
       [var1, var2, var3, var4] = vars
 
@@ -191,7 +191,7 @@ defmodule Revelo.LoopTest do
 
     test "can create simple a->b->a loop" do
       user = user()
-      session = session()
+      session = session(user)
 
       # Create the two variables for the loop
       [var_a, var_b] = Enum.map(1..2, fn _ -> variable(session: session, user: user) end)
@@ -215,7 +215,7 @@ defmodule Revelo.LoopTest do
 
     test "non-loop relationships return error changeset" do
       user = user()
-      session = session()
+      session = session(user)
 
       # Create three variables but don't close the loop
       variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
@@ -249,7 +249,7 @@ defmodule Revelo.LoopTest do
 
     test "invalid relationships with no loop return error changeset" do
       user = user()
-      session = session()
+      session = session(user)
 
       variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
       [var1, var2, var3] = variables
@@ -281,7 +281,7 @@ defmodule Revelo.LoopTest do
 
     test "scan_session creates loops from relationships" do
       user = user()
-      session = session()
+      session = session(user)
 
       # Create variables for two different loops
       variables = Enum.map(1..5, fn _ -> variable(session: session, user: user) end)
@@ -331,7 +331,7 @@ defmodule Revelo.LoopTest do
 
     test "scan_session returns empty list when no loops exist" do
       user = user()
-      session = session()
+      session = session(user)
 
       # Create variables for a linear path (no loops)
       variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
@@ -350,7 +350,7 @@ defmodule Revelo.LoopTest do
 
     test "can create self-loop" do
       user = user()
-      session = session()
+      session = session(user)
 
       # Create a single variable for the self-loop
       variable = variable(session: session, user: user)
@@ -371,7 +371,7 @@ defmodule Revelo.LoopTest do
 
     test "loops_equal? correctly compares loops" do
       user = user()
-      session = session()
+      session = session(user)
 
       # Create test variables
       variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)

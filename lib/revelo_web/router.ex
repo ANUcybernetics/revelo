@@ -28,30 +28,29 @@ defmodule ReveloWeb.Router do
   end
 
   # TODO could scope this to "/sessions and remove that from the live routes
-  scope "/", ReveloWeb do
+  scope "/sessions", ReveloWeb do
     pipe_through :browser
 
     ash_authentication_live_session :authenticated_routes,
       on_mount: {ReveloWeb.LiveUserAuth, :live_user_required} do
-      live "/sessions", SessionLive.Index, :index
-      live "/sessions/new", SessionLive.Index, :new
-      live "/sessions/:id/edit", SessionLive.Index, :edit
+      live "/", SessionLive.Index, :index
+      live "/new", SessionLive.Index, :new
+      live "/:id/edit", SessionLive.Index, :edit
 
-      live "/sessions/:id", SessionLive.Show, :show
-      live "/sessions/:id/show/edit", SessionLive.Show, :edit
+      live "/:id", SessionLive.Show, :show
+      live "/:id/show/edit", SessionLive.Show, :edit
     end
 
     # these are the sessions used during a session, and as such have the "create anon user if not presetnt" on mount
     ash_authentication_live_session :session_routes,
       on_mount: {ReveloWeb.LiveUserAuth, :live_user_required} do
-      live "/sessions/:session_id/prepare", SessionLive.Prepare, :prepare
-      live "/sessions/:session_id/prepare/edit", SessionLive.Prepare, :edit
-      live "/sessions/:session_id/prepare/new_variable", SessionLive.Prepare, :new_variable
-      live "/sessions/:session_id/identify", SessionLive.Prepare, :identify
-      live "/sessions/:session_id/identify/done", SessionLive.Prepare, :done
+      live "/:session_id/prepare", SessionLive.Prepare, :prepare
+      live "/:session_id/prepare/edit", SessionLive.Prepare, :edit
+      live "/:session_id/identify", SessionLive.Prepare, :identify
+      live "/:session_id/identify/done", SessionLive.Prepare, :done
 
-      # live "/sessions/:session_id/relate", SessionLive.Relate, :relate
-      # live "/sessions/:session_id/analyse", SessionLive.Analyse, :analyse
+      live "/:session_id/prepare/variables/:variable_id", SessionLive.Prepare, :prepare
+      live "/:session_id/identify/variables/:variable_id", SessionLive.Prepare, :identify
     end
   end
 
