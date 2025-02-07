@@ -1,4 +1,4 @@
-defmodule ReveloWeb.SessionLive.Prepare do
+defmodule ReveloWeb.SessionLive.Phase do
   @moduledoc false
   use ReveloWeb, :live_view
 
