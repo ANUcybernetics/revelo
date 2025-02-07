@@ -14,18 +14,10 @@ we're building it out & exploring the problem space).
 
 ## Route/LiveView re-org
 
-The plan is:
+- we'll re-do the pubsub stuff, as per yesterday's discussion
 
-- have a single `ReveloWeb.SessionLive.Prepare` LiveView module
-- each `/sessions/:session_id/PHASE_NAME` route will use this module, with the
-  specific phase specified as the live_action
-- for the add/edit variable modals can use the same route, but include a
-  `new_variable=` or `edit_variable=` query param, and the in `handle_params` we
-  check for the existence of this param and (conditionally) display the modal
-
-@Schmidty there are pros and cons to this approach vs the one you took, but I
-think this is better - can explain in person (can't be arsed writing it out
-here).
+- thought: the LLM stuff should either be %Variable{} aware, or no (but
+  consistent in both input & output)
 
 ## Libraries we'll use
 
@@ -64,9 +56,9 @@ mix ash.gen.resource \
   even session -> users) relationship? could just get that info from the list of
   variables (via their :creator attribute)
 
-
 ## adrian's gross things
 
-- Removing a vote is kind of gross at the moment, as you need to pass the whole vote
-  to the destroy function. This is particularly annoying in the identify phase, as we
-  the votes aren't loaded at any point before needing to destroy them.
+- Removing a vote is kind of gross at the moment, as you need to pass the whole
+  vote to the destroy function. This is particularly annoying in the identify
+  phase, as we the votes aren't loaded at any point before needing to destroy
+  them.
