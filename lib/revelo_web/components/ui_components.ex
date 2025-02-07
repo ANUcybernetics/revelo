@@ -675,9 +675,8 @@ defmodule ReveloWeb.UIComponents do
       <div>
         <img src={"data:image/png;base64," <>
           (@text
-          |> QRCode.create(:high)
-          |> QRCode.render(:png)
-          |> elem(1)
+          |> EQRCode.encode()
+          |> EQRCode.png()
           |> Base.encode64())} />
       </div>
     </div>
