@@ -3,6 +3,10 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
+- refactor the variables, relationships and loops tables into LiveComponents
+
+- finish the assign lists -> streams refactor of Phase (currently half-done)
+
 - add tests to user flow which test the Presence stuff (but probably not until
   the route refactor described below)
 
