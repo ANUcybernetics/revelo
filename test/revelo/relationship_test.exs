@@ -223,9 +223,15 @@ defmodule Revelo.RelationshipTest do
       rel2 = Enum.find(relationships, &(&1.id == rel2.id))
       rel3 = Enum.find(relationships, &(&1.id == rel3.id))
 
-      assert rel1.vote_tally == %{reinforcing: 1, balancing: 0, no_relationship: 0}
-      assert rel2.vote_tally == %{reinforcing: 0, balancing: 1, no_relationship: 0}
-      assert rel3.vote_tally == %{reinforcing: 1, balancing: 0, no_relationship: 0}
+      assert rel1.reinforcing_votes == 1
+      assert rel1.balancing_votes == 0
+      assert rel1.no_relationship_votes == 0
+      assert rel2.reinforcing_votes == 0
+      assert rel2.balancing_votes == 1
+      assert rel2.no_relationship_votes == 0
+      assert rel3.reinforcing_votes == 1
+      assert rel3.balancing_votes == 0
+      assert rel3.no_relationship_votes == 0
     end
 
     test "enumerate_relationships creates all src->dst relationships" do
@@ -282,6 +288,66 @@ defmodule Revelo.RelationshipTest do
         ])
 
       assert rel_pairs == expected_pairs
+    end
+
+    test "type calculation" do
+      user = user()
+      session = session(user)
+      var1 = variable(user: user, session: session)
+      var2 = variable(user: user, session: session)
+      relationship = relationship(user: user, session: session, src: var1, dst: var2)
+
+      # Test no votes case
+      relationship =
+        Ash.load!(relationship, [
+          :reinforcing_votes,
+          :balancing_votes,
+          :no_relationship_votes,
+          :type
+        ])
+
+      assert relationship.type == "no_relationship"
+
+      # Test reinforcing only case
+      Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: user)
+
+      relationship =
+        Ash.load!(relationship, [
+          :reinforcing_votes,
+          :balancing_votes,
+          :no_relationship_votes,
+          :type
+        ])
+
+      assert relationship.type == "reinforcing"
+
+      # Create another user and add balancing vote to test conflicting case
+      user2 = user()
+      Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: user2)
+
+      relationship =
+        Ash.load!(relationship, [
+          :reinforcing_votes,
+          :balancing_votes,
+          :no_relationship_votes,
+          :type
+        ])
+
+      assert relationship.type == "conflicting"
+
+      # Create a new relationship to test balancing only case
+      relationship2 = relationship(user: user, session: session, src: var2, dst: var1)
+      Revelo.Diagrams.relationship_vote!(relationship2, :balancing, actor: user)
+
+      relationship2 =
+        Ash.load!(relationship2, [
+          :reinforcing_votes,
+          :balancing_votes,
+          :no_relationship_votes,
+          :type
+        ])
+
+      assert relationship2.type == "balancing"
     end
   end
 end

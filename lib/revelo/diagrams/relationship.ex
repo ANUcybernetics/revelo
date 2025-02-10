@@ -9,27 +9,43 @@ defmodule Revelo.Diagrams.Relationship do
   alias Revelo.Sessions.Session
 
   calculations do
-    # TODO this seems to be required because ash_sqlite doesn't support count
-    # aggregates in expressions (or in aggregates)
-    calculate :vote_tally,
-              :map,
-              expr(%{
-                reinforcing:
-                  fragment(
-                    "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'reinforcing')",
-                    id
-                  ),
-                balancing:
-                  fragment(
-                    "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'balancing')",
-                    id
-                  ),
-                no_relationship:
-                  fragment(
-                    "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'no_relationship')",
-                    id
-                  )
-              })
+    calculate :reinforcing_votes,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'reinforcing')",
+                  id
+                )
+              )
+
+    calculate :balancing_votes,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'balancing')",
+                  id
+                )
+              )
+
+    calculate :no_relationship_votes,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'no_relationship')",
+                  id
+                )
+              )
+
+    calculate :type,
+              :string,
+              expr(
+                cond do
+                  reinforcing_votes > 0 and balancing_votes > 0 -> "conflicting"
+                  reinforcing_votes > 0 and balancing_votes == 0 -> "reinforcing"
+                  balancing_votes > 0 and reinforcing_votes == 0 -> "balancing"
+                  true -> "no_relationship"
+                end
+              )
   end
 
   sqlite do
@@ -50,7 +66,11 @@ defmodule Revelo.Diagrams.Relationship do
       end
 
       filter expr(session.id == ^arg(:session_id) and (^arg(:include_hidden) or hidden? == false))
-      prepare build(sort: [:src_id, :dst_id], load: [:vote_tally])
+
+      prepare build(
+                sort: [:src_id, :dst_id],
+                load: [:reinforcing_votes, :balancing_votes, :no_relationship_votes, :type]
+              )
     end
 
     create :create do
