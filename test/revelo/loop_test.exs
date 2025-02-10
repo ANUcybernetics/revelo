@@ -33,9 +33,8 @@ defmodule Revelo.LoopTest do
         }
 
       loop =
-        Loop
-        |> Ash.Changeset.for_create(:create, input, actor: user)
-        |> Ash.create!()
+        input
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
       assert MapSet.new(relationships, & &1.id) ==
@@ -68,15 +67,13 @@ defmodule Revelo.LoopTest do
       ]
 
       loop1 =
-        Loop
-        |> Ash.Changeset.for_create(:create, %{relationships: loop1_rels}, actor: user)
-        |> Ash.create!()
+        %{relationships: loop1_rels}
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
       loop2 =
-        Loop
-        |> Ash.Changeset.for_create(:create, %{relationships: loop2_rels}, actor: user)
-        |> Ash.create!()
+        %{relationships: loop2_rels}
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
       # Verify both loops were created and contain the shared relationship
@@ -113,15 +110,10 @@ defmodule Revelo.LoopTest do
       }
 
       # Create first loop successfully
-      Loop
-      |> Ash.Changeset.for_create(:create, input, actor: user)
-      |> Ash.create!()
+      Revelo.Diagrams.create_loop!(input, actor: user)
 
       # Attempt to create duplicate loop
-      result =
-        Loop
-        |> Ash.Changeset.for_create(:create, input, actor: user)
-        |> Ash.create()
+      result = Revelo.Diagrams.create_loop(input, actor: user)
 
       assert {:error, changeset} = result
 
@@ -203,9 +195,8 @@ defmodule Revelo.LoopTest do
       ]
 
       loop =
-        Loop
-        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
-        |> Ash.create!()
+        %{relationships: relationships}
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
       # Verify loop was created with both relationships
@@ -232,10 +223,7 @@ defmodule Revelo.LoopTest do
         story: Faker.Lorem.paragraph()
       }
 
-      result =
-        Loop
-        |> Ash.Changeset.for_create(:create, input, actor: user)
-        |> Ash.create()
+      result = Revelo.Diagrams.create_loop(input, actor: user)
 
       assert {:error, changeset} = result
 
@@ -265,10 +253,7 @@ defmodule Revelo.LoopTest do
         story: Faker.Lorem.paragraph()
       }
 
-      result =
-        Loop
-        |> Ash.Changeset.for_create(:create, input, actor: user)
-        |> Ash.create()
+      result = Revelo.Diagrams.create_loop(input, actor: user)
 
       assert {:error, changeset} = result
 
@@ -359,9 +344,8 @@ defmodule Revelo.LoopTest do
       relationship = relationship(src: variable, dst: variable, session: session, user: user)
 
       loop =
-        Loop
-        |> Ash.Changeset.for_create(:create, %{relationships: [relationship]}, actor: user)
-        |> Ash.create!()
+        %{relationships: [relationship]}
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
       # Verify loop was created with the self-referential relationship
@@ -425,9 +409,8 @@ defmodule Revelo.LoopTest do
       end)
 
       loop =
-        Loop
-        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
-        |> Ash.create!()
+        %{relationships: relationships}
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!([:influence_relationships, :type])
 
       assert loop.type == :reinforcing
@@ -455,9 +438,8 @@ defmodule Revelo.LoopTest do
       Revelo.Diagrams.relationship_vote!(List.last(relationships), :balancing, actor: user)
 
       loop =
-        Loop
-        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
-        |> Ash.create!()
+        %{relationships: relationships}
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:type)
 
       assert loop.type == :balancing
@@ -488,9 +470,8 @@ defmodule Revelo.LoopTest do
       Revelo.Diagrams.relationship_vote!(List.last(relationships), :reinforcing, actor: user)
 
       loop =
-        Loop
-        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
-        |> Ash.create!()
+        %{relationships: relationships}
+        |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:type)
 
       assert loop.type == :conflicting

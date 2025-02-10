@@ -30,6 +30,7 @@ defmodule Revelo.Diagrams do
 
     resource Revelo.Diagrams.Loop do
       define :scan_session, args: [:session_id]
+      define :create_loop, args: [:relationships], action: :create
     end
 
     resource Revelo.Diagrams.LoopRelationships
