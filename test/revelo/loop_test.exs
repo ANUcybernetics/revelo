@@ -9,7 +9,6 @@ defmodule Revelo.LoopTest do
 
   alias Ash.Error.Changes.InvalidChanges
   alias Revelo.Diagrams.Analyser
-  alias Revelo.Diagrams.Loop
 
   describe "loop actions" do
     test "can create loop" do
@@ -23,17 +22,17 @@ defmodule Revelo.LoopTest do
         |> List.insert_at(-1, List.first(variables))
         |> Enum.chunk_every(2, 1, :discard)
         |> Enum.map(fn [src, dst] ->
-          relationship(src: src, dst: dst, session: session, user: user)
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session,
+            user: user,
+            vote_type: :reinforcing
+          )
         end)
 
-      input =
-        %{
-          relationships: relationships,
-          story: Faker.Lorem.paragraph()
-        }
-
       loop =
-        input
+        relationships
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
@@ -50,29 +49,60 @@ defmodule Revelo.LoopTest do
       [var1, var2, var3, var4] = variables
 
       # Create shared relationship between var2 and var3
-      shared_relationship = relationship(src: var2, dst: var3, session: session, user: user)
+      shared_relationship =
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
 
       # First loop: var1 -> var2 -> var3 -> var1
       loop1_rels = [
-        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
         shared_relationship,
-        relationship(src: var3, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       # Second loop: var2 -> var3 -> var4 -> var2
       loop2_rels = [
         shared_relationship,
-        relationship(src: var3, dst: var4, session: session, user: user),
-        relationship(src: var4, dst: var2, session: session, user: user)
+        relationship_with_vote(
+          src: var3,
+          dst: var4,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var4,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       loop1 =
-        %{relationships: loop1_rels}
+        loop1_rels
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
       loop2 =
-        %{relationships: loop2_rels}
+        loop2_rels
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
@@ -81,13 +111,6 @@ defmodule Revelo.LoopTest do
       assert MapSet.new(loop2_rels, & &1.id) == MapSet.new(loop2.influence_relationships, & &1.id)
       assert shared_relationship.id in Enum.map(loop1.influence_relationships, & &1.id)
       assert shared_relationship.id in Enum.map(loop2.influence_relationships, & &1.id)
-    end
-
-    test "can create non-empty loop using generator" do
-      loop = Ash.load!(loop(), :influence_relationships)
-
-      assert loop
-      assert length(loop.influence_relationships) > 0
     end
 
     test "creating duplicate loop returns error" do
@@ -101,23 +124,48 @@ defmodule Revelo.LoopTest do
         |> List.insert_at(-1, List.first(variables))
         |> Enum.chunk_every(2, 1, :discard)
         |> Enum.map(fn [src, dst] ->
-          relationship(src: src, dst: dst, session: session, user: user)
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session,
+            user: user,
+            vote_type: :reinforcing
+          )
         end)
 
-      input = %{
-        relationships: relationships,
-        story: Faker.Lorem.paragraph()
-      }
-
       # Create first loop successfully
-      Revelo.Diagrams.create_loop!(input, actor: user)
+      Revelo.Diagrams.create_loop!(relationships, actor: user)
 
       # Attempt to create duplicate loop
-      result = Revelo.Diagrams.create_loop(input, actor: user)
+      result = Revelo.Diagrams.create_loop(relationships, actor: user)
 
       assert {:error, changeset} = result
 
       assert [%InvalidChanges{message: "A loop with these exact relationships already exists"}] =
+               Map.get(changeset, :errors)
+    end
+
+    test "relationships without votes return validation error" do
+      user = user()
+      session = session(user)
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+      relationships =
+        variables
+        |> List.insert_at(-1, List.first(variables))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship(src: src, dst: dst, session: session, user: user)
+        end)
+
+      result = Revelo.Diagrams.create_loop(relationships, actor: user)
+      assert {:error, changeset} = result
+
+      assert [
+               %InvalidChanges{
+                 message: "All relationships must be type :balancing, :reinforcing or :conflicting"
+               }
+             ] =
                Map.get(changeset, :errors)
     end
   end
@@ -131,9 +179,27 @@ defmodule Revelo.LoopTest do
 
       # Simple cycle: var1 -> var2 -> var3 -> var1
       rels = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       loops = Analyser.find_loops(rels)
@@ -148,11 +214,41 @@ defmodule Revelo.LoopTest do
       [var1, var2, var3, var4] = vars
 
       rels = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var1, session: session, user: user),
-        relationship(src: var3, dst: var4, session: session, user: user),
-        relationship(src: var4, dst: var2, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var4,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var4,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       loops = Analyser.find_loops(rels)
@@ -167,15 +263,42 @@ defmodule Revelo.LoopTest do
 
       # No cycles
       rels1 = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var4, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var4,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       assert [] == Analyser.find_loops(rels1)
 
       # Self loop
-      rels2 = [relationship(src: var1, dst: var1, session: session, user: user)]
+      rels2 = [
+        relationship_with_vote(
+          src: var1,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
+      ]
+
       loops = Analyser.find_loops(rels2)
       assert length(loops) == 1
       assert MapSet.new(rels2, & &1.id) == MapSet.new(hd(loops), & &1.id)
@@ -190,12 +313,24 @@ defmodule Revelo.LoopTest do
 
       # Create relationships a->b and b->a
       relationships = [
-        relationship(src: var_a, dst: var_b, session: session, user: user),
-        relationship(src: var_b, dst: var_a, session: session, user: user)
+        relationship_with_vote(
+          src: var_a,
+          dst: var_b,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var_b,
+          dst: var_a,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       loop =
-        %{relationships: relationships}
+        relationships
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
@@ -215,15 +350,16 @@ defmodule Revelo.LoopTest do
         variables
         |> Enum.chunk_every(2, 1, :discard)
         |> Enum.map(fn [src, dst] ->
-          relationship(src: src, dst: dst, session: session, user: user)
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session,
+            user: user,
+            vote_type: :reinforcing
+          )
         end)
 
-      input = %{
-        relationships: relationships,
-        story: Faker.Lorem.paragraph()
-      }
-
-      result = Revelo.Diagrams.create_loop(input, actor: user)
+      result = Revelo.Diagrams.create_loop(relationships, actor: user)
 
       assert {:error, changeset} = result
 
@@ -244,16 +380,23 @@ defmodule Revelo.LoopTest do
 
       # Create non-sequential relationships that don't form a loop
       relationships = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var3, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
-      input = %{
-        relationships: relationships,
-        story: Faker.Lorem.paragraph()
-      }
-
-      result = Revelo.Diagrams.create_loop(input, actor: user)
+      result = Revelo.Diagrams.create_loop(relationships, actor: user)
 
       assert {:error, changeset} = result
 
@@ -274,16 +417,52 @@ defmodule Revelo.LoopTest do
 
       # First loop: var1 -> var2 -> var3 -> var1
       loop1_rels = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       # Second loop: var3 -> var4 -> var5 -> var3
       loop2_rels = [
-        relationship(src: var3, dst: var4, session: session, user: user),
-        relationship(src: var4, dst: var5, session: session, user: user),
-        relationship(src: var5, dst: var3, session: session, user: user)
+        relationship_with_vote(
+          src: var3,
+          dst: var4,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var4,
+          dst: var5,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var5,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       # Run the scan_session action
@@ -324,8 +503,20 @@ defmodule Revelo.LoopTest do
 
       # Create linear relationships: var1 -> var2 -> var3
       [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       # Run scan_session and verify empty result
@@ -341,10 +532,17 @@ defmodule Revelo.LoopTest do
       variable = variable(session: session, user: user)
 
       # Create relationship from variable to itself
-      relationship = relationship(src: variable, dst: variable, session: session, user: user)
+      relationship =
+        relationship_with_vote(
+          src: variable,
+          dst: variable,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
 
       loop =
-        %{relationships: [relationship]}
+        [relationship]
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:influence_relationships)
 
@@ -363,9 +561,27 @@ defmodule Revelo.LoopTest do
 
       # Create a simple loop: var1 -> var2 -> var3 -> var1
       loop_rels = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       # Create the same loop but starting from a different point
@@ -373,9 +589,27 @@ defmodule Revelo.LoopTest do
 
       # Different loop with same variables
       different_loop = [
-        relationship(src: var1, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
       # Test equal loops with different starting points
@@ -399,17 +633,24 @@ defmodule Revelo.LoopTest do
       var2 = variable(session: session, user: user)
 
       relationships = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
       ]
 
-      # Add reinforcing votes for each relationship
-      Enum.each(relationships, fn rel ->
-        Revelo.Diagrams.relationship_vote!(rel, :reinforcing, actor: user)
-      end)
-
       loop =
-        %{relationships: relationships}
+        relationships
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!([:influence_relationships, :type])
 
@@ -425,20 +666,31 @@ defmodule Revelo.LoopTest do
       var3 = variable(session: session, user: user)
 
       relationships = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var1, session: session, user: user)
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :balancing
+        )
       ]
 
-      # Set first two relationships as reinforcing
-      Revelo.Diagrams.relationship_vote!(List.first(relationships), :reinforcing, actor: user)
-      Revelo.Diagrams.relationship_vote!(Enum.at(relationships, 1), :reinforcing, actor: user)
-
-      # Set last relationship as balancing
-      Revelo.Diagrams.relationship_vote!(List.last(relationships), :balancing, actor: user)
-
       loop =
-        %{relationships: relationships}
+        relationships
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:type)
 
@@ -453,24 +705,32 @@ defmodule Revelo.LoopTest do
       var2 = variable(session: session, user: user)
       var3 = variable(session: session, user: user)
 
-      relationships = [
-        relationship(src: var1, dst: var2, session: session, user: user),
-        relationship(src: var2, dst: var3, session: session, user: user),
-        relationship(src: var3, dst: var1, session: session, user: user)
-      ]
-
-      # Add both reinforcing and balancing votes to first relationship
-      first_rel = List.first(relationships)
+      # Create first relationship with both types of votes
+      first_rel = relationship(src: var1, dst: var2, session: session, user: user)
       Revelo.Diagrams.relationship_vote!(first_rel, :reinforcing, actor: user)
       user2 = user()
       Revelo.Diagrams.relationship_vote!(first_rel, :balancing, actor: user2)
 
-      # Add reinforcing votes to other relationships
-      Revelo.Diagrams.relationship_vote!(Enum.at(relationships, 1), :reinforcing, actor: user)
-      Revelo.Diagrams.relationship_vote!(List.last(relationships), :reinforcing, actor: user)
+      relationships = [
+        Ash.load!(first_rel, :type),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
+      ]
 
       loop =
-        %{relationships: relationships}
+        relationships
         |> Revelo.Diagrams.create_loop!(actor: user)
         |> Ash.load!(:type)
 

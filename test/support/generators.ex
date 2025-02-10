@@ -84,7 +84,7 @@ defmodule ReveloTest.Generators do
 
     relationship = relationship(Keyword.put(opts, :user, user))
     Revelo.Diagrams.relationship_vote!(relationship, vote_type, actor: user)
-    Ash.load(relationship, :type)
+    Ash.load!(relationship, :type)
   end
 
   def loop do

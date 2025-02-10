@@ -43,6 +43,16 @@ defmodule Revelo.Diagrams.Loop do
         allow_nil? false
       end
 
+      validate fn changeset, _context ->
+        if Enum.all?(changeset.arguments.relationships, fn rel ->
+             rel.type in [:balancing, :reinforcing, :conflicting]
+           end) do
+          :ok
+        else
+          {:error, "All relationships must be type :balancing, :reinforcing or :conflicting"}
+        end
+      end
+
       # check that the relationships form a loop
       validate fn changeset, context ->
         relationships = changeset.arguments.relationships
