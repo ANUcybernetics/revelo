@@ -37,13 +37,13 @@ defmodule Revelo.Diagrams.Relationship do
               )
 
     calculate :type,
-              :string,
+              :atom,
               expr(
                 cond do
-                  reinforcing_votes > 0 and balancing_votes > 0 -> "conflicting"
-                  reinforcing_votes > 0 and balancing_votes == 0 -> "reinforcing"
-                  balancing_votes > 0 and reinforcing_votes == 0 -> "balancing"
-                  true -> "no_relationship"
+                  reinforcing_votes > 0 and balancing_votes > 0 -> :conflicting
+                  reinforcing_votes > 0 and balancing_votes == 0 -> :reinforcing
+                  balancing_votes > 0 and reinforcing_votes == 0 -> :balancing
+                  true -> :no_relationship
                 end
               )
   end

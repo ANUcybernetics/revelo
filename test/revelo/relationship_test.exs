@@ -332,7 +332,7 @@ defmodule Revelo.RelationshipTest do
           :type
         ])
 
-      assert relationship.type == "no_relationship"
+      assert relationship.type == :no_relationship
 
       # Test reinforcing only case
       Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: user)
@@ -345,7 +345,7 @@ defmodule Revelo.RelationshipTest do
           :type
         ])
 
-      assert relationship.type == "reinforcing"
+      assert relationship.type == :reinforcing
 
       # Create another user and add balancing vote to test conflicting case
       user2 = user()
@@ -359,7 +359,7 @@ defmodule Revelo.RelationshipTest do
           :type
         ])
 
-      assert relationship.type == "conflicting"
+      assert relationship.type == :conflicting
 
       # Create a new relationship to test balancing only case
       relationship2 = relationship(user: user, session: session, src: var2, dst: var1)
@@ -373,7 +373,7 @@ defmodule Revelo.RelationshipTest do
           :type
         ])
 
-      assert relationship2.type == "balancing"
+      assert relationship2.type == :balancing
     end
   end
 end
