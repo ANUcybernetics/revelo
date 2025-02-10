@@ -32,6 +32,10 @@ defmodule Revelo.Diagrams.RelationshipVote do
     create :create do
       accept [:type]
 
+      upsert? true
+      upsert_identity :unique_vote
+      upsert_fields [:type]
+
       argument :relationship, :struct do
         constraints instance_of: Relationship
         allow_nil? false

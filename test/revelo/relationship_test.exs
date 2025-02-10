@@ -106,6 +106,31 @@ defmodule Revelo.RelationshipTest do
       assert vote.relationship_id == relationship.id
     end
 
+    test "relationship_vote upserts the type when user votes again" do
+      user = user()
+      session = session(user)
+      var1 = variable(user: user, session: session)
+      var2 = variable(user: user, session: session)
+      relationship = relationship(user: user, session: session, src: var1, dst: var2)
+
+      # Create initial vote
+      vote1 = Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: user)
+
+      # Vote again with different type
+      vote2 = Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: user)
+
+      # Should have same composite key values but updated type
+      assert vote1.voter_id == vote2.voter_id
+      assert vote1.relationship_id == vote2.relationship_id
+      assert vote1.type == :reinforcing
+      assert vote2.type == :balancing
+
+      # Verify only one vote exists
+      relationship = Ash.load!(relationship, :votes)
+      assert length(relationship.votes) == 1
+      assert hd(relationship.votes).type == :balancing
+    end
+
     test "can create votes for multiple relationships with same user" do
       user = user()
       session = session(user)
