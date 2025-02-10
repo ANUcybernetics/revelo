@@ -45,7 +45,8 @@ defmodule Revelo.Diagrams.Relationship do
                   balancing_votes > 0 and reinforcing_votes == 0 -> :balancing
                   true -> :no_relationship
                 end
-              )
+              ),
+              load: [:reinforcing_votes, :balancing_votes]
   end
 
   sqlite do
