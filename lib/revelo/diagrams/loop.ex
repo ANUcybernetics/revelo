@@ -9,6 +9,24 @@ defmodule Revelo.Diagrams.Loop do
   alias Revelo.Diagrams.LoopRelationships
   alias Revelo.Diagrams.Relationship
 
+  calculations do
+    calculate :type,
+              :atom,
+              fn loops, _context ->
+                Enum.map(loops, fn loop ->
+                  if Enum.any?(loop.influence_relationships, &(&1.type == :conflicting)) do
+                    :conflicting
+                  else
+                    balancing_count =
+                      Enum.count(loop.influence_relationships, &(&1.type == :balancing))
+
+                    if rem(balancing_count, 2) == 0, do: :reinforcing, else: :balancing
+                  end
+                end)
+              end,
+              load: [influence_relationships: [:type]]
+  end
+
   sqlite do
     table "loops"
     repo Revelo.Repo

@@ -405,4 +405,95 @@ defmodule Revelo.LoopTest do
       refute Analyser.loops_equal?(loop_rels, Enum.drop(loop_rels, 1))
     end
   end
+
+  describe "calculating loop type" do
+    test "returns :reinforcing for 2-node even graph where all relationships are reinforcing" do
+      user = user()
+      session = session(user)
+
+      var1 = variable(session: session, user: user)
+      var2 = variable(session: session, user: user)
+
+      relationships = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var1, session: session, user: user)
+      ]
+
+      # Add reinforcing votes for each relationship
+      Enum.each(relationships, fn rel ->
+        Revelo.Diagrams.relationship_vote!(rel, :reinforcing, actor: user)
+      end)
+
+      loop =
+        Loop
+        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
+        |> Ash.create!()
+        |> Ash.load!([:influence_relationships, :type])
+
+      assert loop.type == :reinforcing
+    end
+
+    test "returns :balancing for 3-node loop with 2 reinforcing and 1 balancing relationship" do
+      user = user()
+      session = session(user)
+
+      var1 = variable(session: session, user: user)
+      var2 = variable(session: session, user: user)
+      var3 = variable(session: session, user: user)
+
+      relationships = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var1, session: session, user: user)
+      ]
+
+      # Set first two relationships as reinforcing
+      Revelo.Diagrams.relationship_vote!(List.first(relationships), :reinforcing, actor: user)
+      Revelo.Diagrams.relationship_vote!(Enum.at(relationships, 1), :reinforcing, actor: user)
+
+      # Set last relationship as balancing
+      Revelo.Diagrams.relationship_vote!(List.last(relationships), :balancing, actor: user)
+
+      loop =
+        Loop
+        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
+        |> Ash.create!()
+        |> Ash.load!(:type)
+
+      assert loop.type == :balancing
+    end
+
+    test "returns :conflicting when at least one relationship has both balancing and reinforcing votes" do
+      user = user()
+      session = session(user)
+
+      var1 = variable(session: session, user: user)
+      var2 = variable(session: session, user: user)
+      var3 = variable(session: session, user: user)
+
+      relationships = [
+        relationship(src: var1, dst: var2, session: session, user: user),
+        relationship(src: var2, dst: var3, session: session, user: user),
+        relationship(src: var3, dst: var1, session: session, user: user)
+      ]
+
+      # Add both reinforcing and balancing votes to first relationship
+      first_rel = List.first(relationships)
+      Revelo.Diagrams.relationship_vote!(first_rel, :reinforcing, actor: user)
+      user2 = user()
+      Revelo.Diagrams.relationship_vote!(first_rel, :balancing, actor: user2)
+
+      # Add reinforcing votes to other relationships
+      Revelo.Diagrams.relationship_vote!(Enum.at(relationships, 1), :reinforcing, actor: user)
+      Revelo.Diagrams.relationship_vote!(List.last(relationships), :reinforcing, actor: user)
+
+      loop =
+        Loop
+        |> Ash.Changeset.for_create(:create, %{relationships: relationships}, actor: user)
+        |> Ash.create!()
+        |> Ash.load!(:type)
+
+      assert loop.type == :conflicting
+    end
+  end
 end
