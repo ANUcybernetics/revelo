@@ -349,5 +349,32 @@ defmodule Revelo.RelationshipTest do
 
       assert relationship2.type == "balancing"
     end
+
+    test "list_conflicting_relationships returns only conflicting relationships" do
+      user = user()
+      session = session(user)
+      var1 = variable(user: user, session: session)
+      var2 = variable(user: user, session: session)
+      var3 = variable(user: user, session: session)
+
+      # Create a relationship with conflicting votes
+      rel1 = relationship(user: user, session: session, src: var1, dst: var2)
+      Revelo.Diagrams.relationship_vote!(rel1, :reinforcing, actor: user)
+      Revelo.Diagrams.relationship_vote!(rel1, :balancing, actor: user())
+
+      # Create a relationship with only reinforcing votes
+      rel2 = relationship(user: user, session: session, src: var2, dst: var3)
+      Revelo.Diagrams.relationship_vote!(rel2, :reinforcing, actor: user)
+
+      rel1 = Ash.load!(rel1, [:type])
+      rel2 = Ash.load!(rel2, [:type])
+
+      assert rel1.type == "conflicting"
+      assert rel2.type == "reinforcing"
+
+      conflicting = Revelo.Diagrams.list_conflicting_relationships!(session.id)
+      assert length(conflicting) == 1
+      assert hd(conflicting).id == rel1.id
+    end
   end
 end
