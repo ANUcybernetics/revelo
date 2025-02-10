@@ -131,7 +131,7 @@ defmodule Revelo.Diagrams.Loop do
              end)
     end
 
-    action :scan_session, {:array, :struct} do
+    action :rescan, {:array, :struct} do
       argument :session_id, :uuid do
         allow_nil? false
       end

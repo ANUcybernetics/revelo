@@ -407,7 +407,7 @@ defmodule Revelo.LoopTest do
              ] = Map.get(changeset, :errors)
     end
 
-    test "scan_session creates loops from relationships" do
+    test "rescan creates loops from relationships" do
       user = user()
       session = session(user)
 
@@ -465,8 +465,8 @@ defmodule Revelo.LoopTest do
         )
       ]
 
-      # Run the scan_session action
-      loops = Revelo.Diagrams.scan_session!(session.id)
+      # Run the rescan action
+      loops = Revelo.Diagrams.rescan_loops!(session.id)
 
       # Verify both loops were detected
       assert length(loops) == 2
@@ -493,7 +493,7 @@ defmodule Revelo.LoopTest do
              end)
     end
 
-    test "scan_session returns empty list when no loops exist" do
+    test "rescan returns empty list when no loops exist" do
       user = user()
       session = session(user)
 
@@ -519,8 +519,8 @@ defmodule Revelo.LoopTest do
         )
       ]
 
-      # Run scan_session and verify empty result
-      loops = Revelo.Diagrams.scan_session!(session.id)
+      # Run rescan and verify empty result
+      loops = Revelo.Diagrams.rescan_loops!(session.id)
       assert loops == []
     end
 
