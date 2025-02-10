@@ -47,7 +47,7 @@ defmodule Revelo.RelationshipTest do
       assert found_rel.id == rel.id
     end
 
-    test "Revelo.Diagrams.list! returns only unhidden relationships" do
+    test "Revelo.Diagrams.list_potential_relationships! returns only unhidden relationships" do
       user = user()
       session = session(user)
       var1 = variable(user: user, session: session)
@@ -288,6 +288,32 @@ defmodule Revelo.RelationshipTest do
         ])
 
       assert rel_pairs == expected_pairs
+    end
+
+    test "list_actual_relationships! returns all relationships with at least one balancing or reinforcing vote" do
+      user = user()
+      session = session(user)
+      var1 = variable(user: user, session: session)
+      var2 = variable(user: user, session: session)
+      var3 = variable(user: user, session: session)
+
+      # Create relationships with different vote combinations
+      rel1 = relationship(user: user, session: session, src: var1, dst: var2)
+      Revelo.Diagrams.relationship_vote!(rel1, :reinforcing, actor: user)
+
+      rel2 = relationship(user: user, session: session, src: var2, dst: var3)
+      Revelo.Diagrams.relationship_vote!(rel2, :balancing, actor: user)
+
+      rel3 = relationship(user: user, session: session, src: var1, dst: var3)
+      Revelo.Diagrams.relationship_vote!(rel3, :no_relationship, actor: user)
+
+      relationships = Revelo.Diagrams.list_actual_relationships!(session.id)
+
+      assert length(relationships) == 2
+      rel_ids = Enum.map(relationships, & &1.id)
+      assert rel1.id in rel_ids
+      assert rel2.id in rel_ids
+      refute rel3.id in rel_ids
     end
 
     test "type calculation" do
