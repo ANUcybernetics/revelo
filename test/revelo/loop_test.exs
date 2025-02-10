@@ -40,6 +40,33 @@ defmodule Revelo.LoopTest do
                MapSet.new(loop.influence_relationships, & &1.id)
     end
 
+    test "session_id calculation returns correct session ID" do
+      user = user()
+      session = session(user)
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+      relationships =
+        variables
+        |> List.insert_at(-1, List.first(variables))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session,
+            user: user,
+            vote_type: :reinforcing
+          )
+        end)
+
+      loop =
+        relationships
+        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Ash.load!(:session_id)
+
+      assert loop.session_id == session.id
+    end
+
     test "can create multiple loops sharing relationships" do
       user = user()
       session = session(user)

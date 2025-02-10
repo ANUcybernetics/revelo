@@ -25,6 +25,18 @@ defmodule Revelo.Diagrams.Loop do
                 end)
               end,
               load: [influence_relationships: [:type]]
+
+    calculate :session_id,
+              :uuid,
+              fn loops, _context ->
+                Enum.map(loops, fn loop ->
+                  loop.influence_relationships
+                  |> List.first()
+                  |> Map.get(:src)
+                  |> Map.get(:session_id)
+                end)
+              end,
+              load: [influence_relationships: [src: [:session]]]
   end
 
   sqlite do
@@ -138,6 +150,7 @@ defmodule Revelo.Diagrams.Loop do
 
       run fn changeset, _context ->
         session_id = changeset.arguments.session_id
+
         # load relationships
         relationships = Revelo.Diagrams.list_potential_relationships!(session_id)
 
