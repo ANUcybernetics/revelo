@@ -58,13 +58,13 @@ defmodule Revelo.RelationshipTest do
       hidden_rel = Revelo.Diagrams.hide_relationship!(hidden_rel)
       assert hidden_rel.hidden? == true
 
-      relationships = Revelo.Diagrams.list_relationships!(session.id)
+      relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
 
       assert visible_rel.id in Enum.map(relationships, & &1.id)
       refute hidden_rel.id in Enum.map(relationships, & &1.id)
 
       # check that the hidden relationship is returned when include_hidden is true
-      relationships = Revelo.Diagrams.list_relationships!(session.id, true)
+      relationships = Revelo.Diagrams.list_potential_relationships!(session.id, true)
 
       assert visible_rel.id in Enum.map(relationships, & &1.id)
       assert hidden_rel.id in Enum.map(relationships, & &1.id)
@@ -217,7 +217,7 @@ defmodule Revelo.RelationshipTest do
                {vote1.relationship_id, vote1.voter_id}
              ]
 
-      relationships = Revelo.Diagrams.list_relationships!(session.id)
+      relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
 
       rel1 = Enum.find(relationships, &(&1.id == rel1.id))
       rel2 = Enum.find(relationships, &(&1.id == rel2.id))

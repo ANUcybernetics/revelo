@@ -111,7 +111,7 @@ defmodule Revelo.Diagrams.Loop do
       run fn changeset, _context ->
         session_id = changeset.arguments.session_id
         # load relationships
-        relationships = Revelo.Diagrams.list_relationships!(session_id)
+        relationships = Revelo.Diagrams.list_potential_relationships!(session_id)
 
         # find cycles and create loops from any found
         loops =

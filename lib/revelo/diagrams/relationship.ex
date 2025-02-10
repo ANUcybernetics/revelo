@@ -56,7 +56,7 @@ defmodule Revelo.Diagrams.Relationship do
   actions do
     defaults [:read, :destroy, update: :*]
 
-    read :list do
+    read :list_potential do
       argument :session_id, :uuid do
         allow_nil? false
       end
