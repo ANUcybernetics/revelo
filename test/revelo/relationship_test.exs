@@ -106,6 +106,24 @@ defmodule Revelo.RelationshipTest do
       assert vote.relationship_id == relationship.id
     end
 
+    test "relationship_with_vote generator sets type attribute" do
+      relationship =
+        Ash.load!(
+          relationship_with_vote(vote_type: :reinforcing),
+          [:type]
+        )
+
+      assert relationship.type == :reinforcing
+
+      relationship =
+        Ash.load!(
+          relationship_with_vote(vote_type: :balancing),
+          [:type]
+        )
+
+      assert relationship.type == :balancing
+    end
+
     test "relationship_vote upserts the type when user votes again" do
       user = user()
       session = session(user)

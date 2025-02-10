@@ -78,6 +78,15 @@ defmodule ReveloTest.Generators do
     |> Ash.create!()
   end
 
+  def relationship_with_vote(opts \\ []) do
+    {user, opts} = Keyword.pop_lazy(opts, :user, fn -> user() end)
+    {vote_type, opts} = Keyword.pop(opts, :vote_type, :reinforcing)
+
+    relationship = relationship(Keyword.put(opts, :user, user))
+    Revelo.Diagrams.relationship_vote!(relationship, vote_type, actor: user)
+    Ash.load(relationship, :type)
+  end
+
   def loop do
     # a simple loop of length 3 (in future we might make this generator more sophisticated)
     user = user()
