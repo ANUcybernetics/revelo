@@ -67,6 +67,62 @@ defmodule Revelo.LoopTest do
       assert loop.session_id == session.id
     end
 
+    test "list_loops only returns loops from specified session" do
+      user = user()
+      session1 = session(user)
+      session2 = session(user)
+
+      # Create variables and relationships for session 1
+      variables1 = Enum.map(1..3, fn _ -> variable(session: session1, user: user) end)
+
+      relationships1 =
+        variables1
+        # add the first variable to the end to "close" the loop
+        |> List.insert_at(-1, List.first(variables1))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session1,
+            user: user,
+            vote_type: :reinforcing
+          )
+        end)
+
+      # Create loop in session 1
+      loop1 = Revelo.Diagrams.create_loop!(relationships1, actor: user)
+
+      # Create variables and relationships for session 2
+      variables2 = Enum.map(1..3, fn _ -> variable(session: session2, user: user) end)
+
+      relationships2 =
+        variables2
+        |> List.insert_at(-1, List.first(variables2))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session2,
+            user: user,
+            vote_type: :reinforcing
+          )
+        end)
+
+      # Create loop in session 2
+      loop2 = Revelo.Diagrams.create_loop!(relationships2, actor: user)
+
+      # Verify list_loops only returns loops from the specified session
+      session1_loops = Revelo.Diagrams.list_loops!(session1.id)
+      session2_loops = Revelo.Diagrams.list_loops!(session2.id)
+
+      assert length(session1_loops) == 1
+      assert length(session2_loops) == 1
+      assert List.first(session1_loops).id == loop1.id
+      assert List.first(session2_loops).id == loop2.id
+    end
+
     test "can create multiple loops sharing relationships" do
       user = user()
       session = session(user)

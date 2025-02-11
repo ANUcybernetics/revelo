@@ -9,6 +9,8 @@ defmodule Revelo.Diagrams.Loop do
   alias Revelo.Diagrams.LoopRelationships
   alias Revelo.Diagrams.Relationship
 
+  require Ash.Query
+
   calculations do
     calculate :type,
               :atom,
@@ -46,6 +48,18 @@ defmodule Revelo.Diagrams.Loop do
 
   actions do
     defaults [:read]
+
+    read :list do
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      prepare fn query, _context ->
+        query
+        |> Ash.Query.load(influence_relationships: [src: :session])
+        |> Ash.Query.filter(influence_relationships: [src: [session: [id: query.arguments.session_id]]])
+      end
+    end
 
     create :create do
       accept [:story, :display_order]
