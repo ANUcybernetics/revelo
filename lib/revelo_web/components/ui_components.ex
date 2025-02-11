@@ -67,7 +67,13 @@ defmodule ReveloWeb.UIComponents do
           <.tooltip :for={page <- [:prepare, :identify, :relate, :analyse]}>
             <tooltip_trigger>
               <.link
-                href={"/sessions/#{@session_id}/#{page}"}
+                href={
+                  if page in [:identify, :relate] do
+                    "/sessions/#{@session_id}/#{page}/work"
+                  else
+                    "/sessions/#{@session_id}/#{page}"
+                  end
+                }
                 class={
                   Enum.join(
                     [
@@ -836,7 +842,7 @@ defmodule ReveloWeb.UIComponents do
             <span class="text-muted-foreground">30-50 reccomended</span>
           </div>
           <div>
-            <.link href={"/sessions/#{@session.id}/identify"}>
+            <.link href={"/sessions/#{@session.id}/identify/work"}>
               <.button>Start Session</.button>
             </.link>
           </div>

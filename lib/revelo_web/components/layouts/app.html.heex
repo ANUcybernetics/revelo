@@ -1,6 +1,12 @@
 <.sidebar
   :if={@current_user.facilitator?}
-  current_page={@live_action}
+  current_page={
+    case @live_action do
+      page when page in [:identify_work, :identify_discuss] -> :identify
+      page when page in [:relate_work, :relate_discuss] -> :relate
+      page -> page
+    end
+  }
   session_id={(@session && @session.id) || nil}
 />
 <main class={"p-10 #{if @current_user.facilitator?, do: "ml-14"} bg-dots h-svh"}>

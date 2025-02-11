@@ -22,7 +22,7 @@ defmodule ReveloWeb.QRController do
 
         conn
         |> AshAuthentication.Plug.Helpers.store_in_session(user)
-        |> redirect(to: ~p"/sessions/#{session_id}/identify")
+        |> redirect(to: String.replace_prefix(conn.request_path, "/qr", ""))
 
       {:error, _error} ->
         conn

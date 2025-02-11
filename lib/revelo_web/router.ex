@@ -46,17 +46,20 @@ defmodule ReveloWeb.Router do
       on_mount: {ReveloWeb.LiveUserAuth, :live_user_required} do
       live "/:session_id/prepare", SessionLive.Phase, :prepare
       live "/:session_id/prepare/edit", SessionLive.Phase, :edit
-      live "/:session_id/identify", SessionLive.Phase, :identify
-      live "/:session_id/identify/done", SessionLive.Phase, :done
+      live "/:session_id/identify/work", SessionLive.Phase, :identify_work
+      live "/:session_id/identify/discuss", SessionLive.Phase, :identify_discuss
+      live "/:session_id/relate/work", SessionLive.Phase, :relate_work
+      live "/:session_id/relate/discuss", SessionLive.Phase, :relate_discuss
+      live "/:session_id/analyse", SessionLive.Phase, :relate_discuss
 
       live "/:session_id/prepare/variables/:variable_id", SessionLive.Phase, :prepare
-      live "/:session_id/identify/variables/:variable_id", SessionLive.Phase, :identify
+      live "/:session_id/identify/variables/:variable_id", SessionLive.Phase, :identify_discuss
     end
   end
 
   scope "/qr", ReveloWeb do
     pipe_through :browser
-    get "/sessions/:session_id/:phase", QRController, :handle_qr
+    get "/sessions/:session_id/:phase/work", QRController, :handle_qr
   end
 
   scope "/", ReveloWeb do

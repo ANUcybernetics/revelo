@@ -12,14 +12,14 @@ defmodule ReveloWeb.SessionLive.Phase do
     <div :if={@current_user.facilitator?} class="h-full flex flex-col">
       <div class="grid grid-cols-12 w-full grow gap-10">
         <.variable_table
-          :if={@live_action in [:prepare] or @show_variables == true}
-          class={"#{if(@show_variables == true, do: "md:col-span-12", else: "md:col-span-8")} col-span-12"}
+          :if={@live_action in [:prepare, :identify_discuss]}
+          class={"#{if(@live_action == :prepare, do: "md:col-span-8", else: "md:col-span-12")} col-span-12"}
           live_action={@live_action}
           session={@session}
           variable_count={assigns[:variable_count] || 10}
           variables={@variables}
           title={
-            if @live_action in [:prepare],
+            if @live_action == :prepare,
               do: "Prepare your variables",
               else: if(@show_variables, do: "Variable Votes", else: nil)
           }
@@ -34,7 +34,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         </div>
 
         <.instructions
-          :if={@live_action in [:identify] and @show_variables != true}
+          :if={@live_action == :identify_work}
           title="Identify relationships"
           class="col-span-8"
         >
@@ -54,10 +54,10 @@ defmodule ReveloWeb.SessionLive.Phase do
         </.instructions>
 
         <.qr_code_card
-          :if={@live_action in [:identify] and @show_variables != true}
-          url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify"}
+          :if={@live_action == :identify_work}
+          url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify/work"}
           participant_count={@participant_count}
-          complete_url={"/sessions/#{@session.id}/identify?show_variables=true"}
+          complete_url={"/sessions/#{@session.id}/identify/discuss"}
           class="col-span-4"
         />
       </div>
@@ -66,16 +66,10 @@ defmodule ReveloWeb.SessionLive.Phase do
         <.back :if={@live_action in [:prepare, :new_variable]} patch={~p"/sessions"}>
           Back to Sessions
         </.back>
-        <.back
-          :if={@live_action == :identify and @show_variables == true}
-          patch={~p"/sessions/#{@session.id}/identify"}
-        >
+        <.back :if={@live_action == :identify} patch={~p"/sessions/#{@session.id}/identify/work"}>
           Back to Voting
         </.back>
-        <.back
-          :if={@live_action == :identify and @show_variables != true}
-          patch={~p"/sessions/#{@session.id}/identify"}
-        >
+        <.back :if={@live_action == :identify} patch={~p"/sessions/#{@session.id}/prepare"}>
           Back to Prepare
         </.back>
       </div>
@@ -84,7 +78,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         :if={@modal}
         id="variable-modal"
         show
-        on_cancel={JS.patch(~p"/sessions/#{@session.id}/#{@live_action}")}
+        on_cancel={JS.patch(~p"/sessions/#{@session.id}/prepare")}
       >
         <.live_component
           module={ReveloWeb.SessionLive.VariableFormComponent}
@@ -94,12 +88,12 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           action={@live_action}
           session={@session}
-          patch={~p"/sessions/#{@session.id}/#{@live_action}"}
+          patch={~p"/sessions/#{@session.id}/identify/discuss"}
         />
       </.modal>
 
       <.modal
-        :if={@live_action in [:edit]}
+        :if={@live_action == :edit}
         id="edit-session-modal"
         show
         on_cancel={JS.patch(~p"/sessions/#{@session.id}/prepare/")}
@@ -117,19 +111,22 @@ defmodule ReveloWeb.SessionLive.Phase do
     </div>
 
     <div :if={!@current_user.facilitator?} class="h-full flex flex-col items-center justify-center">
-      <div :if={@live_action in [:identify]} class="flex flex-col items-center gap-4">
+      <div :if={@live_action == :identify_work} class="flex flex-col items-center gap-4">
         <.variable_voting variables={@variables} user={@current_user} />
         <.button type="submit" form="variable-voting-form" class="w-fit px-24" phx-submit="vote">
           Done
         </.button>
       </div>
-      <div :if={@live_action in [:done]} class="flex flex-col items-center gap-4">
+      <div :if={@live_action == :identify_discuss} class="flex flex-col items-center gap-4">
         <.variable_confirmation variables={@variables} user={@current_user} />
         <.link patch={"/sessions/#{@session.id}/identify/"}>
           <.button class="w-fit px-24">Back</.button>
         </.link>
       </div>
-      <div :if={@live_action not in [:identify, :done]} class="flex flex-col items-center gap-4">
+      <div
+        :if={@live_action not in [:identify_work, :identify_discuss]}
+        class="flex flex-col items-center gap-4"
+      >
         <.task_completed completed={elem(@participant_count, 0)} total={elem(@participant_count, 1)} />
       </div>
     </div>
@@ -208,7 +205,7 @@ defmodule ReveloWeb.SessionLive.Phase do
     socket =
       socket
       |> assign(:variables, updated_variables)
-      |> push_navigate(to: "/sessions/#{socket.assigns.session.id}/identify/done")
+      |> push_navigate(to: "/sessions/#{socket.assigns.session.id}/identify/discuss")
 
     {:noreply, socket}
   end

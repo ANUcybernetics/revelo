@@ -46,8 +46,8 @@ defmodule ReveloWeb.UserFlowTest do
       session = session(user)
 
       conn
-      |> visit("/qr/sessions/#{session.id}/identify")
-      |> assert_path("/sessions/#{session.id}/identify")
+      |> visit("/qr/sessions/#{session.id}/identify/work")
+      |> assert_path("/sessions/#{session.id}/identify/work")
       |> assert_has("div", text: "Which of these are important parts of your system?")
     end
 
@@ -58,8 +58,8 @@ defmodule ReveloWeb.UserFlowTest do
       var2 = variable(user: user, session: session, name: "Test Variable 2")
 
       conn
-      |> visit("/qr/sessions/#{session.id}/identify")
-      |> assert_path("/sessions/#{session.id}/identify")
+      |> visit("/qr/sessions/#{session.id}/identify/work")
+      |> assert_path("/sessions/#{session.id}/identify/work")
       |> check("Test Variable 1")
       |> click_button("Done")
       |> assert_has("span", text: var1.name)
@@ -77,8 +77,8 @@ defmodule ReveloWeb.UserFlowTest do
         conn
         |> log_in_user(Ash.CiString.value(user.email), password)
         |> Map.get(:conn)
-        |> visit("/qr/sessions/#{session.id}/identify")
-        |> assert_path("/sessions/#{session.id}/identify")
+        |> visit("/qr/sessions/#{session.id}/identify/work")
+        |> assert_path("/sessions/#{session.id}/identify/work")
         |> assert_has("h3", text: "Identify relationships")
 
       assert browsing_session.conn.assigns.current_user.id == user.id
@@ -95,8 +95,8 @@ defmodule ReveloWeb.UserFlowTest do
         conn
         |> log_in_user(Ash.CiString.value(user.email), password)
         |> Map.get(:conn)
-        |> visit("/qr/sessions/#{session.id}/identify")
-        |> assert_path("/sessions/#{session.id}/identify")
+        |> visit("/qr/sessions/#{session.id}/identify/work")
+        |> assert_path("/sessions/#{session.id}/identify/work")
 
       assert browsing_session.conn.assigns.current_user.id == user.id
     end
@@ -107,8 +107,8 @@ defmodule ReveloWeb.UserFlowTest do
 
       browsing_session =
         conn
-        |> visit("/qr/sessions/#{session.id}/identify")
-        |> assert_path("/sessions/#{session.id}/identify")
+        |> visit("/qr/sessions/#{session.id}/identify/work")
+        |> assert_path("/sessions/#{session.id}/identify/work")
 
       user = Ash.load!(browsing_session.conn.assigns.current_user, :anonymous?)
       assert user.anonymous?
@@ -118,7 +118,7 @@ defmodule ReveloWeb.UserFlowTest do
       creator = user()
       session = session(creator)
 
-      browsing_session = visit(conn, "/qr/sessions/#{session.id}/identify")
+      browsing_session = visit(conn, "/qr/sessions/#{session.id}/identify/work")
       user = browsing_session.conn.assigns.current_user
 
       browsing_session = visit(browsing_session.conn, "/")
