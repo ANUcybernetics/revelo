@@ -254,6 +254,44 @@ defmodule Revelo.LoopTest do
     end
   end
 
+  test "cannot create loop with hidden relationships" do
+    user = user()
+    session = session(user)
+
+    # Create variables
+    variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+    [var1, var2, var3] = variables
+
+    # Create relationships and hide one
+    relationships = [
+      relationship_with_vote(
+        src: var1,
+        dst: var2,
+        session: session,
+        user: user,
+        vote_type: :reinforcing
+      ),
+      # hide the second relationship
+      [src: var2, dst: var3, session: session, user: user, vote_type: :reinforcing]
+      |> relationship_with_vote()
+      |> Revelo.Diagrams.hide_relationship!(),
+      relationship_with_vote(
+        src: var3,
+        dst: var1,
+        session: session,
+        user: user,
+        vote_type: :reinforcing
+      )
+    ]
+
+    result = Revelo.Diagrams.create_loop(relationships, actor: user)
+
+    assert {:error, changeset} = result
+
+    assert [%InvalidChanges{message: "Cannot create loop with hidden relationships"}] =
+             Map.get(changeset, :errors)
+  end
+
   describe "cycle detection" do
     test "find_loops should find simple cycles" do
       user = user()
