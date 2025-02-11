@@ -146,3 +146,7 @@ body {
         rgba(0, 0, 0, 0) 1px
     );
 }
+
+:root {
+    font-size: 24px;
+}
