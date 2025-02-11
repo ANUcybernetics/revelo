@@ -83,9 +83,17 @@ defmodule Revelo.SessionServer do
   end
 
   @impl true
-  def handle_call({:transition_to, phase}, _from, state) do
-    broadcast_transition(state.session_id, phase)
-    {:reply, :ok, %{state | phase: phase}}
+  def handle_call({:transition_to, new_phase}, _from, state) do
+    case new_phase do
+      :analyse ->
+        Revelo.Diagrams.rescan_loops!(state.session_id)
+
+      _ ->
+        :ok
+    end
+
+    broadcast_transition(state.session_id, new_phase)
+    {:reply, :ok, %{state | phase: new_phase, timer: 0}}
   end
 
   @impl true
