@@ -71,12 +71,23 @@ defmodule Revelo.Diagrams.Loop do
       end
 
       validate fn changeset, _context ->
-        if Enum.all?(changeset.arguments.relationships, fn rel ->
-             rel.type in [:balancing, :reinforcing, :conflicting]
-           end) do
-          :ok
+        if Enum.any?(changeset.arguments.relationships, & &1.hidden?) do
+          {:error, "Cannot create loop with hidden relationships"}
         else
-          {:error, "All relationships must be type :balancing, :reinforcing or :conflicting"}
+          :ok
+        end
+      end
+
+      validate fn changeset, _context ->
+        relationships = Enum.map(changeset.arguments.relationships, &Ash.load!(&1, :type))
+
+        case Enum.find(relationships, &(&1.type == :no_relationship)) do
+          nil ->
+            :ok
+
+          rel ->
+            {:error,
+             "Relationship between #{rel.src.name} and #{rel.dst.name} was voted 'no relationship' and can't be part of a loop"}
         end
       end
 

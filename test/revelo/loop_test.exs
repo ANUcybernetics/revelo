@@ -246,10 +246,11 @@ defmodule Revelo.LoopTest do
 
       assert [
                %InvalidChanges{
-                 message: "All relationships must be type :balancing, :reinforcing or :conflicting"
+                 message: msg
                }
-             ] =
-               Map.get(changeset, :errors)
+             ] = Map.get(changeset, :errors)
+
+      assert String.ends_with?(msg, "was voted 'no relationship' and can't be part of a loop")
     end
   end
 
