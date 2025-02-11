@@ -177,11 +177,21 @@ defmodule Revelo.Diagrams.Loop do
       run fn changeset, _context ->
         session_id = changeset.arguments.session_id
 
-        # delete all existing loops (altough not the relationships themselves)
-        # ready for a re-scan
-        session_id
-        |> Diagrams.list_loops!()
-        |> Enum.each(&Ash.destroy!/1)
+        # First get existing loops and delete their relationship records
+        existing_loops = Diagrams.list_loops!(session_id)
+
+        # TODO having to delete the join table rows manually seems a bit gross, but I couldn't get
+        # it to do it automatically via the many_to_many relationship config
+        if not Enum.empty?(existing_loops) do
+          # Delete all loop relationship records (to avoid a FK constraint when we delete the loop later)
+          LoopRelationships
+          |> Ash.Query.filter(loop_id in ^Enum.map(existing_loops, & &1.id))
+          |> Ash.read!()
+          |> Enum.each(&Ash.destroy!/1)
+        end
+
+        # Then delete the loops themselves
+        Enum.each(existing_loops, &Ash.destroy!/1)
 
         # load relationships
         relationships = Diagrams.list_potential_relationships!(session_id)

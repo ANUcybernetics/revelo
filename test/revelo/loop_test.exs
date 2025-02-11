@@ -608,6 +608,52 @@ defmodule Revelo.LoopTest do
       assert loops == []
     end
 
+    test "rescan hides loops with hidden relationships" do
+      user = user()
+      session = session(user)
+
+      # Create variables for a simple loop
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3] = variables
+
+      # Create loop: var1 -> var2 -> var3 -> var1
+      relationships = [
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :reinforcing
+        )
+      ]
+
+      # Initial rescan should find the loop
+      initial_loops = Revelo.Diagrams.rescan_loops!(session.id)
+      assert length(initial_loops) == 1
+
+      # Hide one of the relationships
+      relationship = List.first(relationships)
+      Revelo.Diagrams.hide_relationship!(relationship)
+
+      # Rescan should no longer find the loop
+      loops_after_hide = Revelo.Diagrams.rescan_loops!(session.id)
+      assert loops_after_hide == []
+    end
+
     test "can create self-loop" do
       user = user()
       session = session(user)
