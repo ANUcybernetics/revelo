@@ -15,11 +15,8 @@ defmodule ReveloWeb.Presence do
     complete =
       presences
       |> Map.values()
-      |> Enum.count(fn presence ->
-        case presence do
-          %{metas: [%{status: status} | _]} -> status == :complete
-          _ -> false
-        end
+      |> Enum.count(fn %{metas: metas} ->
+        Enum.any?(metas, fn %{phase: phase} -> phase in [:identify_discuss, :relate_discuss] end)
       end)
 
     # Broadcast both counts
@@ -33,13 +30,13 @@ defmodule ReveloWeb.Presence do
   end
 
   # these functions expect to be called from a LiveView module
-  def track_participant(session_id, user_id, status) do
-    track(self(), "session_presence:#{session_id}", user_id, %{status: status})
+  def track_participant(session_id, user_id, phase) do
+    track(self(), "session_presence:#{session_id}", user_id, %{phase: phase})
   end
 
-  def update_status(session_id, user_id, status) do
+  def update_status(session_id, user_id, phase) do
     update(self(), "session_presence:#{session_id}", user_id, fn meta ->
-      Map.put(meta, :status, status)
+      Map.put(meta, :phase, phase)
     end)
   end
 end
