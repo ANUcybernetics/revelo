@@ -5,6 +5,7 @@ defmodule Revelo.Diagrams.Loop do
     domain: Revelo.Diagrams,
     data_layer: AshSqlite.DataLayer
 
+  alias Revelo.Diagrams
   alias Revelo.Diagrams.Analyser
   alias Revelo.Diagrams.LoopRelationships
   alias Revelo.Diagrams.Relationship
@@ -47,7 +48,7 @@ defmodule Revelo.Diagrams.Loop do
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy]
 
     read :list do
       argument :session_id, :uuid do
@@ -165,21 +166,20 @@ defmodule Revelo.Diagrams.Loop do
       run fn changeset, _context ->
         session_id = changeset.arguments.session_id
 
+        # delete all existing loops (altough not the relationships themselves)
+        # ready for a re-scan
+        session_id
+        |> Diagrams.list_loops!()
+        |> Enum.each(&Ash.destroy!/1)
+
         # load relationships
-        relationships = Revelo.Diagrams.list_potential_relationships!(session_id)
+        relationships = Diagrams.list_potential_relationships!(session_id)
 
         # find cycles and create loops from any found
         loops =
           relationships
           |> Analyser.find_loops()
-          |> Enum.map(fn cycle_relationships ->
-            # Create the loop
-            __MODULE__
-            |> Ash.Changeset.for_create(:create, %{
-              relationships: cycle_relationships
-            })
-            |> Ash.create!()
-          end)
+          |> Enum.map(&Diagrams.create_loop!/1)
 
         {:ok, loops}
       end
