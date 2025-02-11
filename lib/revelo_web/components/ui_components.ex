@@ -10,12 +10,10 @@ defmodule ReveloWeb.UIComponents do
   import ReveloWeb.Component.Card
   import ReveloWeb.Component.Checkbox
   import ReveloWeb.Component.DropdownMenu
-  import ReveloWeb.Component.Input
   import ReveloWeb.Component.Menu
   import ReveloWeb.Component.Progress
   import ReveloWeb.Component.RadioGroup
   import ReveloWeb.Component.ScrollArea
-  import ReveloWeb.Component.Table
   import ReveloWeb.Component.Tooltip
   import ReveloWeb.CoreComponents, except: [table: 1, button: 1, input: 1]
 
@@ -175,101 +173,6 @@ defmodule ReveloWeb.UIComponents do
     <.badge class="bg-fuchsia-200 text-fuchsia-900 hover:bg-fuchsia-300 w-fit border-none shrink-0 h-fit">
       <.icon name="hero-arrows-pointing-in-mini" class="h-4 w-4 mr-1" /> Balancing
     </.badge>
-    """
-  end
-
-  @doc """
-    The variable table action pane
-
-  """
-
-  def variable_actions(assigns) do
-    ~H"""
-    <div class="flex gap-2">
-      <.tooltip>
-        <tooltip_trigger>
-          <.link patch={"/sessions/#{@session.id}/#{@live_action}/variables/#{@variable.id}"}>
-            <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
-              <.icon name="hero-pencil-square" class="h-4 w-4 transition-all" />
-              <span class="sr-only">
-                Edit
-              </span>
-            </button>
-          </.link>
-        </tooltip_trigger>
-        <.tooltip_content side="top">
-          Edit
-        </.tooltip_content>
-      </.tooltip>
-      <.tooltip>
-        <tooltip_trigger>
-          <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
-            phx-click="toggle_key"
-            phx-value-id={@variable.id}
-          >
-            <.icon
-              name={if @variable.is_key?, do: "hero-key-solid", else: "hero-key"}
-              class="h-4 w-4 transition-all"
-            />
-            <span class="sr-only">
-              Make Key
-            </span>
-          </button>
-        </tooltip_trigger>
-        <.tooltip_content side="top">
-          Make Key
-        </.tooltip_content>
-      </.tooltip>
-      <.tooltip>
-        <tooltip_trigger>
-          <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
-            phx-click="toggle_hidden"
-            phx-value-id={@variable.id}
-          >
-            <.icon
-              name={if @variable.hidden?, do: "hero-eye-slash", else: "hero-eye-solid"}
-              class="h-4 w-4 transition-all"
-            />
-            <span class="sr-only">
-              {if @variable.hidden?, do: "Hide", else: "Show"}
-            </span>
-          </button>
-        </tooltip_trigger>
-        <.tooltip_content side="top">
-          {if @variable.hidden?, do: "Show", else: "Hide"}
-        </.tooltip_content>
-      </.tooltip>
-      <.tooltip :if={@variable.vote_tally == 0}>
-        <tooltip_trigger>
-          <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
-            phx-click="delete_variable"
-            phx-value-id={@variable.id}
-          >
-            <.icon name="hero-trash" class="h-4 w-4 transition-all" />
-            <span class="sr-only">
-              Delete
-            </span>
-          </button>
-        </tooltip_trigger>
-        <.tooltip_content side="top">
-          Delete
-        </.tooltip_content>
-      </.tooltip>
-      <.tooltip :if={@variable.vote_tally > 0}>
-        <tooltip_trigger>
-          <div class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground flex-col">
-            {@variable.vote_tally}
-            <span class="text-[10px] leading-[.5]">vote{if @variable.vote_tally != 1, do: "s"}</span>
-          </div>
-        </tooltip_trigger>
-        <.tooltip_content side="top">
-          Vote Count
-        </.tooltip_content>
-      </.tooltip>
-    </div>
     """
   end
 
@@ -690,95 +593,6 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
-  Renders the variable table.
-  """
-  attr :session, :map, required: true, doc: "the session containing the variables"
-  attr :live_action, :atom, required: true, doc: "current live action"
-  attr :variables, :list, required: true, doc: "the list of variables to display"
-  attr :variable_count, :integer, required: true, doc: "the number of variables to generate"
-  attr :class, :string, default: "", doc: "additional class to apply to the card"
-  attr :title, :string, default: "Prepare your variables", doc: "optional title for the table"
-
-  def variable_table(assigns) do
-    ~H"""
-    <.card class={["h-full flex flex-col", @class] |> Enum.join(" ")}>
-      <.card_header class="w-full">
-        <.header class="flex flex-row justify-between !items-start">
-          <.card_title class="grow">{@title}</.card_title>
-          <:actions>
-            <div class="flex flex-row gap-4">
-              <.link patch={"/sessions/#{@session.id}/#{@live_action}/variables/new"}>
-                <.button type="button" variant="outline" size="sm" class="!mt-0">
-                  <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable
-                </.button>
-              </.link>
-              <div class="flex gap-0">
-                <.button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  class="!mt-0 rounded-none rounded-l-md"
-                  phx-click={JS.push("generate_variables")}
-                  phx-value-count={@variable_count}
-                  id="generate_variables_button"
-                >
-                  <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" />
-                  Generate Variables
-                </.button>
-                <.input
-                  id="input-basic-inputs-number"
-                  name="variable_count"
-                  type="number"
-                  placeholder="0"
-                  min="0"
-                  max="20"
-                  class="rounded-none rounded-r-md text-xs h-8 border-l-0 w-12 pr-[2px]"
-                  phx-hook="UpdateGenerateValue"
-                />
-              </div>
-            </div>
-          </:actions>
-        </.header>
-      </.card_header>
-      <.scroll_area class="h-20 grow rounded-md">
-        <.card_content>
-          <.table class="text-base">
-            <.table_header>
-              <.table_row>
-                <.table_head>Name</.table_head>
-                <.table_head>Type</.table_head>
-                <.table_head>Actions</.table_head>
-              </.table_row>
-            </.table_header>
-            <.table_body>
-              <%= for variable <- @variables do %>
-                <.table_row class={if variable.hidden?, do: "opacity-40"}>
-                  <.table_cell>{variable.name}</.table_cell>
-                  <.table_cell>
-                    <%= if variable.is_key? do %>
-                      <.badge_key>
-                        Key Variable
-                      </.badge_key>
-                    <% end %>
-                  </.table_cell>
-                  <.table_cell>
-                    <.variable_actions
-                      variable={variable}
-                      session={@session}
-                      live_action={@live_action}
-                    />
-                  </.table_cell>
-                </.table_row>
-              <% end %>
-            </.table_body>
-          </.table>
-        </.card_content>
-      </.scroll_area>
-    </.card>
-    """
-  end
-
-  @doc """
   Renders a session details card showing title and description with edit functionality.
   """
   attr :session, :map, required: true, doc: "the session containing name and description"
@@ -821,7 +635,7 @@ defmodule ReveloWeb.UIComponents do
   Renders a session state card showing variable count and start session button.
   """
   attr :session, :map, required: true, doc: "the session to start"
-  attr :variables, :list, required: true, doc: "the list of variables to count"
+  attr :variable_count, :integer, required: true, doc: "number of variables in diagram"
   attr :class, :string, default: "", doc: "additional class to apply to the card"
 
   def session_start(assigns) do
@@ -835,9 +649,9 @@ defmodule ReveloWeb.UIComponents do
           <div>
             <div>
               <span class="text-2xl font-semibold leading-none tracking-tight">
-                {length(@variables)}
+                {length(@variable_count)}
               </span>
-              <span>variable{if length(@variables) != 1, do: "s"}</span>
+              <span>variable{if length(@variable_count) != 1, do: "s"}</span>
             </div>
             <span class="text-muted-foreground">30-50 reccomended</span>
           </div>

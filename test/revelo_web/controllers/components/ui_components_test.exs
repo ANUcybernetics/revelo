@@ -54,23 +54,6 @@ defmodule Revelo.UIComponentsTest do
     assert html =~ "Balancing"
   end
 
-  test "variable_actions shows action buttons" do
-    user = user()
-    session = session(user)
-    variable = %{id: 1, is_key?: false, hidden?: false, vote_tally: 0}
-
-    html =
-      render_component(&ReveloWeb.UIComponents.variable_actions/1, %{
-        variable: variable,
-        session: session,
-        live_action: :prepare
-      })
-
-    assert html =~ "Edit"
-    assert html =~ "Make Key"
-    assert html =~ "Delete"
-  end
-
   test "task_completed shows completion status" do
     assigns = %{completed: 5, total: 10}
     html = render_component(&ReveloWeb.UIComponents.task_completed/1, assigns)

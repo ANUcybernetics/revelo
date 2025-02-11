@@ -11,18 +11,14 @@ defmodule ReveloWeb.SessionLive.Phase do
     ~H"""
     <div :if={@current_user.facilitator?} class="h-full flex flex-col">
       <div class="grid grid-cols-12 w-full grow gap-10">
-        <.variable_table
+        <.live_component
           :if={@live_action in [:prepare, :identify_discuss]}
+          module={ReveloWeb.SessionLive.VariableTableComponent}
+          id="variable-table"
           class={"#{if(@live_action == :prepare, do: "md:col-span-8", else: "md:col-span-12")} col-span-12"}
           live_action={@live_action}
           session={@session}
-          variable_count={assigns[:variable_count] || 10}
-          variables={@variables}
-          title={
-            if @live_action == :prepare,
-              do: "Prepare your variables",
-              else: if(@show_variables, do: "Variable Votes", else: nil)
-          }
+          title={if @live_action == :prepare, do: "Prepare your variables", else: "Variable Votes"}
         />
 
         <div
@@ -30,7 +26,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           class="flex gap-5 flex-col col-span-12 md:col-span-4"
         >
           <.session_details session={@session} />
-          <.session_start session={@session} variables={@variables} />
+          <.session_start session={@session} variable_count={0} />
         </div>
 
         <.instructions
@@ -112,13 +108,19 @@ defmodule ReveloWeb.SessionLive.Phase do
 
     <div :if={!@current_user.facilitator?} class="h-full flex flex-col items-center justify-center">
       <div :if={@live_action == :identify_work} class="flex flex-col items-center gap-4">
-        <.variable_voting variables={@variables} user={@current_user} />
-        <.button type="submit" form="variable-voting-form" class="w-fit px-24" phx-submit="vote">
+        <.variable_voting variables={[]} user={@current_user} />
+        <.button
+          type="submit"
+          form="variable-voting-form"
+          class="w-fit px-24"
+          phx-submit="vote"
+          phx-target={@myself}
+        >
           Done
         </.button>
       </div>
       <div :if={@live_action == :identify_discuss} class="flex flex-col items-center gap-4">
-        <.variable_confirmation variables={@variables} user={@current_user} />
+        <.variable_confirmation variables={[]} user={@current_user} />
         <.link patch={"/sessions/#{@session.id}/identify/"}>
           <.button class="w-fit px-24">Back</.button>
         </.link>
@@ -143,9 +145,6 @@ defmodule ReveloWeb.SessionLive.Phase do
     session = Ash.get!(Session, session_id)
     current_user = Ash.load!(socket.assigns.current_user, facilitator?: [session_id: session_id])
 
-    variables =
-      Diagrams.list_variables!(session_id, true, actor: current_user)
-
     modal =
       case params do
         %{"variable_id" => "new"} -> :new
@@ -157,55 +156,9 @@ defmodule ReveloWeb.SessionLive.Phase do
       socket
       |> assign(:current_user, current_user)
       |> assign(:session, session)
-      |> assign(:variables, variables)
-      |> assign(:show_variables, Map.get(params, "show_variables", false))
       |> assign(:modal, modal)
       |> assign(:participant_count, {0, 1})
       |> assign(:page_title, page_title(socket.assigns.live_action))
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("vote", params, socket) do
-    user = socket.assigns.current_user
-
-    variable_ids =
-      socket.assigns.variables
-      |> Enum.reject(& &1.is_key?)
-      |> Enum.map(& &1.id)
-
-    Enum.each(variable_ids, fn var_id ->
-      checkbox_name = "var" <> var_id
-      is_checked = Map.get(params, checkbox_name) == "true"
-
-      variable = Enum.find(socket.assigns.variables, &(&1.id == var_id))
-      has_vote = variable.voted?
-
-      cond do
-        is_checked and not has_vote ->
-          Diagrams.variable_vote!(variable, actor: user)
-
-        not is_checked and has_vote ->
-          vote =
-            Enum.find(
-              Diagrams.list_variable_votes!(socket.assigns.session.id),
-              &(&1.variable.id == var_id)
-            )
-
-          Diagrams.destroy_variable_vote!(vote, actor: user)
-
-        true ->
-          :ok
-      end
-    end)
-
-    updated_variables = Diagrams.list_variables!(socket.assigns.session.id, true, actor: user)
-
-    socket =
-      socket
-      |> assign(:variables, updated_variables)
-      |> push_navigate(to: "/sessions/#{socket.assigns.session.id}/identify/discuss")
 
     {:noreply, socket}
   end
@@ -231,44 +184,17 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_event("toggle_hidden", %{"id" => variable_id}, socket) do
-    updated_variable = Diagrams.toggle_variable_visibility!(variable_id)
-
-    {:noreply,
-     update(socket, :variables, fn vars ->
-       Enum.map(vars, fn v ->
-         if v.id == updated_variable.id, do: updated_variable, else: v
-       end)
-     end)}
-  end
-
-  @impl true
-  def handle_event("toggle_key", %{"id" => variable_id}, socket) do
-    _updated_variable = Diagrams.toggle_key_variable!(variable_id)
-
-    {:noreply,
-     update(socket, :variables, fn _vars ->
-       Diagrams.list_variables!(socket.assigns.session.id, true)
-     end)}
-  end
-
-  @impl true
-  def handle_event("delete_variable", %{"id" => variable_id}, socket) do
-    Diagrams.destroy_variable!(variable_id)
-
-    {:noreply,
-     update(socket, :variables, fn vars ->
-       Enum.filter(vars, fn v -> v.id != variable_id end)
-     end)}
-  end
-
-  @impl true
   def handle_info({ReveloWeb.SessionLive.FormComponent, {:saved, session}}, socket) do
     {:noreply, assign(socket, :session, session)}
   end
 
   @impl true
-  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, _variable}}, socket) do
+  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
+    send_update(ReveloWeb.SessionLive.VariableTableComponent,
+      id: "variable-table",
+      new_variable: variable
+    )
+
     {:noreply, socket}
   end
 
