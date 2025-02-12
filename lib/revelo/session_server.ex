@@ -98,6 +98,9 @@ defmodule Revelo.SessionServer do
 
   @impl true
   def handle_call({:participant_count, {complete, total}}, _from, state) do
+    # fan out to all participants to update their "how many remaining" display
+    broadcast_participant_count(state.session_id, {complete, total})
+
     case {complete, state.phase} do
       # if complete == total, we're done and let's move on
       {^total, :identify} ->
@@ -159,6 +162,14 @@ defmodule Revelo.SessionServer do
       Revelo.PubSub,
       "session:#{session_id}",
       {:transition, phase}
+    )
+  end
+
+  defp broadcast_participant_count(session_id, phase) do
+    Phoenix.PubSub.broadcast(
+      Revelo.PubSub,
+      "session:#{session_id}",
+      {:participant_count, phase}
     )
   end
 end
