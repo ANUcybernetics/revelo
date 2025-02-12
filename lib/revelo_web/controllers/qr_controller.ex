@@ -4,7 +4,9 @@ defmodule ReveloWeb.QRController do
   def handle_qr(conn, %{"session_id" => session_id, "phase" => phase}) when phase in ["identify", "relate"] do
     # Add a small delay to discourage rapid scanning (TODO more robust
     # rate-limiting solution probably needed in future)
-    Process.sleep(500)
+    if Application.get_env(:revelo, :env) == :prod do
+      Process.sleep(500)
+    end
 
     user =
       case conn.assigns do
