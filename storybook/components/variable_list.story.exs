@@ -54,7 +54,7 @@ defmodule Storybook.Examples.VariableList do
               <% end %>
             </.table_cell>
             <.table_cell>
-              <.variable_actions variable={variable} />
+              TODO variable_actions used to be here.
             </.table_cell>
           </.table_row>
         <% end %>
