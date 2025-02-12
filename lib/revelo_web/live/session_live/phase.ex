@@ -137,7 +137,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       </div>
       <div :if={@live_action == :identify_discuss} class="flex flex-col items-center gap-4">
         <.variable_confirmation variables={[]} user={@current_user} />
-        <.link patch={"/sessions/#{@session.id}/identify/"}>
+        <.link patch={"/sessions/#{@session.id}/identify/work"}>
           <.button class="w-fit px-24">Back</.button>
         </.link>
       </div>
