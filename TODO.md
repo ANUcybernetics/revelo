@@ -3,8 +3,6 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- add the VariableVoteComponent (and all other necessary components and events)
-
 - instead of variable.voted?, could do variable.vote_id (and then use that to
   determine if the user has voted)
 
