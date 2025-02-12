@@ -5,11 +5,20 @@ we're building it out & exploring the problem space).
 
 - add the VariableVoteComponent (and all other necessary components and events)
 
+- instead of variable.voted?, could do variable.vote_id (and then use that to
+  determine if the user has voted)
+
+- for any live component with a :variables stream, we could keep a @key_variable
+  assign handy
+
 - faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
   example of doing just this we could use as a staring point)
 
 - add policies/authorizations
+
+- could add a function component for the 2/3 column layout (with first_col and
+  second_col slots)
 
 ## Route/LiveView re-org
 
