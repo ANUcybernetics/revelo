@@ -64,8 +64,7 @@ defmodule Revelo.SessionServer do
   def init(session_id) do
     state = %{
       session_id: session_id,
-      # start in :identify, because it's the start of the real thing
-      phase: :identify,
+      phase: :prepare,
       timer: 0
     }
 
