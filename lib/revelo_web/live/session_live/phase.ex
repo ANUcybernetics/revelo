@@ -109,13 +109,7 @@ defmodule ReveloWeb.SessionLive.Phase do
     <div :if={!@current_user.facilitator?} class="h-full flex flex-col items-center justify-center">
       <div :if={@live_action == :identify_work} class="flex flex-col items-center gap-4">
         <.variable_voting variables={[]} user={@current_user} />
-        <.button
-          type="submit"
-          form="variable-voting-form"
-          class="w-fit px-24"
-          phx-submit="vote"
-          phx-target={@myself}
-        >
+        <.button type="submit" form="variable-voting-form" class="w-fit px-24" phx-submit="vote">
           Done
         </.button>
       </div>
