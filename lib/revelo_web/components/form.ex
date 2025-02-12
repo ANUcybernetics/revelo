@@ -2,6 +2,8 @@ defmodule ReveloWeb.Component.Form do
   @moduledoc false
   use ReveloWeb.Component
 
+  alias Phoenix.HTML.FormField
+
   @doc """
   Implement of form component. SaladUI doesn't define its own form, but it provides a set of form-related components to help you build your own form.
 
@@ -55,7 +57,7 @@ defmodule ReveloWeb.Component.Form do
   attr :class, :string, default: nil
   attr :error, :boolean, default: false
 
-  attr :field, Phoenix.HTML.FormField,
+  attr :field, FormField,
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -107,7 +109,7 @@ defmodule ReveloWeb.Component.Form do
     """
   end
 
-  attr :field, Phoenix.HTML.FormField,
+  attr :field, FormField,
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 

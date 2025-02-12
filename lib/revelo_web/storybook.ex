@@ -1,4 +1,5 @@
 defmodule ReveloWeb.Storybook do
+  @moduledoc false
   use PhoenixStorybook,
     otp_app: :revelo_web,
     content_path: Path.expand("../../storybook", __DIR__),
