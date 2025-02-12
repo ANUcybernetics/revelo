@@ -682,14 +682,14 @@ defmodule ReveloWeb.UIComponents do
 
   def instructions(assigns) do
     ~H"""
-    <.card class={["flex flex-col text-3xl", @class] |> Enum.join(" ")}>
+    <.card class={["flex flex-col text-2xl", @class] |> Enum.join(" ")}>
       <.card_header class="w-full">
         <.header class="flex flex-row justify-between !items-start">
-          <.card_title class="grow text-3xl">{@title}</.card_title>
+          <.card_title class="grow text-2xl">{@title}</.card_title>
         </.header>
       </.card_header>
       <.card_content>
-        <div class="space-y-12">
+        <div>
           {render_slot(@inner_block)}
         </div>
       </.card_content>
@@ -703,7 +703,6 @@ defmodule ReveloWeb.UIComponents do
   attr :url, :string, required: true
   attr :completed, :integer, required: true, doc: "number of participants completed"
   attr :total, :integer, required: true, doc: "total number of participants"
-  attr :complete_url, :string, default: nil
   attr :class, :string, default: "", doc: "additional class to apply to the card"
 
   def qr_code_card(assigns) do
@@ -711,9 +710,9 @@ defmodule ReveloWeb.UIComponents do
     <.card class={["shrink h-full flex flex-col text-2xl justify-between", @class] |> Enum.join(" ")}>
       <.card_header class="w-full">
         <.header class="flex flex-row justify-between !items-start">
-          <.card_title class="grow text-3xl">Scan QR Code</.card_title>
-          <.card_description class="text-xl mt-4">
-            Scan this code with your phone to join the session
+          <.card_title class="grow text-2xl">Scan QR Code</.card_title>
+          <.card_description class="text-lg">
+            Scan this code with your phone to join.
           </.card_description>
         </.header>
       </.card_header>
@@ -724,13 +723,10 @@ defmodule ReveloWeb.UIComponents do
       </.card_content>
       <.card_footer class="flex flex-col items-center gap-2">
         <div>
-          <span class="font-bold text-4xl">{@completed}</span>
-          <span class="text-gray-600">completed</span>
+        <span class="font-bold text-4xl">{@completed}</span>
+        <span class="text-gray-600 text-lg">completed</span>
         </div>
         <.progress class="w-full h-2" value={round(@completed / @total * 100)} />
-        <.link href={@complete_url} class="w-full">
-          <.button class="w-full mt-4">All Done</.button>
-        </.link>
       </.card_footer>
     </.card>
     """

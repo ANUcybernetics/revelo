@@ -10,7 +10,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   def render(assigns) do
     ~H"""
     <div :if={@current_user.facilitator?} class="h-full flex flex-col">
-      <div class="grid grid-cols-12 w-full grow gap-10">
+      <div class="grid grid-cols-12 w-full grow gap-6">
         <.live_component
           :if={@live_action in [:prepare, :identify_discuss]}
           module={ReveloWeb.SessionLive.VariableTableComponent}
@@ -34,7 +34,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           title="Identify relationships"
           class="col-span-8"
         >
-          <ol class="list-decimal p-10 space-y-12">
+          <ol class="list-decimal p-6 space-y-6">
             <li>Scan the QR code with your phone camera.
               Note the key variable shown at the top (this is your main system outcome)</li>
             <li>
@@ -54,7 +54,6 @@ defmodule ReveloWeb.SessionLive.Phase do
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify/work"}
           completed={elem(@participant_count, 0)}
           total={elem(@participant_count, 1)}
-          complete_url={"/sessions/#{@session.id}/identify/discuss"}
           class="col-span-4"
         />
       </div>
