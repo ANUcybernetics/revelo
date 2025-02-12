@@ -144,7 +144,10 @@ defmodule ReveloWeb.SessionLive.Phase do
   def handle_params(%{"session_id" => session_id} = params, _url, socket) do
     session = Ash.get!(Session, session_id)
     current_user = Ash.load!(socket.assigns.current_user, facilitator?: [session_id: session_id])
-    ReveloWeb.Presence.track_participant(session.id, current_user.id)
+
+    # only track non-facilitator participants for "completion" tracking
+    if not current_user.facilitator?,
+      do: ReveloWeb.Presence.track_participant(session.id, current_user.id)
 
     modal =
       case params do

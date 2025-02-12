@@ -28,7 +28,12 @@ defmodule ReveloWeb.Presence do
   end
 
   def list_online_participants(session_id) do
-    "session_presence:#{session_id}" |> list() |> Enum.map(fn {_id, presence} -> presence end)
+    "session_presence:#{session_id}"
+    |> list()
+    |> Enum.map(fn {id, %{metas: metas}} ->
+      completed_count = Enum.count(metas, & &1.completed?)
+      {id, completed_count, length(metas)}
+    end)
   end
 
   # these functions expect to be called from a LiveView module
