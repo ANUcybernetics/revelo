@@ -93,7 +93,7 @@ defmodule Revelo.Diagrams.Variable do
                  |> Revelo.Diagrams.unset_key_variable!()
                end
 
-               {:ok, variable}
+               {:ok, Ash.load!(variable, :vote_tally)}
              end)
     end
 
@@ -110,6 +110,10 @@ defmodule Revelo.Diagrams.Variable do
         current_value = Ash.Changeset.get_attribute(changeset, :hidden?)
         Ash.Changeset.force_change_attribute(changeset, :hidden?, !current_value)
       end
+
+      change after_action(fn _changeset, variable, _context ->
+               {:ok, Ash.load!(variable, :vote_tally)}
+             end)
     end
   end
 
