@@ -52,7 +52,8 @@ defmodule ReveloWeb.SessionLive.Phase do
         <.qr_code_card
           :if={@live_action == :identify_work}
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify/work"}
-          participant_count={@participant_count}
+          completed={elem(@participant_count, 0)}
+          total={elem(@participant_count, 1)}
           complete_url={"/sessions/#{@session.id}/identify/discuss"}
           class="col-span-4"
         />
@@ -156,6 +157,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:current_user, current_user)
       |> assign(:session, session)
       |> assign(:modal, modal)
+      # :participant_count is a {completed, total} tuple
       |> assign(:participant_count, {0, 1})
       |> assign(:variable_count, 0)
       |> assign(:page_title, page_title(socket.assigns.live_action))
@@ -199,8 +201,8 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info({:timer_update, total_count}, socket) do
-    {:noreply, assign(socket, :time_remaining, total_count)}
+  def handle_info({:tick, timer}, socket) do
+    {:noreply, assign(socket, :timer, timer)}
   end
 
   @impl true

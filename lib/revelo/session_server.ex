@@ -109,8 +109,8 @@ defmodule Revelo.SessionServer do
   end
 
   @impl true
-  def handle_call({:participant_count, {complete, total}}, _from, state) do
-    broadcast_participant_count(state.session_id, {complete, total})
+  def handle_call({:participant_count, counts}, _from, state) do
+    broadcast_participant_count(state.session_id, counts)
     # this function used to have the "auto advance phase when everyone's done logic in it
     # but I think that having the facilitator manually advance the phase is a better UX
     # so now this doesn't do much - just fans the broadcast out to all listening clients via pubsub
@@ -149,11 +149,11 @@ defmodule Revelo.SessionServer do
     )
   end
 
-  defp broadcast_participant_count(session_id, phase) do
+  defp broadcast_participant_count(session_id, counts) do
     Phoenix.PubSub.broadcast(
       Revelo.PubSub,
       "session:#{session_id}",
-      {:participant_count, phase}
+      {:participant_count, counts}
     )
   end
 

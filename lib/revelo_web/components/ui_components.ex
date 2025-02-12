@@ -179,6 +179,8 @@ defmodule ReveloWeb.UIComponents do
   @doc """
     The task completed page for mobile
   """
+  attr :completed, :integer, required: true, doc: "number of participants completed"
+  attr :total, :integer, required: true, doc: "total number of participants"
 
   def task_completed(assigns) do
     ~H"""
@@ -694,7 +696,8 @@ defmodule ReveloWeb.UIComponents do
     Renders a QR code card with participant counter and completion button.
   """
   attr :url, :string, required: true
-  attr :participant_count, :map, required: true
+  attr :completed, :integer, required: true, doc: "number of participants completed"
+  attr :total, :integer, required: true, doc: "total number of participants"
   attr :complete_url, :string, default: nil
   attr :class, :string, default: "", doc: "additional class to apply to the card"
 
@@ -716,13 +719,10 @@ defmodule ReveloWeb.UIComponents do
       </.card_content>
       <.card_footer class="flex flex-col items-center gap-2">
         <div>
-          <span class="font-bold text-4xl">{elem(@participant_count, 0)}</span>
+          <span class="font-bold text-4xl">{@completed}</span>
           <span class="text-gray-600">completed</span>
         </div>
-        <.progress
-          class="w-full h-2"
-          value={round(elem(@participant_count, 0) / elem(@participant_count, 1) * 100)}
-        />
+        <.progress class="w-full h-2" value={round(@completed / @total * 100)} />
         <.link href={@complete_url} class="w-full">
           <.button class="w-full mt-4">All Done</.button>
         </.link>
