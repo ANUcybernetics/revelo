@@ -83,68 +83,53 @@ defmodule Revelo.SessionServer do
 
   @impl true
   def handle_call({:transition_to, new_phase}, _from, state) do
-    case new_phase do
-      :analyse ->
-        Revelo.Diagrams.rescan_loops!(state.session_id)
-
-      _ ->
-        :ok
-    end
-
     broadcast_transition(state.session_id, new_phase)
-    {:reply, :ok, %{state | phase: new_phase, timer: 0}}
+
+    # this is the "state transition" control logic (could refactor into an `apply_transition/2`
+    # function, but maybe not worth it for now)
+    state =
+      case new_phase do
+        :identify_work ->
+          schedule_tick()
+          %{state | phase: new_phase, timer: 60}
+
+        :relate_work ->
+          schedule_tick()
+          %{state | phase: new_phase, timer: 60}
+
+        :analyse ->
+          Revelo.Diagrams.rescan_loops!(state.session_id)
+          %{state | phase: new_phase, timer: 0}
+
+        _ ->
+          %{state | phase: new_phase, timer: 0}
+      end
+
+    {:reply, :ok, state}
   end
 
   @impl true
   def handle_call({:participant_count, {complete, total}}, _from, state) do
-    # fan out to all participants to update their "how many remaining" display
     broadcast_participant_count(state.session_id, {complete, total})
-
-    case {complete, state.phase} do
-      # if complete == total, we're done and let's move on
-      {^total, :identify} ->
-        broadcast_transition(state.session_id, :relate)
-
-        schedule_tick()
-        {:reply, :ok, %{state | phase: :relate, timer: 60}}
-
-      {^total, :relate} ->
-        broadcast_transition(state.session_id, :analyse)
-        {:reply, :ok, %{state | phase: :analyse}}
-
-      {_, phase} when phase in [:identify, :relate] ->
-        Phoenix.PubSub.broadcast(
-          Revelo.PubSub,
-          "session:#{state.session_id}",
-          {:participant_count, {complete, total}}
-        )
-
-        {:reply, :ok, state}
-
-      _ ->
-        {:reply, :ok, state}
-    end
+    # this function used to have the "auto advance phase when everyone's done logic in it
+    # but I think that having the facilitator manually advance the phase is a better UX
+    # so now this doesn't do much - just fans the broadcast out to all listening clients via pubsub
+    {:reply, :ok, state}
   end
 
   @impl true
   def handle_info(:tick, state) do
     case {state.phase, state.timer} do
-      {:relate, 0} ->
-        broadcast_transition(state.session_id, :analyse)
+      {phase, 0} when phase in [:identify_work, :relate_work] ->
         {:noreply, %{state | phase: :analyse}}
 
-      {:relate, timer} ->
-        Phoenix.PubSub.broadcast(
-          Revelo.PubSub,
-          "session:#{state.session_id}",
-          {:timer, timer}
-        )
-
+      {phase, timer} when phase in [:identify_work, :relate_work] ->
+        broadcast_tick(state.session_id, timer)
         schedule_tick()
         {:noreply, %{state | timer: timer - @timer_interval_sec}}
 
       _ ->
-        {:noreply, state}
+        {:noreply, %{state | timer: 0}}
     end
   end
 
@@ -169,6 +154,14 @@ defmodule Revelo.SessionServer do
       Revelo.PubSub,
       "session:#{session_id}",
       {:participant_count, phase}
+    )
+  end
+
+  defp broadcast_tick(session_id, timer) do
+    Phoenix.PubSub.broadcast(
+      Revelo.PubSub,
+      "session:#{session_id}",
+      {:timer, timer}
     )
   end
 end
