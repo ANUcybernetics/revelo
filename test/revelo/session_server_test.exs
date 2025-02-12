@@ -15,7 +15,7 @@ defmodule Revelo.SessionServerTest do
   test "initial state is set correctly", %{session: session} do
     state = SessionServer.get_state(session.id)
     assert state.session_id == session.id
-    assert state.phase == :identify
+    assert state.phase == :prepare
     assert state.timer == 0
   end
 
