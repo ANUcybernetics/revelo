@@ -74,6 +74,9 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
           </.card_content>
         </.scroll_area>
       </.card>
+      <.button class="w-fit px-24 mt-4" phx-click="done" phx-target={@myself}>
+        Done
+      </.button>
     </div>
     """
   end
@@ -96,5 +99,16 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
 
     updated_variable = Ash.load!(variable, :voted?, actor: voter)
     {:noreply, stream_insert(socket, :variables, updated_variable)}
+  end
+
+  @impl true
+  def handle_event("done", _params, socket) do
+    ReveloWeb.Presence.update_status(
+      socket.assigns.session.id,
+      socket.assigns.current_user.id,
+      true
+    )
+
+    {:noreply, socket}
   end
 end

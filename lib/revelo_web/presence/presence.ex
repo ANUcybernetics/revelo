@@ -42,13 +42,8 @@ defmodule ReveloWeb.Presence do
   end
 
   def update_status(session_id, user_id, completed?) do
-    update(self(), "session_presence:#{session_id}", user_id, fn %{metas: metas} ->
-      %{
-        metas:
-          Enum.map(metas, fn meta ->
-            Map.put(meta, :completed?, completed?)
-          end)
-      }
+    update(self(), "session_presence:#{session_id}", user_id, fn meta ->
+      Map.put(meta, :completed?, completed?)
     end)
   end
 end
