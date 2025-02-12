@@ -100,7 +100,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
               </:actions>
             </.header>
           </.card_header>
-          <.scroll_area class="flex-1 min-h-0">
+          <.scroll_area class="h-20 grow rounded-md">
             <.card_content class="h-full">
               <.table class="text-base">
                 <.table_header>
