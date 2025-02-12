@@ -146,7 +146,12 @@ body {
         rgba(0, 0, 0, 0) 1px
     );
 }
-
 :root {
     font-size: 24px;
+}
+
+@media (max-width: 768px) {
+    :root {
+        font-size: 16px;
+    }
 }

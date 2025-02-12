@@ -97,7 +97,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           action={@live_action}
           session={@session}
-          patch={~p"/sessions/#{@session.id}/identify/prepare"}
+          patch={~p"/sessions/#{@session.id}/prepare"}
         />
       </.modal>
 
