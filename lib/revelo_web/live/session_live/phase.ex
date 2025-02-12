@@ -127,19 +127,17 @@ defmodule ReveloWeb.SessionLive.Phase do
     </div>
 
     <div :if={!@current_user.facilitator?} class="h-full flex flex-col items-center justify-center">
-      <div :if={@live_action == :identify_work} class="flex flex-col items-center gap-4">
+      <div
+        :if={@live_action in [:identify_work, :identify_discuss]}
+        class="flex flex-col items-center gap-4"
+      >
         <.live_component
           module={ReveloWeb.SessionLive.VariableVotingComponent}
           id="variable-voting"
+          live_action={@live_action}
           current_user={@current_user}
           session={@session}
         />
-      </div>
-      <div :if={@live_action == :identify_discuss} class="flex flex-col items-center gap-4">
-        <.variable_confirmation variables={[]} user={@current_user} />
-        <.link patch={"/sessions/#{@session.id}/identify/work"}>
-          <.button class="w-fit px-24">Back</.button>
-        </.link>
       </div>
       <div
         :if={@live_action not in [:identify_work, :identify_discuss]}

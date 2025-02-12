@@ -36,6 +36,48 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
   end
 
   @impl true
+  def render(%{live_action: :identify_discuss} = assigns) do
+    ~H"""
+    <div class="w-[350px]">
+      <.card class="overflow-hidden">
+        <.card_header>
+          <.card_title>Your Variable Votes</.card_title>
+        </.card_header>
+
+        <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
+          <div class="flex justify-between w-full items-center">
+            <span :if={@key_variable}>
+              {@key_variable.name}
+            </span>
+            <.badge_key />
+          </div>
+        </.card_content>
+
+        <.scroll_area class="h-72">
+          <.card_content class="p-0">
+            <%= for {_id, variable} <- @streams.variables do %>
+              <%= if !variable.is_key? do %>
+                <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
+                  <span>{variable.name}</span>
+                  <%= if variable.voted? do %>
+                    <.badge_vote />
+                  <% else %>
+                    <.badge_no_vote />
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </.card_content>
+        </.scroll_area>
+      </.card>
+      <.link patch={"/sessions/#{@session.id}/identify/work"}>
+        <.button class="w-fit px-24">Back</.button>
+      </.link>
+    </div>
+    """
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="w-[350px]">
