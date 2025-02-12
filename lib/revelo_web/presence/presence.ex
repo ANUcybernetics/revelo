@@ -37,13 +37,18 @@ defmodule ReveloWeb.Presence do
   end
 
   # these functions expect to be called from a LiveView module
-  def track_participant(session_id, user_id) do
-    track(self(), "session_presence:#{session_id}", user_id, %{completed?: false})
+  def track_participant(pid \\ self(), session_id, user_id) do
+    track(pid, "session_presence:#{session_id}", user_id, %{completed?: false})
   end
 
-  def update_status(session_id, user_id, completed?) do
-    update(self(), "session_presence:#{session_id}", user_id, fn meta ->
-      Map.put(meta, :completed?, completed?)
+  def update_status(pid \\ self(), session_id, user_id, completed?) do
+    update(pid, "session_presence:#{session_id}", user_id, fn %{metas: metas} ->
+      %{
+        metas:
+          Enum.map(metas, fn meta ->
+            Map.put(meta, :completed?, completed?)
+          end)
+      }
     end)
   end
 end
