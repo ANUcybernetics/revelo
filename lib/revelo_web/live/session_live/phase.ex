@@ -59,16 +59,29 @@ defmodule ReveloWeb.SessionLive.Phase do
         />
       </div>
 
-      <div>
-        <.back :if={@live_action in [:prepare, :new_variable]} patch={~p"/sessions"}>
-          Back to Sessions
-        </.back>
-        <.back :if={@live_action == :identify} patch={~p"/sessions/#{@session.id}/identify/work"}>
-          Back to Voting
-        </.back>
-        <.back :if={@live_action == :identify} patch={~p"/sessions/#{@session.id}/prepare"}>
-          Back to Prepare
-        </.back>
+      <div class="flex justify-between mt-4">
+        <div>
+          <.back :if={@live_action in [:prepare, :new_variable]} patch={~p"/sessions"}>
+            Back to Sessions
+          </.back>
+          <.back :if={@live_action == :identify_work} patch={~p"/sessions/#{@session.id}/prepare"}>
+            Back to Prepare
+          </.back>
+          <.back :if={@live_action == :identify_discuss} patch={~p"/sessions/#{@session.id}/identify/work"}>
+            Back to Voting
+          </.back>
+        </div>
+        <div>
+          <.link :if={@live_action == :prepare} patch={~p"/sessions/#{@session.id}/identify/work"}>
+            <.button>Continue to Identify</.button>
+          </.link>
+          <.link :if={@live_action == :identify_work} patch={~p"/sessions/#{@session.id}/identify/discuss"}>
+            <.button>Continue to Identify Discussion</.button>
+          </.link>
+          <.link :if={@live_action == :identify_discuss} patch={~p"/sessions/#{@session.id}/relate/work"}>
+            <.button>Continue to Relationships</.button>
+          </.link>
+        </div>
       </div>
 
       <.modal
@@ -85,7 +98,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           action={@live_action}
           session={@session}
-          patch={~p"/sessions/#{@session.id}/prepare"}
+          patch={~p"/sessions/#{@session.id}/identify/prepare"}
         />
       </.modal>
 
