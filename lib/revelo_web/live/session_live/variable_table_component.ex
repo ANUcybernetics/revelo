@@ -36,7 +36,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
 
     variable_count = Enum.count(variables)
 
-    send(self(), {:set_variable_count, variable_count})
+    send(self(), {:increment_variable_count, variable_count})
 
     socket =
       socket
@@ -277,6 +277,35 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
     destroyed_variable = Diagrams.destroy_variable!(variable_id, return_destroyed?: true)
     send(self(), :decrement_variable_count)
     {:noreply, stream_delete(socket, :variables, destroyed_variable)}
+  end
+
+  @impl true
+  def handle_event("generate_variables", %{"count" => count}, socket) do
+    %{session: session, current_user: actor} = socket.assigns
+
+    existing_variables = Diagrams.list_variables!(session.id, true)
+    variable_names = Enum.map(existing_variables, & &1.name)
+    key_variable = Enum.find(existing_variables, & &1.is_key?)
+
+    case Revelo.LLM.generate_variables(
+           session.description,
+           key_variable.name,
+           count,
+           variable_names
+         ) do
+      {:ok, %Revelo.LLM.VariableList{variables: var_list}} ->
+        new_variables =
+          Enum.map(var_list, fn name ->
+            Diagrams.create_variable!(name, session, actor: actor)
+          end)
+
+        variables = existing_variables ++ new_variables
+        send(self(), {:increment_variable_count, length(new_variables)})
+        {:noreply, stream(socket, :variables, variables)}
+
+      {:error, _error} ->
+        {:noreply, put_flash(socket, :error, "Failed to generate variables")}
+    end
   end
 
   def get_phase(:identify_work), do: :identify

@@ -2,8 +2,6 @@ defmodule ReveloWeb.SessionLive.Phase do
   @moduledoc false
   use ReveloWeb, :live_view
 
-  alias Revelo.Diagrams
-  alias Revelo.LLM
   alias Revelo.Sessions.Session
 
   @impl true
@@ -16,6 +14,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           module={ReveloWeb.SessionLive.VariableTableComponent}
           id="variable-table"
           class={"#{if(@live_action == :prepare, do: "md:col-span-8", else: "md:col-span-12")} col-span-12"}
+          current_user={@current_user}
           live_action={@live_action}
           session={@session}
           title={if @live_action == :prepare, do: "Prepare your variables", else: "Variable Votes"}
@@ -178,26 +177,6 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_event("generate_variables", %{"count" => count}, socket) do
-    %{session: session, current_user: actor, variables: existing_variables} = socket.assigns
-    variable_names = Enum.map(existing_variables, & &1.name)
-    key_variable = Enum.find(existing_variables, & &1.is_key?)
-
-    case LLM.generate_variables(session.description, key_variable.name, count, variable_names) do
-      {:ok, %LLM.VariableList{variables: var_list}} ->
-        Enum.each(var_list, fn name ->
-          Diagrams.create_variable!(name, session, actor: actor)
-        end)
-
-        variables = Diagrams.list_variables!(session.id, true)
-        {:noreply, assign(socket, :variables, variables)}
-
-      {:error, _error} ->
-        {:noreply, put_flash(socket, :error, "Failed to generate variables")}
-    end
-  end
-
-  @impl true
   def handle_info({ReveloWeb.SessionLive.FormComponent, {:saved, session}}, socket) do
     {:noreply, assign(socket, :session, session)}
   end
@@ -226,8 +205,8 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info({:set_variable_count, count}, socket) do
-    {:noreply, assign(socket, :variable_count, count)}
+  def handle_info({:increment_variable_count, amount}, socket) do
+    {:noreply, assign(socket, :variable_count, socket.assigns.variable_count + amount)}
   end
 
   @impl true
