@@ -94,6 +94,34 @@ defmodule Revelo.VariableTest do
       assert variable.is_key? == false
     end
 
+    test "can get key variable from session" do
+      user = user()
+      session = session(user)
+      variable1 = variable(user: user, session: session)
+      variable2 = variable(user: user, session: session)
+
+      # Make variable2 a key variable
+      variable2 = Revelo.Diagrams.toggle_key_variable!(variable2)
+      assert variable2.is_key? == true
+
+      key_variable = Revelo.Diagrams.get_key_variable!(session.id)
+      assert key_variable.id == variable2.id
+
+      # Toggle key off, should error when trying to get
+      Revelo.Diagrams.toggle_key_variable!(variable2)
+
+      assert_raise Ash.Error.Query.NotFound, fn ->
+        Revelo.Diagrams.get_key_variable!(session.id)
+      end
+
+      # Toggle key on for variable1, should get new key
+      variable1 = Revelo.Diagrams.toggle_key_variable!(variable1)
+      assert variable1.is_key? == true
+
+      key_variable = Revelo.Diagrams.get_key_variable!(session.id)
+      assert key_variable.id == variable1.id
+    end
+
     test "can toggle hidden flag on variable" do
       variable = variable()
       assert variable.hidden? == false

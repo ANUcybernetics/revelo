@@ -44,6 +44,16 @@ defmodule Revelo.Diagrams.Variable do
       prepare build(sort: [is_key?: :desc, name: :asc], load: [:voted?, :vote_tally])
     end
 
+    read :get_key do
+      get? true
+
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      filter expr(session.id == ^arg(:session_id) and is_key? == true)
+    end
+
     create :create do
       accept [:is_key?, :hidden?]
       primary? true
