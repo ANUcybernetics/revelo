@@ -95,23 +95,28 @@ defmodule ReveloWeb.UIComponents do
           </.tooltip>
         <% end %>
       </nav>
-      <nav class="mt-auto flex flex-col items-center gap-4 px-2">
-        <.tooltip>
-          <tooltip_trigger>
-            <.link
-              href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground py-8"
-            >
-              <.icon
-                name="hero-user-circle-mini"
-                class="h-4 w-4 transition-all group-hover:scale-110"
-              />
-              <span class="sr-only">User</span>
-            </.link>
-          </tooltip_trigger>
-          <.tooltip_content side="right">User</.tooltip_content>
-        </.tooltip>
-      </nav>
+       <nav class="mt-auto flex flex-col items-center gap-4 px-2 cursor-pointer">
+       <.dropdown_menu>
+         <.dropdown_menu_trigger class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground py-8">
+           <.icon
+             name="hero-user-circle-mini"
+             class="h-4 w-4 transition-all group-hover:scale-110"
+           />
+           <span class="sr-only">User</span>
+         </.dropdown_menu_trigger>
+         <.dropdown_menu_content side="right">
+           <.menu>
+             <.menu_group>
+               <.link navigate="/sign-out">
+                 <.menu_item class="cursor-pointer">
+                   <span>Sign out</span>
+                 </.menu_item>
+               </.link>
+             </.menu_group>
+           </.menu>
+         </.dropdown_menu_content>
+       </.dropdown_menu>
+     </nav>
     </aside>
     """
   end
