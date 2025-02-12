@@ -3,11 +3,7 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
-- finish VariableTableComponent (the current issue is the parent @variables
-  shadowing the stream inside - I think)
-
-- add tests to user flow which test the Presence stuff (but probably not until
-  the route refactor described below)
+- add the VariableVoteComponent (and all other necessary components and events)
 
 - faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
