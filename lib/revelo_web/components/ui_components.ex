@@ -649,9 +649,9 @@ defmodule ReveloWeb.UIComponents do
           <div>
             <div>
               <span class="text-2xl font-semibold leading-none tracking-tight">
-                {length(@variable_count)}
+                {@variable_count}
               </span>
-              <span>variable{if length(@variable_count) != 1, do: "s"}</span>
+              <span>variable{if @variable_count != 1, do: "s"}</span>
             </div>
             <span class="text-muted-foreground">30-50 reccomended</span>
           </div>

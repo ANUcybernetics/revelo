@@ -26,7 +26,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           class="flex gap-5 flex-col col-span-12 md:col-span-4"
         >
           <.session_details session={@session} />
-          <.session_start session={@session} variable_count={0} />
+          <.session_start session={@session} variable_count={@variable_count} />
         </div>
 
         <.instructions
@@ -157,6 +157,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:session, session)
       |> assign(:modal, modal)
       |> assign(:participant_count, {0, 1})
+      |> assign(:variable_count, 0)
       |> assign(:page_title, page_title(socket.assigns.live_action))
 
     {:noreply, socket}
@@ -194,7 +195,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       new_variable: variable
     )
 
-    {:noreply, socket}
+    {:noreply, assign(socket, :variable_count, socket.assigns.variable_count + 1)}
   end
 
   @impl true
@@ -205,6 +206,16 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def handle_info({:participant_count, counts}, socket) do
     {:noreply, assign(socket, :participant_count, counts)}
+  end
+
+  @impl true
+  def handle_info({:set_variable_count, count}, socket) do
+    {:noreply, assign(socket, :variable_count, count)}
+  end
+
+  @impl true
+  def handle_info(:decrement_variable_count, socket) do
+    {:noreply, assign(socket, :variable_count, socket.assigns.variable_count - 1)}
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"

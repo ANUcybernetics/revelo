@@ -34,11 +34,15 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   def update(assigns, socket) do
     variables = Diagrams.list_variables!(assigns.session.id, true)
 
+    variable_count = Enum.count(variables)
+
+    send(self(), {:set_variable_count, variable_count})
+
     socket =
       socket
       |> assign(assigns)
       |> stream(:variables, variables, reset: true)
-      |> assign(:variable_count, Enum.count(variables))
+      |> assign(:variable_count, variable_count)
 
     {:ok, socket}
   end
@@ -271,6 +275,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   @impl true
   def handle_event("delete_variable", %{"id" => variable_id}, socket) do
     destroyed_variable = Diagrams.destroy_variable!(variable_id, return_destroyed?: true)
+    send(self(), :decrement_variable_count)
     {:noreply, stream_delete(socket, :variables, destroyed_variable)}
   end
 
