@@ -25,8 +25,8 @@ defmodule ReveloWeb.SessionLive.Phase do
           :if={@live_action in [:prepare, :new_variable]}
           class="flex gap-5 flex-col col-span-12 md:col-span-4"
         >
-          <.session_details session={@session} />
-          <.session_start session={@session} variable_count={@variable_count} />
+
+          <.session_details session={@session} variable_count={@variable_count}/>
         </div>
 
         <.instructions
@@ -85,7 +85,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           action={@live_action}
           session={@session}
-          patch={~p"/sessions/#{@session.id}/identify/discuss"}
+          patch={~p"/sessions/#{@session.id}/prepare"}
         />
       </.modal>
 
@@ -191,7 +191,10 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
+  def handle_info(
+        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}},
+        socket
+      ) do
     send_update(ReveloWeb.SessionLive.VariableTableComponent,
       id: "variable-table",
       new_variable: variable

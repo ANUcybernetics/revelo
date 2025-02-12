@@ -598,6 +598,7 @@ defmodule ReveloWeb.UIComponents do
   Renders a session details card showing title and description with edit functionality.
   """
   attr :session, :map, required: true, doc: "the session containing name and description"
+  attr :variable_count, :integer, required: true, doc: "number of variables in diagram"
   attr :class, :string, default: "", doc: "additional class to apply to the card"
 
   def session_details(assigns) do
@@ -621,6 +622,10 @@ defmodule ReveloWeb.UIComponents do
             <div>
               <span class="font-bold">Title</span>
               <p>{@session.name}</p>
+            </div>
+            <div>
+              <span class="font-bold">Number of variables</span>
+              <p>{@variable_count}</p>
             </div>
             <div>
               <span class="font-bold">Description</span>
