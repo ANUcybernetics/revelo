@@ -109,6 +109,6 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
       true
     )
 
-    {:noreply, socket}
+    {:noreply, push_patch(socket, to: ~p"/sessions/#{socket.assigns.session.id}/identify/discuss")}
   end
 end
