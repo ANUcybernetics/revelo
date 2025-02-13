@@ -3,11 +3,12 @@
 This is a bit lighter-weight than using GH issues, and will do for now (while
 we're building it out & exploring the problem space).
 
+- add the "facilitator's vote wins" behaviour in the relationship voting
+
+- rename rel types to direct/inverse
+
 - instead of variable.voted?, could do variable.vote_id (and then use that to
   determine if the user has voted)
-
-- check that votes are persisting in relationship votes component (e.g. if you
-  go back)
 
 - faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
