@@ -36,6 +36,44 @@ defmodule Revelo.Diagrams.Relationship do
                 )
               )
 
+    calculate :facilitator_reinforcing_votes,
+              :integer,
+              expr(
+                fragment(
+                  """
+                  (SELECT COUNT(*) FROM relationship_votes
+                  JOIN users ON users.id = relationship_votes.voter_id
+                  JOIN session_participants ON users.id = session_participants.participant_id
+                  WHERE relationship_votes.relationship_id = ?
+                  AND relationship_votes.type = 'reinforcing'
+                  AND session_participants."facilitator\\?" = true
+                  AND session_participants.session_id = ?)
+                  """,
+                  id,
+                  session_id
+                )
+              ),
+              load: :session
+
+    calculate :facilitator_balancing_votes,
+              :integer,
+              expr(
+                fragment(
+                  """
+                  (SELECT COUNT(*) FROM relationship_votes
+                    JOIN users ON users.id = relationship_votes.voter_id
+                    JOIN session_participants ON users.id = session_participants.participant_id
+                    WHERE relationship_votes.relationship_id = ?
+                    AND relationship_votes.type = 'balancing'
+                    AND session_participants."facilitator\\?" = true
+                    AND session_participants.session_id = ?)
+                  """,
+                  id,
+                  session_id
+                )
+              ),
+              load: :session
+
     calculate :type,
               :atom,
               expr(

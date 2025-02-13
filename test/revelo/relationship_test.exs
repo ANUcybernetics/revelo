@@ -277,6 +277,40 @@ defmodule Revelo.RelationshipTest do
       assert rel3.no_relationship_votes == 0
     end
 
+    test "facilitator votes calculate correctly" do
+      facilitator = user()
+      participant = user()
+
+      session =
+        facilitator
+        |> session()
+        |> Revelo.Sessions.add_participant!(participant)
+
+      var1 = variable(user: facilitator, session: session)
+      var2 = variable(user: facilitator, session: session)
+      relationship = relationship(user: facilitator, session: session, src: var1, dst: var2)
+
+      # Facilitator votes balancing
+      Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: facilitator)
+      # Non-facilitator votes balancing
+      Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: participant)
+
+      relationship =
+        Ash.load!(relationship, [:facilitator_balancing_votes, :facilitator_reinforcing_votes])
+
+      assert relationship.facilitator_balancing_votes == 1
+      assert relationship.facilitator_reinforcing_votes == 0
+
+      # Facilitator changes vote to reinforcing
+      Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: facilitator)
+
+      relationship =
+        Ash.load!(relationship, [:facilitator_balancing_votes, :facilitator_reinforcing_votes])
+
+      assert relationship.facilitator_balancing_votes == 0
+      assert relationship.facilitator_reinforcing_votes == 1
+    end
+
     test "enumerate_relationships creates all src->dst relationships" do
       user = user()
       session = session(user)
