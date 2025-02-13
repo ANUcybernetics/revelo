@@ -605,13 +605,13 @@ defmodule ReveloWeb.UIComponents do
   def qr_code(assigns) do
     ~H"""
     <div class={"flex flex-col items-center scale-[#{@scale}]"}>
-      <div>
+      <.link href={@text}>
         <img src={"data:image/png;base64," <>
-          (@text
-          |> EQRCode.encode()
-          |> EQRCode.png()
-          |> Base.encode64())} />
-      </div>
+            (@text
+            |> EQRCode.encode()
+            |> EQRCode.png()
+            |> Base.encode64())} />
+      </.link>
     </div>
     """
   end
