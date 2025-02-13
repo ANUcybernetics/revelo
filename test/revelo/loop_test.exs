@@ -27,7 +27,7 @@ defmodule Revelo.LoopTest do
             dst: dst,
             session: session,
             user: user,
-            vote_type: :reinforcing
+            vote_type: :direct
           )
         end)
 
@@ -55,7 +55,7 @@ defmodule Revelo.LoopTest do
             dst: dst,
             session: session,
             user: user,
-            vote_type: :reinforcing
+            vote_type: :direct
           )
         end)
 
@@ -86,7 +86,7 @@ defmodule Revelo.LoopTest do
             dst: dst,
             session: session1,
             user: user,
-            vote_type: :reinforcing
+            vote_type: :direct
           )
         end)
 
@@ -106,7 +106,7 @@ defmodule Revelo.LoopTest do
             dst: dst,
             session: session2,
             user: user,
-            vote_type: :reinforcing
+            vote_type: :direct
           )
         end)
 
@@ -138,7 +138,7 @@ defmodule Revelo.LoopTest do
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
 
       # First loop: var1 -> var2 -> var3 -> var1
@@ -148,7 +148,7 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         shared_relationship,
         relationship_with_vote(
@@ -156,7 +156,7 @@ defmodule Revelo.LoopTest do
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -168,14 +168,14 @@ defmodule Revelo.LoopTest do
           dst: var4,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var4,
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -212,7 +212,7 @@ defmodule Revelo.LoopTest do
             dst: dst,
             session: session,
             user: user,
-            vote_type: :reinforcing
+            vote_type: :direct
           )
         end)
 
@@ -269,10 +269,10 @@ defmodule Revelo.LoopTest do
         dst: var2,
         session: session,
         user: user,
-        vote_type: :reinforcing
+        vote_type: :direct
       ),
       # hide the second relationship
-      [src: var2, dst: var3, session: session, user: user, vote_type: :reinforcing]
+      [src: var2, dst: var3, session: session, user: user, vote_type: :direct]
       |> relationship_with_vote()
       |> Revelo.Diagrams.hide_relationship!(),
       relationship_with_vote(
@@ -280,7 +280,7 @@ defmodule Revelo.LoopTest do
         dst: var1,
         session: session,
         user: user,
-        vote_type: :reinforcing
+        vote_type: :direct
       )
     ]
 
@@ -306,21 +306,21 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -341,35 +341,35 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var4,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var4,
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -390,21 +390,21 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var4,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -417,7 +417,7 @@ defmodule Revelo.LoopTest do
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -440,14 +440,14 @@ defmodule Revelo.LoopTest do
           dst: var_b,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var_b,
           dst: var_a,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -477,7 +477,7 @@ defmodule Revelo.LoopTest do
             dst: dst,
             session: session,
             user: user,
-            vote_type: :reinforcing
+            vote_type: :direct
           )
         end)
 
@@ -507,14 +507,14 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -544,21 +544,21 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -569,21 +569,21 @@ defmodule Revelo.LoopTest do
           dst: var4,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var4,
           dst: var5,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var5,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -630,14 +630,14 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -661,21 +661,21 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -706,7 +706,7 @@ defmodule Revelo.LoopTest do
           dst: variable,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
 
       loop =
@@ -734,21 +734,21 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -762,21 +762,21 @@ defmodule Revelo.LoopTest do
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -793,7 +793,7 @@ defmodule Revelo.LoopTest do
   end
 
   describe "calculating loop type" do
-    test "returns :reinforcing for 2-node even graph where all relationships are reinforcing" do
+    test "returns :direct for 2-node even graph where all relationships are direct" do
       user = user()
       session = session(user)
 
@@ -806,14 +806,14 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 
@@ -825,7 +825,7 @@ defmodule Revelo.LoopTest do
       assert loop.type == :reinforcing
     end
 
-    test "returns :balancing for 3-node loop with 2 reinforcing and 1 balancing relationship" do
+    test "returns :inverse for 3-node loop with 2 reinforcing and 1 inverse relationship" do
       user = user()
       session = session(user)
 
@@ -839,21 +839,21 @@ defmodule Revelo.LoopTest do
           dst: var2,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var2,
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :balancing
+          vote_type: :inverse
         )
       ]
 
@@ -865,7 +865,7 @@ defmodule Revelo.LoopTest do
       assert loop.type == :balancing
     end
 
-    test "returns :conflicting when at least one relationship has both balancing and reinforcing votes" do
+    test "returns :conflicting when at least one relationship has both inverse and direct votes" do
       user = user()
       session = session(user)
 
@@ -875,9 +875,9 @@ defmodule Revelo.LoopTest do
 
       # Create first relationship with both types of votes
       first_rel = relationship(src: var1, dst: var2, session: session, user: user)
-      Revelo.Diagrams.relationship_vote!(first_rel, :reinforcing, actor: user)
+      Revelo.Diagrams.relationship_vote!(first_rel, :direct, actor: user)
       user2 = user()
-      Revelo.Diagrams.relationship_vote!(first_rel, :balancing, actor: user2)
+      Revelo.Diagrams.relationship_vote!(first_rel, :inverse, actor: user2)
 
       relationships = [
         Ash.load!(first_rel, :type),
@@ -886,14 +886,14 @@ defmodule Revelo.LoopTest do
           dst: var3,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         ),
         relationship_with_vote(
           src: var3,
           dst: var1,
           session: session,
           user: user,
-          vote_type: :reinforcing
+          vote_type: :direct
         )
       ]
 

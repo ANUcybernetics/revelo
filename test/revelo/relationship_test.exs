@@ -94,7 +94,7 @@ defmodule Revelo.RelationshipTest do
           :create,
           %{
             relationship: relationship,
-            type: :reinforcing
+            type: :direct
           },
           actor: user
         )
@@ -110,19 +110,19 @@ defmodule Revelo.RelationshipTest do
     test "relationship_with_vote generator sets type attribute" do
       relationship =
         Ash.load!(
-          relationship_with_vote(vote_type: :reinforcing),
+          relationship_with_vote(vote_type: :direct),
           [:type]
         )
 
-      assert relationship.type == :reinforcing
+      assert relationship.type == :direct
 
       relationship =
         Ash.load!(
-          relationship_with_vote(vote_type: :balancing),
+          relationship_with_vote(vote_type: :inverse),
           [:type]
         )
 
-      assert relationship.type == :balancing
+      assert relationship.type == :inverse
     end
 
     test "can override relationship type" do
@@ -132,24 +132,24 @@ defmodule Revelo.RelationshipTest do
       var2 = variable(user: user, session: session)
       relationship = relationship(user: user, session: session, src: var1, dst: var2)
 
-      # Vote reinforcing initially
-      Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: user)
+      # Vote direct initially
+      Revelo.Diagrams.relationship_vote!(relationship, :direct, actor: user)
       relationship = Ash.load!(relationship, [:type])
-      assert relationship.type == :reinforcing
+      assert relationship.type == :direct
 
-      # Override to balancing
-      relationship = Revelo.Diagrams.override_relationship_type!(relationship, :balancing)
+      # Override to inverse
+      relationship = Revelo.Diagrams.override_relationship_type!(relationship, :inverse)
       relationship = Ash.load!(relationship, [:type])
-      assert relationship.type == :balancing
+      assert relationship.type == :inverse
 
       # Verify votes are still present but override takes precedence
-      relationship = Ash.load!(relationship, [:type, :reinforcing_votes, :balancing_votes])
-      assert relationship.reinforcing_votes == 1
-      assert relationship.balancing_votes == 0
-      assert relationship.type == :balancing
+      relationship = Ash.load!(relationship, [:type, :direct_votes, :inverse_votes])
+      assert relationship.direct_votes == 1
+      assert relationship.inverse_votes == 0
+      assert relationship.type == :inverse
     end
 
-    test "override_type fails if type isn't one of balancing/reinforcing/no_relationship" do
+    test "override_type fails if type isn't one of direct/inverse/no_relationship" do
       relationship = relationship()
 
       assert_raise Invalid, fn ->
@@ -165,21 +165,21 @@ defmodule Revelo.RelationshipTest do
       relationship = relationship(user: user, session: session, src: var1, dst: var2)
 
       # Create initial vote
-      vote1 = Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: user)
+      vote1 = Revelo.Diagrams.relationship_vote!(relationship, :direct, actor: user)
 
       # Vote again with different type
-      vote2 = Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: user)
+      vote2 = Revelo.Diagrams.relationship_vote!(relationship, :inverse, actor: user)
 
       # Should have same composite key values but updated type
       assert vote1.voter_id == vote2.voter_id
       assert vote1.relationship_id == vote2.relationship_id
-      assert vote1.type == :reinforcing
-      assert vote2.type == :balancing
+      assert vote1.type == :direct
+      assert vote2.type == :inverse
 
       # Verify only one vote exists
       relationship = Ash.load!(relationship, :votes)
       assert length(relationship.votes) == 1
-      assert hd(relationship.votes).type == :balancing
+      assert hd(relationship.votes).type == :inverse
     end
 
     test "can create votes for multiple relationships with same user" do
@@ -198,7 +198,7 @@ defmodule Revelo.RelationshipTest do
           :create,
           %{
             relationship: relationship1,
-            type: :reinforcing
+            type: :direct
           },
           actor: user
         )
@@ -210,7 +210,7 @@ defmodule Revelo.RelationshipTest do
           :create,
           %{
             relationship: relationship2,
-            type: :reinforcing
+            type: :direct
           },
           actor: user
         )
@@ -243,7 +243,7 @@ defmodule Revelo.RelationshipTest do
           :create,
           %{
             relationship: relationship,
-            type: :reinforcing
+            type: :direct
           },
           actor: user1
         )
@@ -255,7 +255,7 @@ defmodule Revelo.RelationshipTest do
           :create,
           %{
             relationship: relationship,
-            type: :reinforcing
+            type: :direct
           },
           actor: user2
         )
@@ -281,9 +281,9 @@ defmodule Revelo.RelationshipTest do
       rel2 = relationship(user: user, session: session, src: var1, dst: var2)
       rel3 = relationship(user: user, session: session, src: var1, dst: var3)
 
-      vote1 = Revelo.Diagrams.relationship_vote!(rel1, :reinforcing, actor: user)
-      vote2 = Revelo.Diagrams.relationship_vote!(rel2, :balancing, actor: user)
-      vote3 = Revelo.Diagrams.relationship_vote!(rel3, :reinforcing, actor: user)
+      vote1 = Revelo.Diagrams.relationship_vote!(rel1, :direct, actor: user)
+      vote2 = Revelo.Diagrams.relationship_vote!(rel2, :inverse, actor: user)
+      vote3 = Revelo.Diagrams.relationship_vote!(rel3, :direct, actor: user)
 
       votes = Revelo.Diagrams.list_relationship_votes!(session.id)
 
@@ -299,14 +299,14 @@ defmodule Revelo.RelationshipTest do
       rel2 = Enum.find(relationships, &(&1.id == rel2.id))
       rel3 = Enum.find(relationships, &(&1.id == rel3.id))
 
-      assert rel1.reinforcing_votes == 1
-      assert rel1.balancing_votes == 0
+      assert rel1.direct_votes == 1
+      assert rel1.inverse_votes == 0
       assert rel1.no_relationship_votes == 0
-      assert rel2.reinforcing_votes == 0
-      assert rel2.balancing_votes == 1
+      assert rel2.direct_votes == 0
+      assert rel2.inverse_votes == 1
       assert rel2.no_relationship_votes == 0
-      assert rel3.reinforcing_votes == 1
-      assert rel3.balancing_votes == 0
+      assert rel3.direct_votes == 1
+      assert rel3.inverse_votes == 0
       assert rel3.no_relationship_votes == 0
     end
 
@@ -366,7 +366,7 @@ defmodule Revelo.RelationshipTest do
       assert rel_pairs == expected_pairs
     end
 
-    test "list_actual_relationships! returns all relationships with at least one balancing or reinforcing vote" do
+    test "list_actual_relationships! returns all relationships with at least one direct or inverse vote" do
       user = user()
       session = session(user)
       var1 = variable(user: user, session: session)
@@ -375,10 +375,10 @@ defmodule Revelo.RelationshipTest do
 
       # Create relationships with different vote combinations
       rel1 = relationship(user: user, session: session, src: var1, dst: var2)
-      Revelo.Diagrams.relationship_vote!(rel1, :reinforcing, actor: user)
+      Revelo.Diagrams.relationship_vote!(rel1, :direct, actor: user)
 
       rel2 = relationship(user: user, session: session, src: var2, dst: var3)
-      Revelo.Diagrams.relationship_vote!(rel2, :balancing, actor: user)
+      Revelo.Diagrams.relationship_vote!(rel2, :inverse, actor: user)
 
       rel3 = relationship(user: user, session: session, src: var1, dst: var3)
       Revelo.Diagrams.relationship_vote!(rel3, :no_relationship, actor: user)
@@ -403,25 +403,25 @@ defmodule Revelo.RelationshipTest do
       relationship = Ash.load!(relationship, [:type])
       assert relationship.type == :no_relationship
 
-      # Test reinforcing only case
-      Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: user)
+      # Test direct only case
+      Revelo.Diagrams.relationship_vote!(relationship, :direct, actor: user)
 
       relationship = Ash.load!(relationship, [:type])
-      assert relationship.type == :reinforcing
+      assert relationship.type == :direct
 
-      # Create another user and add balancing vote to test conflicting case
+      # Create another user and add inverse vote to test conflicting case
       user2 = user()
-      Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: user2)
+      Revelo.Diagrams.relationship_vote!(relationship, :inverse, actor: user2)
 
       relationship = Ash.load!(relationship, [:type])
       assert relationship.type == :conflicting
 
-      # Create a new relationship to test balancing only case
+      # Create a new relationship to test inverse only case
       relationship2 = relationship(user: user, session: session, src: var2, dst: var1)
-      Revelo.Diagrams.relationship_vote!(relationship2, :balancing, actor: user)
+      Revelo.Diagrams.relationship_vote!(relationship2, :inverse, actor: user)
 
       relationship2 = Ash.load!(relationship2, [:type])
-      assert relationship2.type == :balancing
+      assert relationship2.type == :inverse
     end
 
     test "list_conflicting_relationships! returns all conflicting relationships" do
@@ -433,24 +433,24 @@ defmodule Revelo.RelationshipTest do
 
       # Create relationship with conflicting votes
       rel1 = relationship(user: user, session: session, src: var1, dst: var2)
-      Revelo.Diagrams.relationship_vote!(rel1, :reinforcing, actor: user)
-      Revelo.Diagrams.relationship_vote!(rel1, :balancing, actor: user())
+      Revelo.Diagrams.relationship_vote!(rel1, :direct, actor: user)
+      Revelo.Diagrams.relationship_vote!(rel1, :inverse, actor: user())
 
-      # Create relationship with only reinforcing vote
+      # Create relationship with only direct vote
       rel2 = relationship(user: user, session: session, src: var2, dst: var3)
-      Revelo.Diagrams.relationship_vote!(rel2, :reinforcing, actor: user)
+      Revelo.Diagrams.relationship_vote!(rel2, :direct, actor: user)
 
-      # Create relationship with only balancing vote
+      # Create relationship with only inverse vote
       rel3 = relationship(user: user, session: session, src: var1, dst: var3)
-      Revelo.Diagrams.relationship_vote!(rel3, :balancing, actor: user)
+      Revelo.Diagrams.relationship_vote!(rel3, :inverse, actor: user)
 
       relationships = Revelo.Diagrams.list_conflicting_relationships!(session.id)
 
       assert length(relationships) == 1
       [conflicting] = relationships
       assert conflicting.id == rel1.id
-      assert conflicting.reinforcing_votes > 0
-      assert conflicting.balancing_votes > 0
+      assert conflicting.direct_votes > 0
+      assert conflicting.inverse_votes > 0
       assert conflicting.type == :conflicting
     end
   end

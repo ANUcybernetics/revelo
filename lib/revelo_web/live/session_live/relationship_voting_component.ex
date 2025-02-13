@@ -18,7 +18,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     # note, this is a zipper
     relationships =
       assigns.session.id
-      |> Diagrams.list_potential_relationships!(true, actor: assigns.current_user)
+      |> Diagrams.list_potential_relationships!(actor: assigns.current_user)
       |> ZipperList.from_list()
 
     socket =
@@ -47,11 +47,11 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             <div class="p-6 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
               <.radio_group_item
                 builder={builder}
-                value="balancing"
-                id="balancing"
-                checked={@relationships.cursor.voted? && @relationships.cursor.type == :balancing}
+                value="inverse"
+                id="inverse"
+                checked={@relationships.cursor.voted? && @relationships.cursor.type == :inverse}
                 phx-click="vote"
-                phx-value-type="balancing"
+                phx-value-type="inverse"
                 phx-target={@myself}
               />
               <.label for="balancing">
@@ -61,11 +61,11 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
               <.radio_group_item
                 builder={builder}
-                value="reinforcing"
-                id="reinforcing"
-                checked={@relationships.cursor.voted? && @relationships.cursor.type == :reinforcing}
+                value="direct"
+                id="direct"
+                checked={@relationships.cursor.voted? && @relationships.cursor.type == :direct}
                 phx-click="vote"
-                phx-value-type="reinforcing"
+                phx-value-type="direct"
                 phx-target={@myself}
               />
               <.label for="reinforcing">

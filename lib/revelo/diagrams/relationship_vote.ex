@@ -49,7 +49,7 @@ defmodule Revelo.Diagrams.RelationshipVote do
   attributes do
     attribute :type, :atom do
       allow_nil? false
-      constraints one_of: [:balancing, :reinforcing, :no_relationship]
+      constraints one_of: [:inverse, :direct, :no_relationship]
     end
 
     timestamps()

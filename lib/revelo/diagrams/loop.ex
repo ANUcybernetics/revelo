@@ -20,10 +20,10 @@ defmodule Revelo.Diagrams.Loop do
                   if Enum.any?(loop.influence_relationships, &(&1.type == :conflicting)) do
                     :conflicting
                   else
-                    balancing_count =
-                      Enum.count(loop.influence_relationships, &(&1.type == :balancing))
+                    inverse_count =
+                      Enum.count(loop.influence_relationships, &(&1.type == :inverse))
 
-                    if rem(balancing_count, 2) == 0, do: :reinforcing, else: :balancing
+                    if rem(inverse_count, 2) == 0, do: :reinforcing, else: :balancing
                   end
                 end)
               end,

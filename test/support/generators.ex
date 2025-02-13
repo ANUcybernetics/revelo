@@ -80,7 +80,7 @@ defmodule ReveloTest.Generators do
 
   def relationship_with_vote(opts \\ []) do
     {user, opts} = Keyword.pop_lazy(opts, :user, fn -> user() end)
-    {vote_type, opts} = Keyword.pop(opts, :vote_type, :reinforcing)
+    {vote_type, opts} = Keyword.pop(opts, :vote_type, :direct)
 
     relationship = relationship(Keyword.put(opts, :user, user))
     Revelo.Diagrams.relationship_vote!(relationship, vote_type, actor: user)

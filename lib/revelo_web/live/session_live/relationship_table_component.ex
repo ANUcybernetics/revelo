@@ -107,16 +107,16 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 <div class="relative h-4 w-4 flex items-center justify-center">
                                   <.icon name="hero-arrow-long-up" class="h-4 w-4 transition-all" />
                                   <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-orange-300 text-orange-900 text-[0.6rem] flex items-center justify-center h-3 w-3">
-                                    {relationship.reinforcing_votes}
+                                    {relationship.direct_votes}
                                   </div>
                                 </div>
                                 <span class="sr-only">
-                                  Reinforcing Votes
+                                  Direct Votes
                                 </span>
                               </button>
                             </tooltip_trigger>
                             <.tooltip_content side="right">
-                              Reinforcing Votes
+                              Direct Votes
                             </.tooltip_content>
                           </.tooltip>
                           <.tooltip>
@@ -143,16 +143,16 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 <div class="relative h-4 w-4 flex items-center justify-center">
                                   <.icon name="hero-arrows-up-down" class="h-4 w-4" />
                                   <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-200 text-blue-900 text-[0.6rem] flex items-center justify-center h-3 w-3">
-                                    {relationship.balancing_votes}
+                                    {relationship.inverse_votes}
                                   </div>
                                 </div>
                                 <span class="sr-only">
-                                  Balancing Votes
+                                  Inverse Votes
                                 </span>
                               </button>
                             </tooltip_trigger>
                             <.tooltip_content side="right">
-                              Balancing Votes
+                              Inverse Votes
                             </.tooltip_content>
                           </.tooltip>
                         </div>

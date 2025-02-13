@@ -9,20 +9,20 @@ defmodule Revelo.Diagrams.Relationship do
   alias Revelo.Sessions.Session
 
   calculations do
-    calculate :reinforcing_votes,
+    calculate :direct_votes,
               :integer,
               expr(
                 fragment(
-                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'reinforcing')",
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'direct')",
                   id
                 )
               )
 
-    calculate :balancing_votes,
+    calculate :inverse_votes,
               :integer,
               expr(
                 fragment(
-                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'balancing')",
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'inverse')",
                   id
                 )
               )
@@ -43,20 +43,20 @@ defmodule Revelo.Diagrams.Relationship do
                   not is_nil(type_override) ->
                     type_override
 
-                  reinforcing_votes > 0 and balancing_votes > 0 ->
+                  direct_votes > 0 and inverse_votes > 0 ->
                     :conflicting
 
-                  reinforcing_votes > 0 and balancing_votes == 0 ->
-                    :reinforcing
+                  direct_votes > 0 and inverse_votes == 0 ->
+                    :direct
 
-                  balancing_votes > 0 and reinforcing_votes == 0 ->
-                    :balancing
+                  inverse_votes > 0 and direct_votes == 0 ->
+                    :inverse
 
                   true ->
                     :no_relationship
                 end
               ),
-              load: [:reinforcing_votes, :balancing_votes]
+              load: [:direct_votes, :inverse_votes]
 
     calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
   end
@@ -81,8 +81,8 @@ defmodule Revelo.Diagrams.Relationship do
                 load: [
                   :src,
                   :dst,
-                  :reinforcing_votes,
-                  :balancing_votes,
+                  :direct_votes,
+                  :inverse_votes,
                   :no_relationship_votes,
                   :type,
                   :voted?
@@ -98,7 +98,7 @@ defmodule Revelo.Diagrams.Relationship do
       filter expr(
                session.id == ^arg(:session_id) and
                  hidden? == false and
-                 (balancing_votes > 0 or reinforcing_votes > 0)
+                 (inverse_votes > 0 or direct_votes > 0)
              )
 
       prepare build(
@@ -106,8 +106,8 @@ defmodule Revelo.Diagrams.Relationship do
                 load: [
                   :src,
                   :dst,
-                  :reinforcing_votes,
-                  :balancing_votes,
+                  :direct_votes,
+                  :inverse_votes,
                   :no_relationship_votes,
                   :type,
                   :voted?
@@ -120,15 +120,15 @@ defmodule Revelo.Diagrams.Relationship do
         allow_nil? false
       end
 
-      filter expr(session.id == ^arg(:session_id) and reinforcing_votes > 0 and balancing_votes > 0)
+      filter expr(session.id == ^arg(:session_id) and direct_votes > 0 and inverse_votes > 0)
 
       prepare build(
                 sort: [:src_id, :dst_id],
                 load: [
                   :src,
                   :dst,
-                  :reinforcing_votes,
-                  :balancing_votes,
+                  :direct_votes,
+                  :inverse_votes,
                   :no_relationship_votes,
                   :type,
                   :voted?
@@ -163,7 +163,7 @@ defmodule Revelo.Diagrams.Relationship do
 
     update :override_type do
       argument :type, :atom do
-        constraints one_of: [:balancing, :reinforcing, :no_relationship]
+        constraints one_of: [:inverse, :direct, :no_relationship]
         allow_nil? false
       end
 
@@ -189,8 +189,8 @@ defmodule Revelo.Diagrams.Relationship do
                 Ash.load!(relationship, [
                   :src,
                   :dst,
-                  :reinforcing_votes,
-                  :balancing_votes,
+                  :direct_votes,
+                  :inverse_votes,
                   :no_relationship_votes
                 ])}
              end)
