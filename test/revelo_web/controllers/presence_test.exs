@@ -103,7 +103,8 @@ defmodule ReveloWeb.PresenceTest do
         |> click_button("Done")
 
       # Third anon user joins but doesn't click done
-      %{conn: %{assigns: %{current_user: _third_user}}} = visit(build_conn(), "/qr/sessions/#{session.id}/identify/work")
+      %{conn: %{assigns: %{current_user: _third_user}}} =
+        visit(build_conn(), "/qr/sessions/#{session.id}/identify/work")
 
       participants = Presence.list_online_participants(session.id)
       assert length(participants) == 3
