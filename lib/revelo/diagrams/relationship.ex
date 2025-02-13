@@ -100,6 +100,19 @@ defmodule Revelo.Diagrams.Relationship do
               )
     end
 
+    read :list_conflicting do
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      filter expr(session.id == ^arg(:session_id) and reinforcing_votes > 0 and balancing_votes > 0)
+
+      prepare build(
+                sort: [:src_id, :dst_id],
+                load: [:reinforcing_votes, :balancing_votes, :no_relationship_votes, :type]
+              )
+    end
+
     create :create do
       accept [:description, :hidden?]
 
