@@ -5,6 +5,10 @@ we're building it out & exploring the problem space).
 
 - add the "facilitator's vote wins" behaviour in the relationship voting
 
+- add cytoscape
+
+- sort out generate variables input counter component
+
 - rename rel types to direct/inverse
 
 - instead of variable.voted?, could do variable.vote_id (and then use that to
