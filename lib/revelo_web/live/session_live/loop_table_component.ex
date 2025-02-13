@@ -28,20 +28,20 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="w-full">
+    <div class="col-span-12">
       <h2>Total Loops: {@loop_count}</h2>
-      <ul class="space-y-4 mt-4">
+      <ol class="list-decimal space-y-4 mt-4">
         <li
           :for={loop <- Ash.load!(@loops, influence_relationships: [:src])}
-          class="border rounded p-4"
+          class="p-4 border rounded"
         >
-          <ul class="list-disc list-inside space-y-2">
+          <ul class="list-disc list-inside space-y-2 ml-4">
             <li :for={rel <- loop.influence_relationships} class="text-gray-700">
               {rel.src.name}
             </li>
           </ul>
         </li>
-      </ul>
+      </ol>
     </div>
     """
   end
