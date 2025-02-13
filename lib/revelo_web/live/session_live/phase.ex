@@ -7,7 +7,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def render(assigns) do
     ~H"""
-    <div :if={@current_user.facilitator?} class="h-full flex flex-col">
+    <div :if={@current_user.facilitator?} class="p-6 h-full flex flex-col h-svh overflow-y-auto">
       <div class="grid grid-cols-12 w-full grow gap-6">
         <.live_component
           :if={@live_action in [:prepare, :identify_discuss]}
@@ -41,7 +41,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         <.instructions
           :if={@live_action == :identify_work}
           title="Identify variables"
-          class="col-span-8"
+          class="col-span-12 lg:col-span-8"
         >
           <ol class="list-decimal px-6 space-y-6">
             <li>Scan the QR code with your phone camera.
@@ -61,7 +61,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         <.instructions
           :if={@live_action == :relate_work}
           title="Identify relationships"
-          class="col-span-8"
+          class="col-span-12 lg:col-span-8"
         >
           <ol class="list-decimal px-6 space-y-6">
             <li>
@@ -90,7 +90,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify/work"}
           completed={elem(@participant_count, 0)}
           total={elem(@participant_count, 1)}
-          class="col-span-4"
+          class="col-span-12 lg:col-span-4"
         />
 
         <.qr_code_card
@@ -98,7 +98,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/relate/work"}
           completed={elem(@participant_count, 0)}
           total={elem(@participant_count, 1)}
-          class="col-span-4"
+          class="col-span-12 lg:col-span-4"
         />
       </div>
 

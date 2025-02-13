@@ -64,7 +64,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
             <.header class="flex flex-row justify-between !items-start">
               <.card_title class="grow">{@title}</.card_title>
               <:actions>
-                <div class="flex flex-row gap-4">
+                <div class="flex flex-row gap-2 shrink flex-wrap items-end justify-end">
                   <.link patch={"/sessions/#{@session.id}/#{get_phase(@live_action)}/variables/new"}>
                     <.button type="button" variant="outline" size="sm" class="!mt-0">
                       <.icon name="hero-plus-mini" class="h-4 w-4 mr-2 transition-all" /> Add Variable

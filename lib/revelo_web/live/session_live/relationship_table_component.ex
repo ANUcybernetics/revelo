@@ -82,7 +82,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
             </.header>
           </.card_header>
           <.scroll_area class="h-20 grow rounded-md">
-            <.card_content class="h-full">
+            <.card_content class="h-full overflow-x-auto">
               <.table class="text-base">
                 <.table_header>
                   <.table_row>

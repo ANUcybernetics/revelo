@@ -7,36 +7,38 @@ defmodule ReveloWeb.SessionLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.card>
-      <.card_header>
-        <.header>
-          <.card_title>Your Sessions</.card_title>
-          <:actions>
-            <.link patch={~p"/sessions/new"}>
-              <.button>New Session</.button>
-            </.link>
-          </:actions>
-        </.header>
-      </.card_header>
-      <.card_content>
-        <ReveloWeb.CoreComponents.table
-          id="Sessions"
-          rows={@streams.sessions}
-          row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}/prepare") end}
-        >
-          <:col :let={{_id, session}} label="Name">{session.name}</:col>
+    <div class="h-full p-6">
+      <.card class="h-full flex flex-col">
+        <.card_header>
+          <.header>
+            <.card_title>Your Sessions</.card_title>
+            <:actions>
+              <.link patch={~p"/sessions/new"}>
+                <.button>New Session</.button>
+              </.link>
+            </:actions>
+          </.header>
+        </.card_header>
+        <.card_content class="h-2 grow">
+          <ReveloWeb.CoreComponents.table
+            id="Sessions"
+            rows={@streams.sessions}
+            row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}/prepare") end}
+          >
+            <:col :let={{_id, session}} label="Name">{session.name}</:col>
 
-          <:action :let={{id, session}}>
-            <.link
-              phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
-              data-confirm="Are you sure?"
-            >
-              Delete
-            </.link>
-          </:action>
-        </ReveloWeb.CoreComponents.table>
-      </.card_content>
-    </.card>
+            <:action :let={{id, session}}>
+              <.link
+                phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
+                data-confirm="Are you sure?"
+              >
+                Delete
+              </.link>
+            </:action>
+          </ReveloWeb.CoreComponents.table>
+        </.card_content>
+      </.card>
+    </div>
 
     <.modal
       :if={@live_action in [:new, :edit]}
