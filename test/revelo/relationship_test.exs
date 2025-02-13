@@ -3,6 +3,7 @@ defmodule Revelo.RelationshipTest do
 
   import ReveloTest.Generators
 
+  alias Ash.Error.Invalid
   alias Revelo.Diagrams.Relationship
   alias Revelo.Diagrams.RelationshipVote
 
@@ -72,7 +73,7 @@ defmodule Revelo.RelationshipTest do
 
       _r1 = relationship(user: user, session: session, src: src, dst: dst)
 
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         relationship(user: user, session: session, src: src, dst: dst)
       end
     end
@@ -146,6 +147,14 @@ defmodule Revelo.RelationshipTest do
       assert relationship.reinforcing_votes == 1
       assert relationship.balancing_votes == 0
       assert relationship.type == :balancing
+    end
+
+    test "override_type fails if type isn't one of balancing/reinforcing/no_relationship" do
+      relationship = relationship()
+
+      assert_raise Invalid, fn ->
+        Revelo.Diagrams.override_relationship_type!(relationship, :invalid_type)
+      end
     end
 
     test "relationship_vote upserts the type when user votes again" do
