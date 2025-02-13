@@ -139,5 +139,27 @@ defmodule ReveloWeb.PresenceTest do
       participants = Presence.list_online_participants(session.id)
       assert length(participants) == 2
     end
+
+    test "all users receive updated participant_count when a user joins", %{conn: conn} do
+      user = user()
+      session = session(user)
+      Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
+
+      # First user joins
+      conn
+      |> visit("/qr/sessions/#{session.id}/identify/work")
+      |> assert_path("/sessions/#{session.id}/identify/work")
+
+      assert_receive {:participant_count, {0, 1}}
+
+      # Second user joins and clicks done
+      build_conn()
+      |> visit("/qr/sessions/#{session.id}/identify/work")
+      |> click_button("Done")
+
+      assert_receive {:participant_count, {1, 2}}
+
+      :ok = Phoenix.PubSub.unsubscribe(Revelo.PubSub, "session:#{session.id}")
+    end
   end
 end
