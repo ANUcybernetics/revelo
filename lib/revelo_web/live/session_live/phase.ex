@@ -186,10 +186,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           session={@session}
         />
       </div>
-      <div
-        :if={@live_action in [:relate_work, :relate_discuss]}
-        class="flex flex-col items-center gap-4"
-      >
+      <div :if={@live_action in [:relate_work]} class="flex flex-col items-center gap-4">
         <.live_component
           module={ReveloWeb.SessionLive.RelationshipVotingComponent}
           id="relationship-voting"
