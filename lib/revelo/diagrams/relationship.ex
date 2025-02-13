@@ -78,7 +78,8 @@ defmodule Revelo.Diagrams.Relationship do
                   :reinforcing_votes,
                   :balancing_votes,
                   :no_relationship_votes,
-                  :type
+                  :type,
+                  :voted?
                 ]
               )
     end
@@ -102,7 +103,8 @@ defmodule Revelo.Diagrams.Relationship do
                   :reinforcing_votes,
                   :balancing_votes,
                   :no_relationship_votes,
-                  :type
+                  :type,
+                  :voted
                 ]
               )
     end
@@ -122,7 +124,8 @@ defmodule Revelo.Diagrams.Relationship do
                   :reinforcing_votes,
                   :balancing_votes,
                   :no_relationship_votes,
-                  :type
+                  :type,
+                  :voted
                 ]
               )
     end
