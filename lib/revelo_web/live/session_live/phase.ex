@@ -31,6 +31,16 @@ defmodule ReveloWeb.SessionLive.Phase do
           title="Relationship Votes"
         />
 
+        <.live_component
+          :if={@live_action == :analyse}
+          module={ReveloWeb.SessionLive.LoopTableComponent}
+          id="loop-table"
+          class="col-span-12"
+          current_user={@current_user}
+          live_action={@live_action}
+          session={@session}
+        />
+
         <div
           :if={@live_action in [:prepare, :new_variable]}
           class="flex gap-5 flex-col col-span-12 md:col-span-4"
