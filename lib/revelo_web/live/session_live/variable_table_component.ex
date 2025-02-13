@@ -266,8 +266,37 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
 
   @impl true
   def handle_event("toggle_key", %{"id" => variable_id}, socket) do
-    updated_variable = Diagrams.toggle_key_variable!(variable_id)
-    {:noreply, stream_insert(socket, :variables, updated_variable)}
+    variable = Ash.get!(Diagrams.Variable, variable_id)
+
+    old_key =
+      case Diagrams.get_key_variable(variable.session_id) do
+        {:ok, old_key} ->
+          old_key
+
+        {:error, _error} ->
+          nil
+      end
+
+    updated_variable =
+      variable_id
+      |> Diagrams.toggle_key_variable!()
+      |> Ash.load!([:voted?, :vote_tally], actor: socket.assigns.current_user)
+
+    socket =
+      if is_nil(old_key) do
+        stream_insert(socket, :variables, updated_variable)
+      else
+        old_key =
+          old_key
+          |> Ash.reload!()
+          |> Ash.load!([:voted?, :vote_tally], actor: socket.assigns.current_user)
+
+        socket
+        |> stream_insert(:variables, old_key)
+        |> stream_insert(:variables, updated_variable)
+      end
+
+    {:noreply, socket}
   end
 
   @impl true
