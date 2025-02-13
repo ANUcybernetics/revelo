@@ -12,7 +12,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
 
   @impl true
   def mount(socket) do
-    {:ok, stream(socket, :variables, [])}
+    {:ok, assign(socket, completed?: false, variables: [])}
   end
 
   @impl true
@@ -30,51 +30,9 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
       socket
       |> assign(assigns)
       |> assign(:key_variable, key_variable)
-      |> stream(:variables, variables, reset: true)
+      |> assign(:variables, variables)
 
     {:ok, socket}
-  end
-
-  @impl true
-  def render(%{live_action: :identify_discuss} = assigns) do
-    ~H"""
-    <div class="w-[350px]">
-      <.card class="overflow-hidden">
-        <.card_header>
-          <.card_title>Your Variable Votes</.card_title>
-        </.card_header>
-
-        <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
-          <div class="flex justify-between w-full items-center">
-            <span :if={@key_variable}>
-              {@key_variable.name}
-            </span>
-            <.badge_key />
-          </div>
-        </.card_content>
-
-        <.scroll_area class="h-72">
-          <.card_content class="p-0">
-            <%= for {_id, variable} <- @streams.variables do %>
-              <%= if !variable.is_key? do %>
-                <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
-                  <span>{variable.name}</span>
-                  <%= if variable.voted? do %>
-                    <.badge_vote />
-                  <% else %>
-                    <.badge_no_vote />
-                  <% end %>
-                </div>
-              <% end %>
-            <% end %>
-          </.card_content>
-        </.scroll_area>
-      </.card>
-      <.link patch={"/sessions/#{@session.id}/identify/work"}>
-        <.button class="w-fit px-24">Back</.button>
-      </.link>
-    </div>
-    """
   end
 
   @impl true
@@ -83,7 +41,13 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
     <div class="w-[350px]">
       <.card class="overflow-hidden">
         <.card_header>
-          <.card_title>Which of these are important parts of your system?</.card_title>
+          <.card_title>
+            <%= if @completed? do %>
+              Your Variable Votes
+            <% else %>
+              Which of these are important parts of your system?
+            <% end %>
+          </.card_title>
         </.card_header>
 
         <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
@@ -96,29 +60,54 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
         </.card_content>
 
         <.scroll_area class="h-72">
-          <.card_content id={@id} class="p-0" phx-update="stream">
-            <%= for {id, variable} <- @streams.variables do %>
-              <%= if !variable.is_key? do %>
-                <.label id={id} for={"#{id}-checkbox"}>
-                  <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
-                    <.checkbox
-                      id={"#{id}-checkbox"}
-                      value={variable.voted?}
-                      phx-click="vote"
-                      phx-value-id={variable.id}
-                      phx-target={@myself}
-                    />
-                    {variable.name}
+          <%= if @completed? do %>
+            <.card_content id={"summary-#{@id}"} class="p-0">
+              <%= for variable <- @variables do %>
+                <%= if !variable.is_key? do %>
+                  <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
+                    <span>{variable.name}</span>
+                    <%= if variable.voted? do %>
+                      <.badge_vote />
+                    <% else %>
+                      <.badge_no_vote />
+                    <% end %>
                   </div>
-                </.label>
+                <% end %>
               <% end %>
-            <% end %>
-          </.card_content>
+            </.card_content>
+          <% else %>
+            <.card_content id={"voting-#{@id}"} class="p-0">
+              <%= for variable <- @variables do %>
+                <%= if !variable.is_key? do %>
+                  <.label id={variable.id} for={"#{variable.id}-checkbox"}>
+                    <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
+                      <.checkbox
+                        id={"#{variable.id}-checkbox"}
+                        value={variable.voted?}
+                        phx-click="vote"
+                        phx-value-id={variable.id}
+                        phx-target={@myself}
+                      />
+                      {variable.name}
+                    </div>
+                  </.label>
+                <% end %>
+              <% end %>
+            </.card_content>
+          <% end %>
         </.scroll_area>
       </.card>
-      <.button class="w-fit px-24 mt-4" phx-click="done" phx-target={@myself}>
-        Done
-      </.button>
+      <div class="mt-4 flex justify-between">
+        <%= if @completed? do %>
+          <.button class="w-fit px-24" phx-click="back" phx-target={@myself}>
+            Back
+          </.button>
+        <% else %>
+          <.button class="w-fit px-24" phx-click="done" phx-target={@myself}>
+            Done
+          </.button>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -140,7 +129,13 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
     end
 
     updated_variable = Ash.load!(variable, :voted?, actor: voter)
-    {:noreply, stream_insert(socket, :variables, updated_variable)}
+
+    variables =
+      Enum.map(socket.assigns.variables, fn var ->
+        if var.id == updated_variable.id, do: updated_variable, else: var
+      end)
+
+    {:noreply, assign(socket, :variables, variables)}
   end
 
   @impl true
@@ -151,6 +146,11 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
       true
     )
 
-    {:noreply, push_patch(socket, to: ~p"/sessions/#{socket.assigns.session.id}/identify/discuss")}
+    {:noreply, assign(socket, :completed?, true)}
+  end
+
+  @impl true
+  def handle_event("back", _params, socket) do
+    {:noreply, assign(socket, :completed?, false)}
   end
 end
