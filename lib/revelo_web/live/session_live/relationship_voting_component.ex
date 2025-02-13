@@ -15,9 +15,6 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
   @impl true
   def update(assigns, socket) do
-    # TODO Remove once hooked up
-    Diagrams.enumerate_relationships(assigns.session)
-
     # note, this is a zipper
     relationships =
       assigns.session.id
