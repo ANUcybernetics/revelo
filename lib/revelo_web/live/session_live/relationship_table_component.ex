@@ -19,13 +19,17 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
     {:ok,
      socket
      |> stream(:relationships, [])
-     |> assign(:relationship_count, 0)}
+     |> assign(:relationship_count, 0)
+     |> assign(:current_filter, :all)}
   end
 
   @impl true
   def update(assigns, socket) do
     relationships =
-      Diagrams.list_potential_relationships!(assigns.session.id, include_hidden = true)
+      case socket.assigns[:current_filter] || :all do
+        :all -> Diagrams.list_potential_relationships!(assigns.session.id, true)
+        :active -> Diagrams.list_potential_relationships!(assigns.session.id, false)
+      end
 
     IO.inspect(relationships, label: "relations")
 
@@ -61,9 +65,16 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                   <.dropdown_menu_content align="end">
                     <.menu>
                       <.menu_group>
-                        <.menu_item>All</.menu_item>
-                        <.menu_item>Conflicting</.menu_item>
-                        <.menu_item>Active</.menu_item>
+                        <.menu_item phx-click="set_filter" phx-value-filter="all" phx-target={@myself}>
+                          All
+                        </.menu_item>
+                        <.menu_item
+                          phx-click="set_filter"
+                          phx-value-filter="active"
+                          phx-target={@myself}
+                        >
+                          Active
+                        </.menu_item>
                       </.menu_group>
                     </.menu>
                   </.dropdown_menu_content>
@@ -178,6 +189,22 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
   def handle_event("toggle_hidden", %{"id" => relationship_id}, socket) do
     updated_relationship = Diagrams.toggle_relationship_visibility!(relationship_id)
     {:noreply, stream_insert(socket, :relationships, updated_relationship)}
+  end
+
+  @impl true
+  def handle_event("set_filter", %{"filter" => filter}, socket) do
+    filter_atom = String.to_existing_atom(filter)
+
+    relationships =
+      case filter_atom do
+        :all -> Diagrams.list_potential_relationships!(socket.assigns.session.id, true)
+        :active -> Diagrams.list_potential_relationships!(socket.assigns.session.id, false)
+      end
+
+    {:noreply,
+     socket
+     |> assign(:current_filter, filter_atom)
+     |> stream(:relationships, relationships, reset: true)}
   end
 
   def get_phase(:identify_work), do: :identify
