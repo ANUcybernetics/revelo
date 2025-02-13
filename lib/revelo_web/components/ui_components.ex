@@ -333,8 +333,22 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
-    Renders a countdown timer component.
+  Renders a countdown timer component. The component shows a timer with optional
+  navigation buttons and progress bar. It can be configured to show left, right,
+  or both navigation buttons.
   """
+  attr :time_left, :integer, required: true, doc: "remaining time in seconds"
+  attr :initial_time, :integer, required: true, doc: "initial time in seconds"
+
+  attr :type, :string,
+    default: "none",
+    doc: "button type - can be 'left_button', 'both_buttons' or 'none'"
+
+  attr :target, :any, default: nil, doc: "the phx-target for button clicks"
+  attr :on_left_click, :any, default: nil, doc: "the phx-click event for the left button"
+  attr :on_right_click, :any, default: nil, doc: "the phx-click event for the right button"
+  attr :left_disabled, :boolean, default: false, doc: "whether the left button is disabled"
+  attr :right_disabled, :boolean, default: false, doc: "whether the right button is disabled"
 
   def countdown(assigns) do
     ~H"""
