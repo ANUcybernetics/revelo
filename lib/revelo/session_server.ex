@@ -95,6 +95,11 @@ defmodule Revelo.SessionServer do
 
         :relate_work ->
           schedule_tick()
+
+          state.session_id
+          |> Ash.get!(Revelo.Session)
+          |> Revelo.Diagrams.enumerate_relationships!()
+
           %{state | phase: new_phase, timer: 60}
 
         :analyse ->
