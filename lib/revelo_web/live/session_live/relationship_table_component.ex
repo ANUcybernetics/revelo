@@ -58,7 +58,9 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
               <:actions>
                 <.dropdown_menu>
                   <.dropdown_menu_trigger>
-                    <.button variant="outline" size="sm">Filter</.button>
+                    <.button variant="outline" size="sm">
+                      <b class="mr-1">Filter:</b> {String.capitalize(to_string(@current_filter))}
+                    </.button>
                   </.dropdown_menu_trigger>
                   <.dropdown_menu_content align="end">
                     <.menu>
