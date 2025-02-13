@@ -70,3 +70,5 @@ mix ash.gen.resource \
   them.
 
 - Generate variables breaks if there isn't a key variable
+
+- We should change the style of the relationship votes table, as it's a bit confusing and large.

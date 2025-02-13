@@ -20,6 +20,17 @@ defmodule ReveloWeb.SessionLive.Phase do
           title={if @live_action == :prepare, do: "Prepare your variables", else: "Variable Votes"}
         />
 
+        <.live_component
+          :if={@live_action in [:relate_discuss]}
+          module={ReveloWeb.SessionLive.RelationshipTableComponent}
+          id="relationship-table"
+          class="col-span-12"
+          current_user={@current_user}
+          live_action={@live_action}
+          session={@session}
+          title="Relationship Votes"
+        />
+
         <div
           :if={@live_action in [:prepare, :new_variable]}
           class="flex gap-5 flex-col col-span-12 md:col-span-4"

@@ -131,6 +131,24 @@ defmodule Revelo.Diagrams.Relationship do
       change set_attribute(:hidden?, false)
     end
 
+    update :toggle_visibility do
+      change fn changeset, _ ->
+        current_value = Ash.Changeset.get_attribute(changeset, :hidden?)
+        Ash.Changeset.force_change_attribute(changeset, :hidden?, !current_value)
+      end
+
+      change after_action(fn _changeset, relationship, _context ->
+               {:ok,
+                Ash.load!(relationship, [
+                  :src,
+                  :dst,
+                  :reinforcing_votes,
+                  :balancing_votes,
+                  :no_relationship_votes
+                ])}
+             end)
+    end
+
     action :enumerate, {:array, :struct} do
       constraints items: [instance_of: __MODULE__]
 
