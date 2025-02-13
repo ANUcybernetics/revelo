@@ -194,7 +194,7 @@ defmodule Revelo.Diagrams.Loop do
         Enum.each(existing_loops, &Ash.destroy!/1)
 
         # load relationships
-        relationships = Diagrams.list_potential_relationships!(session_id)
+        relationships = Diagrams.list_actual_relationships!(session_id)
 
         # find cycles and create loops from any found
         loops =
