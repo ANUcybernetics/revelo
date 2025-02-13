@@ -11,7 +11,6 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   import ReveloWeb.Component.Tooltip
   import ReveloWeb.CoreComponents
   import ReveloWeb.CoreComponents, except: [table: 1, button: 1, input: 1]
-  import ReveloWeb.UIComponents
 
   alias Revelo.Diagrams
 
@@ -220,19 +219,17 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       </.tooltip>
       <.tooltip :if={@variable.vote_tally > 0}>
         <tooltip_trigger>
-        <button
-          class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
-        >
-        <div class="relative h-4 w-4 flex items-center justify-center">
-          <.icon name="hero-chart-bar-solid" class="h-4 w-4 transition-all" />
-          <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-400 text-white text-[0.6rem] flex items-center justify-center h-3 w-3">
-            {@variable.vote_tally}
-          </div>
-        </div>
-          <span class="sr-only">
-          Vote Count
-          </span>
-        </button>
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+            <div class="relative h-4 w-4 flex items-center justify-center">
+              <.icon name="hero-chart-bar-solid" class="h-4 w-4 transition-all" />
+              <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-400 text-white text-[0.6rem] flex items-center justify-center h-3 w-3">
+                {@variable.vote_tally}
+              </div>
+            </div>
+            <span class="sr-only">
+              Vote Count
+            </span>
+          </button>
         </tooltip_trigger>
         <.tooltip_content side="top">
           Vote Count
