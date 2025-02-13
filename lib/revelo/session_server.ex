@@ -83,8 +83,6 @@ defmodule Revelo.SessionServer do
 
   @impl true
   def handle_call({:transition_to, new_phase}, _from, state) do
-    broadcast_transition(state.session_id, new_phase)
-
     # this is the "state transition" control logic (could refactor into an `apply_transition/2`
     # function, but maybe not worth it for now)
     state =
@@ -96,8 +94,8 @@ defmodule Revelo.SessionServer do
         :relate_work ->
           schedule_tick()
 
-          state.session_id
-          |> Ash.get!(Revelo.Session)
+          Revelo.Sessions.Session
+          |> Ash.get!(state.session_id)
           |> Revelo.Diagrams.enumerate_relationships!()
 
           %{state | phase: new_phase, timer: 60}
@@ -110,6 +108,7 @@ defmodule Revelo.SessionServer do
           %{state | phase: new_phase, timer: 0}
       end
 
+    broadcast_transition(state.session_id, new_phase)
     {:reply, :ok, state}
   end
 
@@ -166,7 +165,7 @@ defmodule Revelo.SessionServer do
     Phoenix.PubSub.broadcast(
       Revelo.PubSub,
       "session:#{session_id}",
-      {:timer, timer}
+      {:tick, timer}
     )
   end
 end

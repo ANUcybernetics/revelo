@@ -30,7 +30,7 @@ defmodule Revelo.SessionServerTest do
     assert state.timer == 60
 
     Process.sleep(2000)
-    assert_receive {:timer, 60}
-    assert_receive {:timer, 59}
+    assert_receive {:tick, 60}
+    assert_receive {:tick, 59}
   end
 end

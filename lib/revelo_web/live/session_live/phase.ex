@@ -102,50 +102,13 @@ defmodule ReveloWeb.SessionLive.Phase do
         />
       </div>
 
-      <div class="flex justify-between mt-4">
-        <div>
-          <.back :if={@live_action in [:prepare, :new_variable]} patch={~p"/sessions"}>
-            Back to Sessions
-          </.back>
-          <.back :if={@live_action == :identify_work} patch={~p"/sessions/#{@session.id}/prepare"}>
-            Back to Prepare
-          </.back>
-          <.back
-            :if={@live_action == :identify_discuss}
-            patch={~p"/sessions/#{@session.id}/identify/work"}
-          >
-            Back to Voting
-          </.back>
-          <.back
-            :if={@live_action == :relate_work}
-            patch={~p"/sessions/#{@session.id}/identify/discuss"}
-          >
-            Back to Identify
-          </.back>
-        </div>
-        <div>
-          <.link :if={@live_action == :prepare} patch={~p"/sessions/#{@session.id}/identify/work"}>
-            <.button>Continue to Identify</.button>
-          </.link>
-          <.link
-            :if={@live_action == :identify_work}
-            patch={~p"/sessions/#{@session.id}/identify/discuss"}
-          >
-            <.button>Continue to Identify Discussion</.button>
-          </.link>
-          <.link
-            :if={@live_action == :identify_discuss}
-            patch={~p"/sessions/#{@session.id}/relate/work"}
-          >
-            <.button>Continue to Relationships</.button>
-          </.link>
-          <.link
-            :if={@live_action == :relate_work}
-            patch={~p"/sessions/#{@session.id}/relate/discuss"}
-          >
-            <.button>Continue to Discussion</.button>
-          </.link>
-        </div>
+      <div :if={@current_user.facilitator?} class="flex justify-between mt-4">
+        <.button phx-click="phase_transition" phx-value-direction="previous">
+          Previous Phase
+        </.button>
+        <.button phx-click="phase_transition" phx-value-direction="next">
+          Next Phase
+        </.button>
       </div>
 
       <.modal
@@ -224,13 +187,49 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
+  def handle_event("phase_transition", %{"direction" => direction}, socket) do
+    current_phase = socket.assigns.live_action
+    session_id = socket.assigns.session.id
+
+    new_phase =
+      case direction do
+        "next" ->
+          case current_phase do
+            :prepare -> :identify_work
+            :identify_work -> :identify_discuss
+            :identify_discuss -> :relate_work
+            :relate_work -> :relate_discuss
+            :relate_discuss -> :analyse
+            _ -> current_phase
+          end
+
+        "previous" ->
+          case current_phase do
+            :identify_work -> :prepare
+            :identify_discuss -> :identify_work
+            :relate_work -> :identify_discuss
+            :relate_discuss -> :relate_work
+            :analyse -> :relate_discuss
+            _ -> current_phase
+          end
+      end
+
+    Revelo.SessionServer.transition_to(session_id, new_phase)
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_params(%{"session_id" => session_id} = params, _url, socket) do
     session = Ash.get!(Session, session_id)
     current_user = Ash.load!(socket.assigns.current_user, facilitator?: [session_id: session_id])
 
     # only track non-facilitator participants for "completion" tracking
-    if not current_user.facilitator? and connected?(socket) do
-      ReveloWeb.Presence.track_participant(session.id, current_user.id)
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
+
+      if not current_user.facilitator? do
+        ReveloWeb.Presence.track_participant(session.id, current_user.id)
+      end
     end
 
     modal =
@@ -271,6 +270,21 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def handle_info({:tick, timer}, socket) do
     {:noreply, assign(socket, :timer, timer)}
+  end
+
+  @impl true
+  def handle_info({:transition, phase}, socket) do
+    path =
+      case phase do
+        :identify_work -> ~p"/sessions/#{socket.assigns.session.id}/identify/work"
+        :identify_discuss -> ~p"/sessions/#{socket.assigns.session.id}/identify/discuss"
+        :relate_work -> ~p"/sessions/#{socket.assigns.session.id}/relate/work"
+        :relate_discuss -> ~p"/sessions/#{socket.assigns.session.id}/relate/discuss"
+        :prepare -> ~p"/sessions/#{socket.assigns.session.id}/prepare"
+        :analyse -> ~p"/sessions/#{socket.assigns.session.id}/analyse"
+      end
+
+    {:noreply, push_patch(socket, to: path)}
   end
 
   @impl true

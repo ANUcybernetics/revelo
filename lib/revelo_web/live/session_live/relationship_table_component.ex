@@ -5,7 +5,6 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
 
   import ReveloWeb.Component.Button
   import ReveloWeb.Component.Card
-  import ReveloWeb.Component.Input
   import ReveloWeb.Component.ScrollArea
   import ReveloWeb.Component.Table
   import ReveloWeb.Component.Tooltip
