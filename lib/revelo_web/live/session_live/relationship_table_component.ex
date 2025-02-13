@@ -31,8 +31,6 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
         :active -> Diagrams.list_potential_relationships!(assigns.session.id, false)
       end
 
-    IO.inspect(relationships, label: "relations")
-
     socket =
       socket
       |> assign(assigns)
@@ -101,7 +99,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                       <div class="flex items-center gap-2">
                         <span>{relationship.src.name}</span>
                         <.icon name="hero-minus" class="h-4 w-4" />
-                        <div class="flex flex-col items-center gap-1">
+                        <div class="flex items-center gap-1">
                           <.tooltip>
                             <tooltip_trigger>
                               <button class="bg-gray-200 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
