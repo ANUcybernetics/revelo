@@ -187,7 +187,21 @@ defmodule ReveloWeb.SessionLive.Phase do
         />
       </div>
       <div
-        :if={@live_action not in [:identify_work, :identify_discuss]}
+        :if={@live_action in [:relate_work, :relate_discuss]}
+        class="flex flex-col items-center gap-4"
+      >
+        <.live_component
+          module={ReveloWeb.SessionLive.RelationshipVotingComponent}
+          id="relationship-voting"
+          live_action={@live_action}
+          current_user={@current_user}
+          session={@session}
+          start_index={0}
+          time_left={40}
+        />
+      </div>
+      <div
+        :if={@live_action not in [:identify_work, :identify_discuss, :relate_work]}
         class="flex flex-col items-center gap-4"
       >
         <.task_completed completed={elem(@participant_count, 0)} total={elem(@participant_count, 1)} />

@@ -95,28 +95,25 @@ defmodule ReveloWeb.UIComponents do
           </.tooltip>
         <% end %>
       </nav>
-       <nav class="mt-auto flex flex-col items-center gap-4 px-2 cursor-pointer">
-       <.dropdown_menu>
-         <.dropdown_menu_trigger class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground py-8">
-           <.icon
-             name="hero-user-circle-mini"
-             class="h-4 w-4 transition-all group-hover:scale-110"
-           />
-           <span class="sr-only">User</span>
-         </.dropdown_menu_trigger>
-         <.dropdown_menu_content side="right">
-           <.menu>
-             <.menu_group>
-               <.link navigate="/sign-out">
-                 <.menu_item class="cursor-pointer">
-                   <span>Sign out</span>
-                 </.menu_item>
-               </.link>
-             </.menu_group>
-           </.menu>
-         </.dropdown_menu_content>
-       </.dropdown_menu>
-     </nav>
+      <nav class="mt-auto flex flex-col items-center gap-4 px-2 cursor-pointer">
+        <.dropdown_menu>
+          <.dropdown_menu_trigger class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground py-8">
+            <.icon name="hero-user-circle-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
+            <span class="sr-only">User</span>
+          </.dropdown_menu_trigger>
+          <.dropdown_menu_content side="right">
+            <.menu>
+              <.menu_group>
+                <.link navigate="/sign-out">
+                  <.menu_item class="cursor-pointer">
+                    <span>Sign out</span>
+                  </.menu_item>
+                </.link>
+              </.menu_group>
+            </.menu>
+          </.dropdown_menu_content>
+        </.dropdown_menu>
+      </nav>
     </aside>
     """
   end
@@ -353,6 +350,9 @@ defmodule ReveloWeb.UIComponents do
           <ReveloWeb.Component.Button.button
             variant="outline"
             class="h-full border-0 border-r-[1px] rounded-none"
+            phx-click={@on_left_click}
+            disabled={@left_disabled}
+            phx-target={@target}
           >
             <.icon name="hero-arrow-left" class="h-5 w-5" />
           </ReveloWeb.Component.Button.button>
@@ -374,6 +374,9 @@ defmodule ReveloWeb.UIComponents do
           <ReveloWeb.Component.Button.button
             variant="outline"
             class="h-full border-0 border-l-[1px] rounded-none"
+            phx-target={@target}
+            phx-click={@on_right_click}
+            disabled={@right_disabled}
           >
             <.icon name="hero-arrow-right" class="h-5 w-5" />
           </ReveloWeb.Component.Button.button>
@@ -728,8 +731,8 @@ defmodule ReveloWeb.UIComponents do
       </.card_content>
       <.card_footer class="flex flex-col items-center gap-2">
         <div>
-        <span class="font-bold text-4xl">{@completed}</span>
-        <span class="text-gray-600 text-lg">completed</span>
+          <span class="font-bold text-4xl">{@completed}</span>
+          <span class="text-gray-600 text-lg">completed</span>
         </div>
         <.progress class="w-full h-2" value={round(@completed / @total * 100)} />
       </.card_footer>
