@@ -79,7 +79,7 @@ defmodule ReveloWeb.UserFlowTest do
         |> Map.get(:conn)
         |> visit("/qr/sessions/#{session.id}/identify/work")
         |> assert_path("/sessions/#{session.id}/identify/work")
-        |> assert_has("h3", text: "Identify relationships")
+        |> assert_has("h3", text: "Identify variables")
 
       assert browsing_session.conn.assigns.current_user.id == user.id
     end
