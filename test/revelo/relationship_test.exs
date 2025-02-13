@@ -47,7 +47,7 @@ defmodule Revelo.RelationshipTest do
       assert found_rel.id == rel.id
     end
 
-    test "Revelo.Diagrams.list_potential_relationships! returns only unhidden relationships" do
+    test "Revelo.Diagrams.list_potential_relationships! returns all relationships (including hidden)" do
       user = user()
       session = session(user)
       var1 = variable(user: user, session: session)
@@ -59,12 +59,6 @@ defmodule Revelo.RelationshipTest do
       assert hidden_rel.hidden? == true
 
       relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
-
-      assert visible_rel.id in Enum.map(relationships, & &1.id)
-      refute hidden_rel.id in Enum.map(relationships, & &1.id)
-
-      # check that the hidden relationship is returned when include_hidden is true
-      relationships = Revelo.Diagrams.list_potential_relationships!(session.id, true)
 
       assert visible_rel.id in Enum.map(relationships, & &1.id)
       assert hidden_rel.id in Enum.map(relationships, & &1.id)

@@ -18,10 +18,7 @@ defmodule Revelo.Diagrams do
     resource Revelo.Diagrams.Relationship do
       define :create_relationship, args: [:src, :dst, :session], action: :create
 
-      define :list_potential_relationships,
-        args: [:session_id, {:optional, :include_hidden}],
-        action: :list_potential
-
+      define :list_potential_relationships, args: [:session_id], action: :list_potential
       define :list_actual_relationships, args: [:session_id], action: :list_actual
       define :list_conflicting_relationships, args: [:session_id], action: :list_conflicting
 

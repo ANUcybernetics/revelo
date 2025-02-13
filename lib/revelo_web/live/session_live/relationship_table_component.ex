@@ -26,8 +26,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
   def update(assigns, socket) do
     relationships =
       case socket.assigns[:current_filter] || :all do
-        :all -> Diagrams.list_potential_relationships!(assigns.session.id, true)
-        :active -> Diagrams.list_potential_relationships!(assigns.session.id, false)
+        :all -> Diagrams.list_potential_relationships!(assigns.session.id)
         :conflicting -> Diagrams.list_conflicting_relationships!(socket.assigns.session.id)
       end
 
@@ -67,13 +66,6 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                       <.menu_group>
                         <.menu_item phx-click="set_filter" phx-value-filter="all" phx-target={@myself}>
                           All
-                        </.menu_item>
-                        <.menu_item
-                          phx-click="set_filter"
-                          phx-value-filter="active"
-                          phx-target={@myself}
-                        >
-                          Active
                         </.menu_item>
                         <.menu_item
                           phx-click="set_filter"
@@ -204,8 +196,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
 
     relationships =
       case filter_atom do
-        :all -> Diagrams.list_potential_relationships!(socket.assigns.session.id, true)
-        :active -> Diagrams.list_potential_relationships!(socket.assigns.session.id, false)
+        :all -> Diagrams.list_potential_relationships!(socket.assigns.session.id)
         :conflicting -> Diagrams.list_conflicting_relationships!(socket.assigns.session.id)
       end
 
