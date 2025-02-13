@@ -36,57 +36,12 @@ defmodule Revelo.Diagrams.Relationship do
                 )
               )
 
-    calculate :facilitator_reinforcing_votes,
-              :integer,
-              expr(
-                fragment(
-                  """
-                  (SELECT COUNT(*) FROM relationship_votes
-                  JOIN users ON users.id = relationship_votes.voter_id
-                  JOIN session_participants ON users.id = session_participants.participant_id
-                  WHERE relationship_votes.relationship_id = ?
-                  AND relationship_votes.type = 'reinforcing'
-                  AND session_participants."facilitator\\?" = true
-                  AND session_participants.session_id = ?)
-                  """,
-                  id,
-                  session_id
-                )
-              ),
-              load: :session
-
-    calculate :facilitator_balancing_votes,
-              :integer,
-              expr(
-                fragment(
-                  """
-                  (SELECT COUNT(*) FROM relationship_votes
-                    JOIN users ON users.id = relationship_votes.voter_id
-                    JOIN session_participants ON users.id = session_participants.participant_id
-                    WHERE relationship_votes.relationship_id = ?
-                    AND relationship_votes.type = 'balancing'
-                    AND session_participants."facilitator\\?" = true
-                    AND session_participants.session_id = ?)
-                  """,
-                  id,
-                  session_id
-                )
-              ),
-              load: :session
-
-    # TODO all this calculation stuff is gross - should hide it in a module probably
     calculate :type,
               :atom,
               expr(
                 cond do
-                  facilitator_reinforcing_votes > 0 and facilitator_balancing_votes == 0 ->
-                    :reinforcing
-
-                  facilitator_balancing_votes > 0 and facilitator_reinforcing_votes == 0 ->
-                    :balancing
-
-                  facilitator_reinforcing_votes > 0 and facilitator_balancing_votes > 0 ->
-                    :conflicting
+                  not is_nil(type_override) ->
+                    type_override
 
                   reinforcing_votes > 0 and balancing_votes > 0 ->
                     :conflicting
@@ -101,12 +56,7 @@ defmodule Revelo.Diagrams.Relationship do
                     :no_relationship
                 end
               ),
-              load: [
-                :facilitator_reinforcing_votes,
-                :facilitator_balancing_votes,
-                :reinforcing_votes,
-                :balancing_votes
-              ]
+              load: [:reinforcing_votes, :balancing_votes]
 
     calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
   end
@@ -211,6 +161,15 @@ defmodule Revelo.Diagrams.Relationship do
       change manage_relationship(:dst, type: :append)
     end
 
+    update :override_type do
+      argument :type, :atom do
+        constraints one_of: [:balancing, :reinforcing, :no_relationship]
+        allow_nil? false
+      end
+
+      change set_attribute(:type_override, arg(:type))
+    end
+
     update :hide do
       change set_attribute(:hidden?, true)
     end
@@ -272,6 +231,7 @@ defmodule Revelo.Diagrams.Relationship do
 
     attribute :description, :string
     attribute :hidden?, :boolean, allow_nil?: false, default: false
+    attribute :type_override, :atom
 
     timestamps()
   end

@@ -17,6 +17,7 @@ defmodule Revelo.Diagrams do
 
     resource Revelo.Diagrams.Relationship do
       define :create_relationship, args: [:src, :dst, :session], action: :create
+      define :override_relationship_type, args: [:type], action: :override_type
 
       define :list_potential_relationships, args: [:session_id], action: :list_potential
       define :list_actual_relationships, args: [:session_id], action: :list_actual

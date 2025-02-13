@@ -124,6 +124,30 @@ defmodule Revelo.RelationshipTest do
       assert relationship.type == :balancing
     end
 
+    test "can override relationship type" do
+      user = user()
+      session = session(user)
+      var1 = variable(user: user, session: session)
+      var2 = variable(user: user, session: session)
+      relationship = relationship(user: user, session: session, src: var1, dst: var2)
+
+      # Vote reinforcing initially
+      Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: user)
+      relationship = Ash.load!(relationship, [:type])
+      assert relationship.type == :reinforcing
+
+      # Override to balancing
+      relationship = Revelo.Diagrams.override_relationship_type!(relationship, :balancing)
+      relationship = Ash.load!(relationship, [:type])
+      assert relationship.type == :balancing
+
+      # Verify votes are still present but override takes precedence
+      relationship = Ash.load!(relationship, [:type, :reinforcing_votes, :balancing_votes])
+      assert relationship.reinforcing_votes == 1
+      assert relationship.balancing_votes == 0
+      assert relationship.type == :balancing
+    end
+
     test "relationship_vote upserts the type when user votes again" do
       user = user()
       session = session(user)
@@ -275,40 +299,6 @@ defmodule Revelo.RelationshipTest do
       assert rel3.reinforcing_votes == 1
       assert rel3.balancing_votes == 0
       assert rel3.no_relationship_votes == 0
-    end
-
-    test "facilitator votes calculate correctly" do
-      facilitator = user()
-      participant = user()
-
-      session =
-        facilitator
-        |> session()
-        |> Revelo.Sessions.add_participant!(participant)
-
-      var1 = variable(user: facilitator, session: session)
-      var2 = variable(user: facilitator, session: session)
-      relationship = relationship(user: facilitator, session: session, src: var1, dst: var2)
-
-      # Facilitator votes balancing
-      Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: facilitator)
-      # Non-facilitator votes balancing
-      Revelo.Diagrams.relationship_vote!(relationship, :balancing, actor: participant)
-
-      relationship =
-        Ash.load!(relationship, [:facilitator_balancing_votes, :facilitator_reinforcing_votes])
-
-      assert relationship.facilitator_balancing_votes == 1
-      assert relationship.facilitator_reinforcing_votes == 0
-
-      # Facilitator changes vote to reinforcing
-      Revelo.Diagrams.relationship_vote!(relationship, :reinforcing, actor: facilitator)
-
-      relationship =
-        Ash.load!(relationship, [:facilitator_balancing_votes, :facilitator_reinforcing_votes])
-
-      assert relationship.facilitator_balancing_votes == 0
-      assert relationship.facilitator_reinforcing_votes == 1
     end
 
     test "enumerate_relationships creates all src->dst relationships" do
