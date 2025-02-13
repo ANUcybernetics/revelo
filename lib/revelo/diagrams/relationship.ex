@@ -74,17 +74,39 @@ defmodule Revelo.Diagrams.Relationship do
               ),
               load: :session
 
+    # TODO all this calculation stuff is gross - should hide it in a module probably
     calculate :type,
               :atom,
               expr(
                 cond do
-                  reinforcing_votes > 0 and balancing_votes > 0 -> :conflicting
-                  reinforcing_votes > 0 and balancing_votes == 0 -> :reinforcing
-                  balancing_votes > 0 and reinforcing_votes == 0 -> :balancing
-                  true -> :no_relationship
+                  facilitator_reinforcing_votes > 0 and facilitator_balancing_votes == 0 ->
+                    :reinforcing
+
+                  facilitator_balancing_votes > 0 and facilitator_reinforcing_votes == 0 ->
+                    :balancing
+
+                  facilitator_reinforcing_votes > 0 and facilitator_balancing_votes > 0 ->
+                    :conflicting
+
+                  reinforcing_votes > 0 and balancing_votes > 0 ->
+                    :conflicting
+
+                  reinforcing_votes > 0 and balancing_votes == 0 ->
+                    :reinforcing
+
+                  balancing_votes > 0 and reinforcing_votes == 0 ->
+                    :balancing
+
+                  true ->
+                    :no_relationship
                 end
               ),
-              load: [:reinforcing_votes, :balancing_votes]
+              load: [
+                :facilitator_reinforcing_votes,
+                :facilitator_balancing_votes,
+                :reinforcing_votes,
+                :balancing_votes
+              ]
 
     calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
   end
