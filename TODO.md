@@ -6,8 +6,8 @@ we're building it out & exploring the problem space).
 - instead of variable.voted?, could do variable.vote_id (and then use that to
   determine if the user has voted)
 
-- for any live component with a :variables stream, we could keep a @key_variable
-  assign handy
+- check that votes are persisting in relationship votes component (e.g. if you
+  go back)
 
 - faciliator view which which lists all curerntly-connected participants (the
   (Docs)[https://hexdocs.pm/phoenix/presence.html#usage-with-liveview] have an
@@ -71,4 +71,5 @@ mix ash.gen.resource \
 
 - Generate variables breaks if there isn't a key variable
 
-- We should change the style of the relationship votes table, as it's a bit confusing and large.
+- We should change the style of the relationship votes table, as it's a bit
+  confusing and large.
