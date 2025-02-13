@@ -50,29 +50,39 @@ defmodule ReveloWeb.PresenceTest do
       assert length(participants) == 1
     end
 
-    @tag skip: "need to wait until we can click the 'completed' link to test whether presence updating works"
     test "presence tracking is triggered when known user starts the prepare phase", %{conn: conn} do
       user = user()
       session = session(user)
 
-      browsing_session =
+      %{conn: conn} =
         conn
         |> visit("/qr/sessions/#{session.id}/identify/work")
         |> assert_path("/sessions/#{session.id}/identify/work")
 
       # Get user_id from the browsing session
-      user_id = browsing_session.conn.assigns.current_user.id
+      user_id = conn.assigns.current_user.id
 
       participants = Presence.list_online_participants(session.id)
       assert length(participants) == 1
       # Participant starts with completed? == false
       assert [{^user_id, 0, 1}] = participants
+    end
 
-      Presence.update_status(session.id, user_id, true)
+    test "participant state is updated when they click done in :identify_work", %{conn: conn} do
+      user = user()
+      session = session(user)
+
+      %{conn: conn} =
+        conn
+        |> visit("/qr/sessions/#{session.id}/identify/work")
+        |> click_button("Done")
+
+      # Get user_id from the browsing session
+      user_id = conn.assigns.current_user.id
 
       participants = Presence.list_online_participants(session.id)
       assert length(participants) == 1
-      # Participant now shows as completed
+      # Participant starts with completed? == false
       assert [{^user_id, 1, 1}] = participants
     end
 
