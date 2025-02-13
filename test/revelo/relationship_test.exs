@@ -90,6 +90,9 @@ defmodule Revelo.RelationshipTest do
       var2 = variable(user: user, session: session)
       relationship = relationship(user: user, session: session, src: var1, dst: var2)
 
+      relationship = Ash.load!(relationship, :voted?, actor: user)
+      refute relationship.voted?
+
       vote =
         RelationshipVote
         |> Ash.Changeset.for_create(
@@ -104,6 +107,9 @@ defmodule Revelo.RelationshipTest do
 
       assert vote.voter_id == user.id
       assert vote.relationship_id == relationship.id
+
+      relationship = Ash.load!(relationship, :voted?, actor: user)
+      assert relationship.voted?
     end
 
     test "relationship_with_vote generator sets type attribute" do

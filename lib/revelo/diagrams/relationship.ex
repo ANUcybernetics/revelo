@@ -47,6 +47,8 @@ defmodule Revelo.Diagrams.Relationship do
                 end
               ),
               load: [:reinforcing_votes, :balancing_votes]
+
+    calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
   end
 
   sqlite do
