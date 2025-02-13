@@ -18,17 +18,16 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     # TODO Remove once hooked up
     Diagrams.enumerate_relationships(assigns.session)
 
-    relationships = Diagrams.list_potential_relationships!(assigns.session.id)
-    relationship = Ash.load!(Enum.at(relationships, assigns.start_index), votes: [voter: [:id]])
-
-    current_vote = Enum.find(relationship.votes, &(&1.voter_id == assigns.current_user.id))
+    # note, this is a zipper
+    relationships =
+      assigns.session.id
+      |> Diagrams.list_potential_relationships!()
+      |> ZipperList.from_list()
 
     socket =
       socket
       |> assign(assigns)
       |> assign(:relationships, relationships)
-      |> assign(:relationship, relationship)
-      |> assign(:current_vote, current_vote)
 
     {:ok, socket}
   end
@@ -46,7 +45,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             :let={builder}
             name="relationship"
             class="gap-0 mb-6"
-            value={@current_vote && Atom.to_string(@current_vote.type)}
+            value={@relationships.cursor.type}
           >
             <div class="p-6 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
               <.radio_group_item
@@ -58,7 +57,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 phx-target={@myself}
               />
               <.label for="balancing">
-                As {@relationship.src.name} <b><em>increases</em></b>, {@relationship.dst.name} <b><em>decreases</em></b>.
+                As {@relationships.cursor.src.name} <b><em>increases</em></b>, {@relationships.cursor.dst.name} <b><em>decreases</em></b>.
               </.label>
             </div>
             <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
@@ -71,7 +70,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 phx-target={@myself}
               />
               <.label for="reinforcing">
-                As {@relationship.src.name} <b><em>increases</em></b>, {@relationship.dst.name} <b><em>increases</em></b>.
+                As {@relationships.cursor.src.name} <b><em>increases</em></b>, {@relationships.cursor.dst.name} <b><em>increases</em></b>.
               </.label>
             </div>
             <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
@@ -85,7 +84,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
               />
               <.label for="no_relationship">
                 There is <b><em>no direct relationship</em></b>
-                between {@relationship.src.name} and {@relationship.dst.name}.
+                between {@relationships.cursor.src.name} and {@relationships.cursor.dst.name}.
               </.label>
             </div>
           </.radio_group>
@@ -97,8 +96,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         initial_time={60}
         on_left_click="navigate_left"
         on_right_click="navigate_right"
-        left_disabled={@start_index == 0}
-        right_disabled={@start_index >= length(@relationships) - 1}
+        left_disabled={ZipperList.beginning?(@relationships)}
+        right_disabled={ZipperList.end?(@relationships)}
         target={@myself}
       />
     </div>
@@ -108,62 +107,28 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   @impl true
   def handle_event("vote", %{"type" => type}, socket) do
     voter = socket.assigns.current_user
-    relationship = socket.assigns.relationship
+    relationship = socket.assigns.relationships.cursor
     type = String.to_existing_atom(type)
 
     Diagrams.relationship_vote!(relationship, type, actor: voter)
 
     Process.sleep(300)
 
-    relationships = Diagrams.list_potential_relationships!(socket.assigns.session.id)
-    next_index = socket.assigns.start_index + 1
-    next_relationship = Ash.load!(Enum.at(relationships, next_index), votes: [voter: [:id]])
-    next_vote = Enum.find(next_relationship.votes, &(&1.voter_id == voter.id))
+    relationships =
+      socket.assigns.relationships
+      |> ZipperList.replace(Ash.load!(relationship, :voted?))
+      |> ZipperList.right()
 
-    socket =
-      socket
-      |> assign(:start_index, next_index)
-      |> assign(:relationship, next_relationship)
-      |> assign(:current_vote, next_vote)
-
-    {:noreply, socket}
+    {:noreply, assign(socket, :relationships, relationships)}
   end
 
   @impl true
   def handle_event("navigate_left", _params, socket) do
-    prev_index = max(0, socket.assigns.start_index - 1)
-
-    prev_relationship =
-      Ash.load!(Enum.at(socket.assigns.relationships, prev_index), votes: [voter: [:id]])
-
-    prev_vote =
-      Enum.find(prev_relationship.votes, &(&1.voter_id == socket.assigns.current_user.id))
-
-    socket =
-      socket
-      |> assign(:start_index, prev_index)
-      |> assign(:relationship, prev_relationship)
-      |> assign(:current_vote, prev_vote)
-
-    {:noreply, socket}
+    {:noreply, update(socket, :relationships, &ZipperList.left/1)}
   end
 
   @impl true
   def handle_event("navigate_right", _params, socket) do
-    next_index = min(length(socket.assigns.relationships) - 1, socket.assigns.start_index + 1)
-
-    next_relationship =
-      Ash.load!(Enum.at(socket.assigns.relationships, next_index), votes: [voter: [:id]])
-
-    next_vote =
-      Enum.find(next_relationship.votes, &(&1.voter_id == socket.assigns.current_user.id))
-
-    socket =
-      socket
-      |> assign(:start_index, next_index)
-      |> assign(:relationship, next_relationship)
-      |> assign(:current_vote, next_vote)
-
-    {:noreply, socket}
+    {:noreply, update(socket, :relationships, &ZipperList.right/1)}
   end
 end
