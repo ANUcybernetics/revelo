@@ -106,7 +106,6 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
                 <.table_header>
                   <.table_row>
                     <.table_head>Name</.table_head>
-                    <.table_head>Type</.table_head>
                     <.table_head>Actions</.table_head>
                   </.table_row>
                 </.table_header>
@@ -117,13 +116,6 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
                     class={if variable.hidden?, do: "opacity-40"}
                   >
                     <.table_cell>{variable.name}</.table_cell>
-                    <.table_cell>
-                      <%= if variable.is_key? do %>
-                        <.badge_key>
-                          Key Variable
-                        </.badge_key>
-                      <% end %>
-                    </.table_cell>
                     <.table_cell>
                       <.variable_actions
                         variable={variable}
