@@ -96,7 +96,14 @@ defmodule Revelo.Diagrams.Relationship do
 
       prepare build(
                 sort: [:src_id, :dst_id],
-                load: [:reinforcing_votes, :balancing_votes, :no_relationship_votes, :type]
+                load: [
+                  :src,
+                  :dst,
+                  :reinforcing_votes,
+                  :balancing_votes,
+                  :no_relationship_votes,
+                  :type
+                ]
               )
     end
 
@@ -109,7 +116,14 @@ defmodule Revelo.Diagrams.Relationship do
 
       prepare build(
                 sort: [:src_id, :dst_id],
-                load: [:reinforcing_votes, :balancing_votes, :no_relationship_votes, :type]
+                load: [
+                  :src,
+                  :dst,
+                  :reinforcing_votes,
+                  :balancing_votes,
+                  :no_relationship_votes,
+                  :type
+                ]
               )
     end
 
