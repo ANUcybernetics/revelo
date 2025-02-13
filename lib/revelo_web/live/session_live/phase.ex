@@ -29,10 +29,10 @@ defmodule ReveloWeb.SessionLive.Phase do
 
         <.instructions
           :if={@live_action == :identify_work}
-          title="Identify relationships"
+          title="Identify variables"
           class="col-span-8"
         >
-          <ol class="list-decimal p-6 space-y-6">
+          <ol class="list-decimal px-6 space-y-6">
             <li>Scan the QR code with your phone camera.
               Note the key variable shown at the top (this is your main system outcome)</li>
             <li>
@@ -47,9 +47,44 @@ defmodule ReveloWeb.SessionLive.Phase do
           </ol>
         </.instructions>
 
+        <.instructions
+          :if={@live_action == :relate_work}
+          title="Identify relationships"
+          class="col-span-8"
+        >
+          <ol class="list-decimal px-6 space-y-6">
+            <li>
+              Look at each pair of variables and select which best describes the relationship:
+              <ul class="list-disc ml-8">
+                <li>As A increases, B increases (direct relationship)</li>
+                <li>As A increases, B decreases (inverse relationship)</li>
+                <li>A does not directly relate to B</li>
+              </ul>
+            </li>
+            <li>
+              Complete as many pairs as you can in 5 minutes.
+            </li>
+            <li>
+              Your answer will automatically advance to the next pair. Use the Previous and Next buttons to review or change your answers. Tips for choosing:
+              <ul class="list-disc ml-8">
+                <li>Think about direct cause and effect</li>
+                <li>Ignore indirect relationships through other variables</li>
+              </ul>
+            </li>
+          </ol>
+        </.instructions>
+
         <.qr_code_card
           :if={@live_action == :identify_work}
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify/work"}
+          completed={elem(@participant_count, 0)}
+          total={elem(@participant_count, 1)}
+          class="col-span-4"
+        />
+
+        <.qr_code_card
+          :if={@live_action == :relate_work}
+          url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/relate/work"}
           completed={elem(@participant_count, 0)}
           total={elem(@participant_count, 1)}
           class="col-span-4"
@@ -70,6 +105,12 @@ defmodule ReveloWeb.SessionLive.Phase do
           >
             Back to Voting
           </.back>
+          <.back
+            :if={@live_action == :relate_work}
+            patch={~p"/sessions/#{@session.id}/identify/discuss"}
+          >
+            Back to Identify
+          </.back>
         </div>
         <div>
           <.link :if={@live_action == :prepare} patch={~p"/sessions/#{@session.id}/identify/work"}>
@@ -86,6 +127,12 @@ defmodule ReveloWeb.SessionLive.Phase do
             patch={~p"/sessions/#{@session.id}/relate/work"}
           >
             <.button>Continue to Relationships</.button>
+          </.link>
+          <.link
+            :if={@live_action == :relate_work}
+            patch={~p"/sessions/#{@session.id}/relate/discuss"}
+          >
+            <.button>Continue to Discussion</.button>
           </.link>
         </div>
       </div>
