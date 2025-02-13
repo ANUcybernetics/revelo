@@ -18,7 +18,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     # note, this is a zipper
     relationships =
       assigns.session.id
-      |> Diagrams.list_potential_relationships!()
+      |> Diagrams.list_potential_relationships!(true, actor: assigns.current_user)
       |> ZipperList.from_list()
 
     socket =
@@ -49,6 +49,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 builder={builder}
                 value="balancing"
                 id="balancing"
+                checked={@relationships.cursor.voted? && @relationships.cursor.type == :balancing}
                 phx-click="vote"
                 phx-value-type="balancing"
                 phx-target={@myself}
@@ -62,6 +63,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 builder={builder}
                 value="reinforcing"
                 id="reinforcing"
+                checked={@relationships.cursor.voted? && @relationships.cursor.type == :reinforcing}
                 phx-click="vote"
                 phx-value-type="reinforcing"
                 phx-target={@myself}
@@ -75,6 +77,9 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 builder={builder}
                 value="no_relationship"
                 id="no_relationship"
+                checked={
+                  @relationships.cursor.voted? && @relationships.cursor.type == :no_relationship
+                }
                 phx-click="vote"
                 phx-value-type="no_relationship"
                 phx-target={@myself}
@@ -113,7 +118,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
     relationships =
       socket.assigns.relationships
-      |> ZipperList.replace(Ash.load!(relationship, :voted?))
+      |> ZipperList.replace(Ash.load!(relationship, [:voted?, :type], actor: voter))
       |> ZipperList.right()
 
     {:noreply, assign(socket, :relationships, relationships)}
