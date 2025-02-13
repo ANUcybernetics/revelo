@@ -86,6 +86,35 @@ defmodule ReveloWeb.PresenceTest do
       assert [{^user_id, 1, 1}] = participants
     end
 
+    test "tracker reflects completion status for individual participants", %{conn: conn} do
+      user = user()
+      session = session(user)
+
+      # First anon user joins
+      %{conn: %{assigns: %{current_user: _first_user}}} =
+        conn
+        |> visit("/qr/sessions/#{session.id}/identify/work")
+        |> click_button("Done")
+
+      # Second anon user joins
+      %{conn: %{assigns: %{current_user: _second_user}}} =
+        build_conn()
+        |> visit("/qr/sessions/#{session.id}/identify/work")
+        |> click_button("Done")
+
+      # Third anon user joins but doesn't click done
+      %{conn: %{assigns: %{current_user: _third_user}}} = visit(build_conn(), "/qr/sessions/#{session.id}/identify/work")
+
+      participants = Presence.list_online_participants(session.id)
+      assert length(participants) == 3
+
+      # Get count of completed participants
+      completed_count =
+        Enum.count(participants, fn {_id, completed, _total} -> completed == 1 end)
+
+      assert completed_count == 2
+    end
+
     test "count reports participants only (not facilitator)", %{conn: conn} do
       password = "657]545asdflh"
       facilitator = user_with_password(password)
