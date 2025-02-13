@@ -220,10 +220,19 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       </.tooltip>
       <.tooltip :if={@variable.vote_tally > 0}>
         <tooltip_trigger>
-          <div class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground flex-col">
+        <button
+          class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
+        >
+        <div class="relative h-4 w-4 flex items-center justify-center">
+          <.icon name="hero-chart-bar-solid" class="h-4 w-4 transition-all" />
+          <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-400 text-white text-[0.6rem] flex items-center justify-center h-3 w-3">
             {@variable.vote_tally}
-            <span class="text-[10px] leading-[.5]">vote{if @variable.vote_tally != 1, do: "s"}</span>
           </div>
+        </div>
+          <span class="sr-only">
+          Vote Count
+          </span>
+        </button>
         </tooltip_trigger>
         <.tooltip_content side="top">
           Vote Count
