@@ -51,8 +51,24 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
       <.card class="h-full">
         <div class="flex flex-col h-full">
           <.card_header class="w-full flex-none">
-            <.header>
+            <.header class="flex flex-row justify-between !items-start">
               <.card_title class="grow">{@title}</.card_title>
+              <:actions>
+                <.dropdown_menu>
+                  <.dropdown_menu_trigger>
+                    <.button variant="outline" size="sm">Filter</.button>
+                  </.dropdown_menu_trigger>
+                  <.dropdown_menu_content align="end">
+                    <.menu>
+                      <.menu_group>
+                        <.menu_item>All</.menu_item>
+                        <.menu_item>Conflicting</.menu_item>
+                        <.menu_item>Active</.menu_item>
+                      </.menu_group>
+                    </.menu>
+                  </.dropdown_menu_content>
+                </.dropdown_menu>
+              </:actions>
             </.header>
           </.card_header>
           <.scroll_area class="h-20 grow rounded-md">

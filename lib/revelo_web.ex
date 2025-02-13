@@ -93,9 +93,11 @@ defmodule ReveloWeb do
       import ReveloWeb.Component.Button
       import ReveloWeb.Component.Card
       import ReveloWeb.Component.Checkbox
+      import ReveloWeb.Component.DropdownMenu
       import ReveloWeb.Component.Form
       import ReveloWeb.Component.Input
       import ReveloWeb.Component.Label
+      import ReveloWeb.Component.Menu
       import ReveloWeb.Component.Progress
       import ReveloWeb.Component.ScrollArea
       import ReveloWeb.Component.Table
