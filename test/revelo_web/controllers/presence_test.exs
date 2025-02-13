@@ -50,7 +50,7 @@ defmodule ReveloWeb.PresenceTest do
       assert length(participants) == 1
     end
 
-    test "presence tracking is triggered when known user starts the prepare phase", %{conn: conn} do
+    test "presence tracking is triggered when known user starts the :identify_work", %{conn: conn} do
       user = user()
       session = session(user)
 
