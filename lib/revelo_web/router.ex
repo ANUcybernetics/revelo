@@ -50,7 +50,7 @@ defmodule ReveloWeb.Router do
       live "/:session_id/identify/discuss", SessionLive.Phase, :identify_discuss
       live "/:session_id/relate/work", SessionLive.Phase, :relate_work
       live "/:session_id/relate/discuss", SessionLive.Phase, :relate_discuss
-      live "/:session_id/analyse", SessionLive.Phase, :relate_discuss
+      live "/:session_id/analyse", SessionLive.Phase, :analyse
 
       live "/:session_id/prepare/variables/:variable_id", SessionLive.Phase, :prepare
       live "/:session_id/identify/variables/:variable_id", SessionLive.Phase, :identify_discuss
