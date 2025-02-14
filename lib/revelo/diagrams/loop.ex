@@ -224,7 +224,7 @@ defmodule Revelo.Diagrams.Loop do
           Ash.load!(changeset.data, [
             :type,
             :session,
-            influence_relationships: [:src, :dst]
+            influence_relationships: [:src, :dst, :type]
           ])
 
         relationship_string =
