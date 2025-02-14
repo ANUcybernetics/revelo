@@ -37,8 +37,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   end
 
   def loop_card(assigns) do
-    IO.inspect(Enum.find(assigns.loops, &(&1.id == assigns.selected_loop)), label: "TEST")
-
     ~H"""
     <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
     <% loop_index = Enum.find_index(@loops, &(&1.id == @selected_loop)) + 1 %>
@@ -125,7 +123,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
+    <div class="flex flex-col gap-4">
       <.loop_wrapper
         facilitator?={@current_user.facilitator?}
         selected_loop={@selected_loop}
@@ -176,6 +174,16 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
           </div>
         </nav>
       </.loop_wrapper>
+      <%= if !@current_user.facilitator? do %>
+        <.countdown
+          type="left_button"
+          time_left={40}
+          initial_time={60}
+          on_left_click="unselect_loop"
+          target={@myself}
+          left_disabled={is_nil(@selected_loop)}
+        />
+      <% end %>
     </div>
     """
   end
