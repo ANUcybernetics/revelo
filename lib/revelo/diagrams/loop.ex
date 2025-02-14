@@ -57,7 +57,7 @@ defmodule Revelo.Diagrams.Loop do
 
       prepare fn query, _context ->
         query
-        |> Ash.Query.load(influence_relationships: [src: :session])
+        |> Ash.Query.load([:type, influence_relationships: [:type, src: :session]])
         |> Ash.Query.filter(influence_relationships: [src: [session: [id: query.arguments.session_id]]])
       end
     end
