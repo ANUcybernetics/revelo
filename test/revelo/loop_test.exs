@@ -691,6 +691,71 @@ defmodule Revelo.LoopTest do
              )
     end
 
+    test "rescan finds all loops after adding new relationships" do
+      user = user()
+      session = session(user)
+
+      # Create three variables
+      [var_a, var_b, var_c] = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+      # Create initial simple loop: a->b->a
+      initial_loop_rels = [
+        relationship_with_vote(
+          src: var_a,
+          dst: var_b,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var_b,
+          dst: var_a,
+          session: session,
+          user: user,
+          vote_type: :direct
+        )
+      ]
+
+      # Initial rescan should find just the a->b->a loop
+      initial_loops = Revelo.Diagrams.rescan_loops!(session.id)
+      assert length(initial_loops) == 1
+
+      initial_loop = Ash.load!(List.first(initial_loops), :influence_relationships)
+
+      assert MapSet.new(initial_loop_rels, & &1.id) ==
+               MapSet.new(initial_loop.influence_relationships, & &1.id)
+
+      # Add new relationships to form a second loop: b->c->a
+      [
+        relationship_with_vote(
+          src: var_b,
+          dst: var_c,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var_c,
+          dst: var_a,
+          session: session,
+          user: user,
+          vote_type: :direct
+        )
+      ]
+
+      # Rescan should now find both loops
+      final_loops = Revelo.Diagrams.rescan_loops!(session.id)
+      assert length(final_loops) == 2
+
+      # Verify first loop still exists
+      assert Enum.any?(final_loops, fn loop ->
+               loop = Ash.load!(loop, :influence_relationships)
+
+               MapSet.new(initial_loop_rels, & &1.id) ==
+                 MapSet.new(loop.influence_relationships, & &1.id)
+             end)
+    end
+
     test "calling rescan twice in a row doesn't change any of the loops" do
       user = user()
       session = session(user)
