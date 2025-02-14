@@ -63,7 +63,7 @@ defmodule Revelo.LLM do
     )
   end
 
-  def generate_story(description, key_variable, loop, feedback_type) do
+  def generate_story(description, loop, feedback_type) do
     InstructorLite.instruct(
       %{
         messages: [
@@ -79,8 +79,7 @@ defmodule Revelo.LLM do
           },
           %{
             role: "user",
-            content:
-              "Context: #{description}, Key Variable: #{key_variable}, loop: #{loop}, feedback type: #{feedback_type}"
+            content: "Context: #{description}, loop: #{loop}, feedback type: #{feedback_type}"
           }
         ]
       },

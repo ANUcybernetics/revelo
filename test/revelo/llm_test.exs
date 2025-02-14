@@ -20,7 +20,6 @@ defmodule Revelo.LLMTest do
       {:ok, story} =
         Revelo.LLM.generate_story(
           "The hobbits in hobbiton are wondering what actions they should take.",
-          "Level of Sauron's power",
           "[Level of Sauron's Power increases Size of Orc Armies increases Sauron's Military Control over territories increases Level of Sauron's Power]",
           "Reinforcing"
         )
