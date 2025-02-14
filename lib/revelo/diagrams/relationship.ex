@@ -95,11 +95,7 @@ defmodule Revelo.Diagrams.Relationship do
         allow_nil? false
       end
 
-      filter expr(
-               (session.id == ^arg(:session_id) and
-                  (is_nil(type_override) and (inverse_votes > 0 or direct_votes > 0))) or
-                 type_override != :no_relationship
-             )
+      filter expr(session.id == ^arg(:session_id) and type != :no_relationship)
 
       prepare build(
                 sort: [:src_id, :dst_id],
