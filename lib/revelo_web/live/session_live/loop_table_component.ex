@@ -37,6 +37,8 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   end
 
   def loop_card(assigns) do
+    IO.inspect(Enum.find(assigns.loops, &(&1.id == assigns.selected_loop)), label: "TEST")
+
     ~H"""
     <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
     <% loop_index = Enum.find_index(@loops, &(&1.id == @selected_loop)) + 1 %>
@@ -46,23 +48,23 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         {matching_loop.title}
       </.card_title>
       <div class="mx-6 pt-2">
-        <.badge_reinforcing :if={matching_loop.type == "reinforcing"} />
-        <.badge_balancing :if={matching_loop.type == "balancing"} />
+        <.badge_reinforcing :if={Atom.to_string(matching_loop.type) == "reinforcing"} />
+        <.badge_balancing :if={Atom.to_string(matching_loop.type) == "balancing"} />
       </div>
     </.card_header>
     <.card_content class="mx-6">
-      <div class="flex justify-between items-center space-x-4">
+      <div class="flex justify-between flex-col gap-2">
         <.card_description>
-          <%= for _rel <- matching_loop.influence_relationships do %>
-            <div>{matching_loop.story}</div>
-          <% end %>
+          {matching_loop.story}If story existed it'd go here
         </.card_description>
         <div :if={@show_diagram}>
           <div class="flex -ml-8 gap-1">
-            <div class="text-sky-600 border-sky-600 border-2 border-r-0 rounded-l-lg w-8 my-10 relative">
+            <div class={
+            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-blue-500 !border-blue-500", else: "text-orange-500 !border-orange-500"} border-2 border-r-0 rounded-l-lg w-8 my-10 relative"
+          }>
               <.icon
                 name="hero-arrow-long-right-solid"
-                class="h-8 w-8 absolute -top-[17px] -right-[6px]"
+                class="h-8 w-8 absolute -top-[15px] -right-[6px]"
               />
             </div>
             <div class="flex flex-col mb-2 grow">
@@ -86,7 +88,9 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                   </.card>
 
                   <%= if index < length(matching_loop.influence_relationships) - 1 do %>
-                    <div class="text-sky-600 w-full flex justify-center">
+                    <div class={
+                      "#{if relationship.type == :direct, do: "text-blue-500", else: "text-orange-500"} w-full flex justify-center"
+                    }>
                       <.icon name="hero-arrow-long-down-solid" class="h-8 w-8" />
                     </div>
                   <% end %>
