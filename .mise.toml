@@ -2,4 +2,4 @@
 elixir = "latest"
 erlang = "latest"
 sqlite = "latest"
-pnpm = "latest"
+npm = "latest"
