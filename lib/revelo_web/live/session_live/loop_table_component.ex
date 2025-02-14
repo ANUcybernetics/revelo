@@ -36,6 +36,16 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     {:noreply, assign(socket, :selected_loop, nil)}
   end
 
+  @impl true
+  def handle_event("generate_stories", _params, socket) do
+    loops =
+      Enum.map(socket.assigns.loops, fn loop ->
+        Diagrams.generate_loop_story!(loop)
+      end)
+
+    {:noreply, assign(socket, :loops, loops)}
+  end
+
   def loop_card(assigns) do
     ~H"""
     <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
@@ -196,15 +206,5 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       <% end %>
     </div>
     """
-  end
-
-  @impl true
-  def handle_event("generate_stories", _params, socket) do
-    loops =
-      Enum.map(socket.assigns.loops, fn loop ->
-        Diagrams.generate_loop_story!(loop)
-      end)
-
-    {:noreply, assign(socket, :loops, loops)}
   end
 end
