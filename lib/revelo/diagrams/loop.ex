@@ -29,14 +29,14 @@ defmodule Revelo.Diagrams.Loop do
               end,
               load: [influence_relationships: [:type]]
 
-    calculate :session_id,
+    calculate :session,
               :uuid,
               fn loops, _context ->
                 Enum.map(loops, fn loop ->
                   loop.influence_relationships
                   |> List.first()
                   |> Map.get(:src)
-                  |> Map.get(:session_id)
+                  |> Map.get(:session)
                 end)
               end,
               load: [influence_relationships: [src: [:session]]]
@@ -215,6 +215,33 @@ defmodule Revelo.Diagrams.Loop do
 
         # Return remaining existing loops plus new loops
         {:ok, remaining_loops ++ new_loops}
+      end
+    end
+
+    update :generate_story do
+      change fn changeset, _ ->
+        loop =
+          Ash.load!(changeset.data, [
+            :type,
+            :session,
+            influence_relationships: [:src, :dst]
+          ])
+
+        relationship_string =
+          Enum.map_join(loop.influence_relationships, "; ", fn rel ->
+            "#{rel.src.name} #{if rel.type == :inverse, do: "decreases", else: "increases"} #{rel.dst.name}"
+          end)
+
+        {:ok, %{story: story}} =
+          Revelo.LLM.generate_story(
+            Ash.load!(loop.session, :description).description,
+            relationship_string,
+            Atom.to_string(loop.type)
+          )
+
+        changeset
+        |> Ash.Changeset.force_change_attribute(:story, story)
+        |> Ash.Changeset.force_change_attribute(:title, "#{loop.type} loop")
       end
     end
   end

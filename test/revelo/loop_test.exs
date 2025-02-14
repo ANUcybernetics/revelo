@@ -62,9 +62,9 @@ defmodule Revelo.LoopTest do
       loop =
         relationships
         |> Revelo.Diagrams.create_loop!(actor: user)
-        |> Ash.load!(:session_id)
+        |> Ash.load!(:session)
 
-      assert loop.session_id == session.id
+      assert loop.session.id == session.id
     end
 
     test "list_loops only returns loops from specified session" do

@@ -1,6 +1,8 @@
 defmodule Revelo.LLMTest do
   use Revelo.DataCase
 
+  import ReveloTest.Generators
+
   describe "test real OpenAI API calls" do
     @describetag skip: "requires OpenAI API key and costs money"
 
@@ -23,6 +25,39 @@ defmodule Revelo.LLMTest do
           "[Level of Sauron's Power increases Size of Orc Armies increases Sauron's Military Control over territories increases Level of Sauron's Power]",
           "Reinforcing"
         )
+
+      assert story
+    end
+
+    test "generate_loop_story calls generate_story with correct arguments" do
+      user = user()
+      session = session(user)
+
+      # Create variables for the loop
+      var_a = variable(session: session, user: user)
+      var_b = variable(session: session, user: user)
+
+      # Create simple a->b->a loop
+      relationships = [
+        relationship_with_vote(
+          src: var_a,
+          dst: var_b,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var_b,
+          dst: var_a,
+          session: session,
+          user: user,
+          vote_type: :direct
+        )
+      ]
+
+      loop = Revelo.Diagrams.create_loop!(relationships, actor: user)
+
+      story = Revelo.Diagrams.generate_loop_story!(loop, actor: user)
 
       assert story
     end
