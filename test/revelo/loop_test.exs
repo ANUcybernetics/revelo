@@ -700,7 +700,7 @@ defmodule Revelo.LoopTest do
       [var1, var2, var3, var4, var5] = variables
 
       # First loop: var1 -> var2 -> var3 -> var1
-      loop1_rels = [
+      _loop1_rels = [
         relationship_with_vote(
           src: var1,
           dst: var2,
@@ -725,7 +725,7 @@ defmodule Revelo.LoopTest do
       ]
 
       # Second loop: var3 -> var4 -> var5 -> var3
-      loop2_rels = [
+      _loop2_rels = [
         relationship_with_vote(
           src: var3,
           dst: var4,
