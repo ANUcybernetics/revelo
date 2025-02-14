@@ -106,10 +106,15 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 phx-target={@myself}
                                 class={[
                                   "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
-                                  if(relationship.type_override == :direct,
-                                    do: "bg-orange-300",
-                                    else: "bg-gray-200 hover:bg-gray-200"
-                                  )
+                                  cond do
+                                    relationship.type_override == :direct ||
+                                        (relationship.type_override == nil &&
+                                           relationship.type == :direct) ->
+                                      "bg-orange-300"
+
+                                    true ->
+                                      "hover:bg-gray-200"
+                                  end
                                 ]}
                               >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
@@ -137,10 +142,15 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 phx-target={@myself}
                                 class={[
                                   "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
-                                  if(relationship.type_override == :no_relationship,
-                                    do: "bg-gray-300",
-                                    else: "bg-gray-200 hover:bg-gray-200"
-                                  )
+                                  cond do
+                                    relationship.type_override == :no_relationship ||
+                                        (relationship.type_override == nil &&
+                                           relationship.type == :no_relationship) ->
+                                      "bg-gray-300"
+
+                                    true ->
+                                      "hover:bg-gray-200"
+                                  end
                                 ]}
                               >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
@@ -168,10 +178,15 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 phx-target={@myself}
                                 class={[
                                   "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
-                                  if(relationship.type_override == :inverse,
-                                    do: "bg-blue-200",
-                                    else: "bg-gray-200 hover:bg-gray-200"
-                                  )
+                                  cond do
+                                    relationship.type_override == :inverse ||
+                                        (relationship.type_override == nil &&
+                                           relationship.type == :inverse) ->
+                                      "bg-blue-300"
+
+                                    true ->
+                                      "hover:bg-gray-200"
+                                  end
                                 ]}
                               >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
