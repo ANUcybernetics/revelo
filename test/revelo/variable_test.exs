@@ -85,41 +85,41 @@ defmodule Revelo.VariableTest do
 
     test "can toggle key flag on variable" do
       variable = variable()
-      assert variable.is_key? == false
+      assert variable.is_voi? == false
 
-      variable = Revelo.Diagrams.toggle_key_variable!(variable)
-      assert variable.is_key? == true
+      variable = Revelo.Diagrams.toggle_voi!(variable)
+      assert variable.is_voi? == true
 
-      variable = Revelo.Diagrams.toggle_key_variable!(variable)
-      assert variable.is_key? == false
+      variable = Revelo.Diagrams.toggle_voi!(variable)
+      assert variable.is_voi? == false
     end
 
-    test "can get key variable from session" do
+    test "can get variable of interest from session" do
       user = user()
       session = session(user)
       variable1 = variable(user: user, session: session)
       variable2 = variable(user: user, session: session)
 
-      # Make variable2 a key variable
-      variable2 = Revelo.Diagrams.toggle_key_variable!(variable2)
-      assert variable2.is_key? == true
+      # Make variable2 a variable of interest
+      variable2 = Revelo.Diagrams.toggle_voi!(variable2)
+      assert variable2.is_voi? == true
 
-      key_variable = Revelo.Diagrams.get_key_variable!(session.id)
-      assert key_variable.id == variable2.id
+      voi = Revelo.Diagrams.get_voi!(session.id)
+      assert voi.id == variable2.id
 
       # Toggle key off, should error when trying to get
-      Revelo.Diagrams.toggle_key_variable!(variable2)
+      Revelo.Diagrams.toggle_voi!(variable2)
 
       assert_raise Ash.Error.Query.NotFound, fn ->
-        Revelo.Diagrams.get_key_variable!(session.id)
+        Revelo.Diagrams.get_voi!(session.id)
       end
 
       # Toggle key on for variable1, should get new key
-      variable1 = Revelo.Diagrams.toggle_key_variable!(variable1)
-      assert variable1.is_key? == true
+      variable1 = Revelo.Diagrams.toggle_voi!(variable1)
+      assert variable1.is_voi? == true
 
-      key_variable = Revelo.Diagrams.get_key_variable!(session.id)
-      assert key_variable.id == variable1.id
+      voi = Revelo.Diagrams.get_voi!(session.id)
+      assert voi.id == variable1.id
     end
 
     test "can toggle hidden flag on variable" do
@@ -154,15 +154,15 @@ defmodule Revelo.VariableTest do
       assert hidden_var.id in Enum.map(variables, & &1.id)
     end
 
-    test "key variable is returned first by list_variables!" do
+    test "variable of interest is returned first by list_variables!" do
       user = user()
       session = session(user)
       variable1 = variable(name: "abc", user: user, session: session)
       variable2 = variable(name: "xyz", user: user, session: session)
 
-      # Make variable2 a key variable even though it's later alphabetically
-      variable2 = Revelo.Diagrams.toggle_key_variable!(variable2)
-      assert variable2.is_key? == true
+      # Make variable2 a variable of interest even though it's later alphabetically
+      variable2 = Revelo.Diagrams.toggle_voi!(variable2)
+      assert variable2.is_voi? == true
 
       variables = Revelo.Diagrams.list_variables!(session.id)
       assert length(variables) == 2
@@ -172,20 +172,20 @@ defmodule Revelo.VariableTest do
       assert second.id == variable1.id
     end
 
-    test "toggling key variable on unsets other key variables in the session" do
+    test "toggling variable of interest on unsets other variables of interest in the session" do
       user = user()
       session = session(user)
       variable1 = variable(user: user, session: session)
       variable2 = variable(user: user, session: session)
 
-      variable1 = Revelo.Diagrams.toggle_key_variable!(variable1)
-      assert variable1.is_key? == true
+      variable1 = Revelo.Diagrams.toggle_voi!(variable1)
+      assert variable1.is_voi? == true
 
-      variable2 = Revelo.Diagrams.toggle_key_variable!(variable2)
-      assert variable2.is_key? == true
+      variable2 = Revelo.Diagrams.toggle_voi!(variable2)
+      assert variable2.is_voi? == true
 
       variable1 = Ash.get!(Variable, variable1.id)
-      assert variable1.is_key? == false
+      assert variable1.is_voi? == false
     end
 
     test "enforces uniqueness of names within session" do

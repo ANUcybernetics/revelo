@@ -29,9 +29,9 @@ defmodule Revelo.UIComponentsTest do
     assert html =~ "User"
   end
 
-  test "badge_key shows as key variable" do
+  test "badge_key shows as variable of interest" do
     html = render_component(&ReveloWeb.UIComponents.badge_key/1, %{})
-    assert html =~ "Key Variable"
+    assert html =~ "variable of interest"
   end
 
   test "badge_vote shows as important" do
@@ -64,10 +64,10 @@ defmodule Revelo.UIComponentsTest do
   test "variable_voting shows voting interface" do
     assigns = %{
       variables: [
-        %{id: "1", name: "Test Var", is_key?: true, voted?: false},
-        %{id: "2", name: "Other Var", is_key?: false, voted?: true}
+        %{id: "1", name: "Test Var", is_voi?: true, voted?: false},
+        %{id: "2", name: "Other Var", is_voi?: false, voted?: true}
       ],
-      key_variable: "0"
+      voi: "0"
     }
 
     html = render_component(&ReveloWeb.UIComponents.variable_voting/1, assigns)
@@ -77,7 +77,7 @@ defmodule Revelo.UIComponentsTest do
 
   test "variable_confirmation shows voting results" do
     assigns = %{
-      variables: [%{id: "1", name: "Test Var", is_key?: true}],
+      variables: [%{id: "1", name: "Test Var", is_voi?: true}],
       votes: [%{id: "1", voter_id: 1}],
       user_id: "1"
     }
@@ -111,7 +111,7 @@ defmodule Revelo.UIComponentsTest do
       loop_id: 1,
       title: "Test Loop",
       type: "reinforcing",
-      variables: [%{id: "1", name: "Test Var", is_key?: true}],
+      variables: [%{id: "1", name: "Test Var", is_voi?: true}],
       loop: [%{src: "1"}],
       description: "Test description"
     }

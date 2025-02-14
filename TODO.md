@@ -61,22 +61,12 @@ mix ash.gen.resource \
   --relationship "belongs_to:session:Revelo.Sessions.Session:required,has_many:votes:Revelo.Diagrams.VariableVote"
 ```
 
-## general dev thoughts
-
-- data model-wise, maybe we don't actually want a session -> participants (or
-  even session -> users) relationship? could just get that info from the list of
-  variables (via their :creator attribute)
-
 ## adrian's gross things
 
 - Removing a vote is kind of gross at the moment, as you need to pass the whole
   vote to the destroy function. This is particularly annoying in the identify
   phase, as we the votes aren't loaded at any point before needing to destroy
   them.
-
-- Generate variables breaks if there isn't a key variable
-
-- Generated variables also start by displaying the voted icon, instead of the trash icon.
 
 - We should change the style of the relationship votes table, as it's a bit
   confusing and large.

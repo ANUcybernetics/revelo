@@ -38,7 +38,7 @@ defmodule Revelo.LLM do
   alias Revelo.LLM.Title
   alias Revelo.LLM.VariableList
 
-  def generate_variables(description, key_variable, count, variables) do
+  def generate_variables(description, voi, count, variables) do
     InstructorLite.instruct(
       %{
         messages: [
@@ -56,7 +56,7 @@ defmodule Revelo.LLM do
 
             You will be a description of the system that should decide most of your variables.
 
-            A key variable will also be provided, which we are interested to track the influence of.
+            A variable of interest will also be provided, which we are interested to track the influence of.
 
             You will also be provided with a number N, and you will generate N different variable names that follow all the rules above.
 
@@ -66,7 +66,7 @@ defmodule Revelo.LLM do
           %{
             role: "user",
             content:
-              "System Description: #{description}, Key Variable: #{key_variable}, N: #{count}, Existing variables: #{variables}"
+              "System Description: #{description}, variable of interest: #{voi}, N: #{count}, Existing variables: #{variables}"
           }
         ]
       },

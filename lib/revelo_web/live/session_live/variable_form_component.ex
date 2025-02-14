@@ -25,7 +25,7 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
           <.form_label error={not Enum.empty?(f[:name].errors)}>Variable Name</.form_label>
           <.input field={@form[:name]} type="text" phx-debounce="500" required />
           <%= if f.source.type == :create do %>
-            <.input type="hidden" field={@form[:is_key?]} value="false" />
+            <.input type="hidden" field={@form[:is_voi?]} value="false" />
             <.input type="hidden" field={@form[:hidden?]} value="false" />
           <% end %>
           <.form_message field={f[:name]} />

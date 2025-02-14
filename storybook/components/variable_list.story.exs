@@ -17,7 +17,7 @@ defmodule Storybook.Examples.VariableList do
     "The main variable list interface (for a facilitator)"
   end
 
-  defstruct [:id, :name, :is_key?, :hidden?]
+  defstruct [:id, :name, :is_voi?, :hidden?]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -25,8 +25,8 @@ defmodule Storybook.Examples.VariableList do
      assign(socket,
        current_id: 2,
        variables: [
-         %__MODULE__{id: 1, name: "Stuff", is_key?: true, hidden?: false},
-         %__MODULE__{id: 2, name: "Things", is_key?: false, hidden?: true}
+         %__MODULE__{id: 1, name: "Stuff", is_voi?: true, hidden?: false},
+         %__MODULE__{id: 2, name: "Things", is_voi?: false, hidden?: true}
        ]
      )}
   end
@@ -47,9 +47,9 @@ defmodule Storybook.Examples.VariableList do
           <.table_row class={if variable.hidden?, do: "opacity-40"}>
             <.table_cell>{variable.name}</.table_cell>
             <.table_cell>
-              <%= if variable.is_key? do %>
+              <%= if variable.is_voi? do %>
                 <.badge_key>
-                  Key Variable
+                  Variable of Interest
                 </.badge_key>
               <% end %>
             </.table_cell>
@@ -71,7 +71,7 @@ defmodule Storybook.Examples.VariableList do
       </.form_item>
       <.form_item>
         <div class="flex items-center space-x-2">
-          <.checkbox id="key" field={f[:is_key?]} />
+          <.checkbox id="key" field={f[:is_voi?]} />
           <.label for="key">Is Key?</.label>
         </div>
       </.form_item>
@@ -84,7 +84,7 @@ defmodule Storybook.Examples.VariableList do
   def handle_event("save_variable", %{"variable" => params}, socket) do
     variable = %__MODULE__{
       name: params["name"],
-      is_key?: params["is_key?"] == "true",
+      is_voi?: params["is_voi?"] == "true",
       id: socket.assigns.current_id + 1,
       hidden?: false
     }

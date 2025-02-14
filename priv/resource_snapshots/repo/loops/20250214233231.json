@@ -3,16 +3,6 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime_usec",
-      "source": "created_at",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "uuid",
       "source": "id",
       "references": null,
@@ -24,29 +14,9 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "jti",
+      "source": "title",
       "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": true
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "subject",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime",
-      "source": "expires_at",
-      "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -54,17 +24,17 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "purpose",
+      "source": "story",
       "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
     {
       "default": "nil",
       "size": null,
-      "type": "map",
-      "source": "extra_data",
+      "type": "bigint",
+      "source": "display_order",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -91,12 +61,12 @@
       "primary_key?": false
     }
   ],
-  "table": "tokens",
-  "hash": "A8B74873C61244C84C42C530BE906D59FAF5BD775F980FC0F8A4B390EC45FEA4",
+  "table": "loops",
+  "hash": "1AFBDE518C5604D2A2D21C6F0B524A26E2D2DC46E10218DCD864EF0691C99847",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "identities": [],
   "repo": "Elixir.Revelo.Repo",

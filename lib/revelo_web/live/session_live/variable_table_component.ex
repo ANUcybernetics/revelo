@@ -161,12 +161,12 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
         <tooltip_trigger>
           <button
             class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
-            phx-click="toggle_key"
+            phx-click="toggle_voi"
             phx-value-id={@variable.id}
             phx-target={@myself}
           >
             <.icon
-              name={if @variable.is_key?, do: "hero-key-solid", else: "hero-key"}
+              name={if @variable.is_voi?, do: "hero-key-solid", else: "hero-key"}
               class="h-4 w-4 transition-all"
             />
             <span class="sr-only">
@@ -265,13 +265,13 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   end
 
   @impl true
-  def handle_event("toggle_key", %{"id" => variable_id}, socket) do
+  def handle_event("toggle_voi", %{"id" => variable_id}, socket) do
     variable = Ash.get!(Diagrams.Variable, variable_id)
 
-    old_key =
-      case Diagrams.get_key_variable(variable.session_id) do
-        {:ok, old_key} ->
-          old_key
+    old_voi =
+      case Diagrams.get_voi(variable.session_id) do
+        {:ok, old_voi} ->
+          old_voi
 
         {:error, _error} ->
           nil
@@ -279,20 +279,20 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
 
     updated_variable =
       variable_id
-      |> Diagrams.toggle_key_variable!()
+      |> Diagrams.toggle_voi!()
       |> Ash.load!([:voted?, :vote_tally], actor: socket.assigns.current_user)
 
     socket =
-      if is_nil(old_key) do
+      if is_nil(old_voi) do
         stream_insert(socket, :variables, updated_variable)
       else
-        old_key =
-          old_key
+        old_voi =
+          old_voi
           |> Ash.reload!()
           |> Ash.load!([:voted?, :vote_tally], actor: socket.assigns.current_user)
 
         socket
-        |> stream_insert(:variables, old_key)
+        |> stream_insert(:variables, old_voi)
         |> stream_insert(:variables, updated_variable)
       end
 
@@ -312,11 +312,11 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
 
     existing_variables = Diagrams.list_variables!(session.id, true)
     variable_names = Enum.map(existing_variables, & &1.name)
-    key_variable = Enum.find(existing_variables, & &1.is_key?)
+    voi = Enum.find(existing_variables, & &1.is_voi?)
 
     case Revelo.LLM.generate_variables(
            session.description,
-           key_variable.name,
+           voi.name,
            count,
            variable_names
          ) do

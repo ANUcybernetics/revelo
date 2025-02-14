@@ -3,15 +3,35 @@
     {
       "default": "nil",
       "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
-      "source": "loop_id",
+      "source": "variable_id",
       "references": {
-        "name": "loop_relationships_loop_id_fkey",
-        "table": "loops",
+        "name": "variable_votes_variable_id_fkey",
+        "table": "variables",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -29,14 +49,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "relationship_id",
+      "source": "voter_id",
       "references": {
-        "name": "loop_relationships_relationship_id_fkey",
-        "table": "relationships",
+        "name": "variable_votes_voter_id_fkey",
+        "table": "users",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -51,14 +71,24 @@
       "primary_key?": true
     }
   ],
-  "table": "loop_relationships",
-  "hash": "CFE19511D9BD525852DC415F058D08AAF2D52AD78D360F77D870454B75FF9DB9",
+  "table": "variable_votes",
+  "hash": "A94B1E363204CD0EDFEB6E7DA67770B158C9834ABAD2075E67707D02518F9162",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
-  "identities": [],
+  "identities": [
+    {
+      "name": "unique_vote",
+      "keys": [
+        "variable_id",
+        "voter_id"
+      ],
+      "index_name": "variable_votes_unique_vote_index",
+      "base_filter": null
+    }
+  ],
   "repo": "Elixir.Revelo.Repo",
   "base_filter": null,
   "custom_indexes": [],

@@ -48,11 +48,11 @@ defmodule ReveloWeb.SessionLive.Phase do
         >
           <ol class="list-decimal px-6 space-y-6">
             <li>Scan the QR code with your phone camera.
-              Note the key variable shown at the top (this is your main system outcome)</li>
+              Note the variable of interest shown at the top (this is your main system outcome)</li>
             <li>
               Choose variables that are important parts of your system:
               <ul class="list-disc ml-8">
-                <li>They may directly affect your key variable.</li>
+                <li>They may directly affect your variable of interest.</li>
                 <li>They could relate to other important variables</li>
                 <li>They may help tell your system's story</li>
               </ul>
@@ -276,8 +276,8 @@ defmodule ReveloWeb.SessionLive.Phase do
 
   @impl true
   def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
-    if socket.assigns.variable_count == 0 and not variable.is_key? do
-      Revelo.Diagrams.toggle_key_variable!(variable)
+    if socket.assigns.variable_count == 0 and not variable.is_voi? do
+      Revelo.Diagrams.toggle_voi!(variable)
     end
 
     send_update(ReveloWeb.SessionLive.VariableTableComponent,

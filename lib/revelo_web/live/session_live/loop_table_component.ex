@@ -83,13 +83,13 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       Enum.join(
                         [
                           "flex justify-center items-center font-bold",
-                          if(relationship.src.is_key?, do: "pt-7 pb-5", else: "py-6")
+                          if(relationship.src.is_voi?, do: "pt-7 pb-5", else: "py-6")
                         ],
                         " "
                       )
                     }>
                       <div class="absolute top-1 left-1">
-                        <.badge_key :if={relationship.src.is_key?} />
+                        <.badge_key :if={relationship.src.is_voi?} />
                       </div>
                       <span class="text-center">{relationship.src.name}</span>
                     </.card_content>

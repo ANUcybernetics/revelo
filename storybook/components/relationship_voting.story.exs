@@ -8,14 +8,14 @@ defmodule Storybook.Examples.RelationshipVoting do
     "The main relationship selection interface (for a participant)"
   end
 
-  defstruct [:id, :name, :is_key?]
+  defstruct [:id, :name, :is_voi?]
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       variable1: %__MODULE__{id: 2, name: "The size of assembled Orc armies", is_key?: false},
-       variable2: %__MODULE__{id: 3, name: "Sauron's Power Over Middle-earth", is_key?: false}
+       variable1: %__MODULE__{id: 2, name: "The size of assembled Orc armies", is_voi?: false},
+       variable2: %__MODULE__{id: 3, name: "Sauron's Power Over Middle-earth", is_voi?: false}
      )}
   end
 

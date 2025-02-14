@@ -20,8 +20,8 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
     variables =
       Diagrams.list_variables!(assigns.session.id, true, actor: assigns.current_user)
 
-    key_variable =
-      case Diagrams.get_key_variable(assigns.session.id) do
+    voi =
+      case Diagrams.get_voi(assigns.session.id) do
         {:ok, key} -> key
         {:error, _} -> nil
       end
@@ -29,7 +29,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
     socket =
       socket
       |> assign(assigns)
-      |> assign(:key_variable, key_variable)
+      |> assign(:voi, voi)
       |> assign(:variables, variables)
 
     {:ok, socket}
@@ -52,8 +52,8 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
 
         <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
           <div class="flex justify-between w-full items-center">
-            <span :if={@key_variable}>
-              {@key_variable.name}
+            <span :if={@voi}>
+              {@voi.name}
             </span>
             <.badge_key />
           </div>
@@ -63,7 +63,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
           <%= if @completed? do %>
             <.card_content id={"summary-#{@id}"} class="p-0">
               <%= for variable <- @variables do %>
-                <%= if !variable.is_key? do %>
+                <%= if !variable.is_voi? do %>
                   <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
                     <span>{variable.name}</span>
                     <%= if variable.voted? do %>
@@ -78,7 +78,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
           <% else %>
             <.card_content id={"voting-#{@id}"} class="p-0">
               <%= for variable <- @variables do %>
-                <%= if !variable.is_key? do %>
+                <%= if !variable.is_voi? do %>
                   <.label id={variable.id} for={"#{variable.id}-checkbox"}>
                     <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
                       <.checkbox

@@ -8,21 +8,21 @@ defmodule Storybook.Examples.VariableVoting do
     "The main variable voting interface (for a participant)"
   end
 
-  defstruct [:id, :name, :is_key?, :voted?]
+  defstruct [:id, :name, :is_voi?, :voted?]
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
        variables: [
-         %__MODULE__{id: "1", name: "The One Ring", is_key?: true, voted?: false},
-         %__MODULE__{id: "2", name: "Frodo Baggins", is_key?: false, voted?: false},
-         %__MODULE__{id: "3", name: "Gandalf the Grey", is_key?: false, voted?: true},
-         %__MODULE__{id: "4", name: "Aragorn", is_key?: false, voted?: false},
-         %__MODULE__{id: "5", name: "Legolas", is_key?: false, voted?: false},
-         %__MODULE__{id: "6", name: "Gimli", is_key?: false, voted?: true},
-         %__MODULE__{id: "7", name: "Samwise Gamgee", is_key?: false, voted?: false},
-         %__MODULE__{id: "8", name: "Gollum", is_key?: false, voted?: false}
+         %__MODULE__{id: "1", name: "The One Ring", is_voi?: true, voted?: false},
+         %__MODULE__{id: "2", name: "Frodo Baggins", is_voi?: false, voted?: false},
+         %__MODULE__{id: "3", name: "Gandalf the Grey", is_voi?: false, voted?: true},
+         %__MODULE__{id: "4", name: "Aragorn", is_voi?: false, voted?: false},
+         %__MODULE__{id: "5", name: "Legolas", is_voi?: false, voted?: false},
+         %__MODULE__{id: "6", name: "Gimli", is_voi?: false, voted?: true},
+         %__MODULE__{id: "7", name: "Samwise Gamgee", is_voi?: false, voted?: false},
+         %__MODULE__{id: "8", name: "Gollum", is_voi?: false, voted?: false}
        ]
      )}
   end

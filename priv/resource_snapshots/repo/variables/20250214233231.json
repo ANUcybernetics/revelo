@@ -14,19 +14,29 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "description",
+      "source": "name",
       "references": null,
-      "allow_nil?": true,
+      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     },
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "type_override",
+      "type": "boolean",
+      "source": "is_voi?",
       "references": null,
-      "allow_nil?": true,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "boolean",
+      "source": "hidden?",
+      "references": null,
+      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     },
@@ -56,12 +66,12 @@
       "type": "uuid",
       "source": "session_id",
       "references": {
-        "name": "relationships_session_id_fkey",
+        "name": "variables_session_id_fkey",
         "table": "sessions",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -79,39 +89,14 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "src_id",
+      "source": "creator_id",
       "references": {
-        "name": "relationships_src_id_fkey",
-        "table": "variables",
+        "name": "variables_creator_id_fkey",
+        "table": "users",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "on_delete": null,
-        "destination_attribute": "id",
-        "deferrable": false,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "on_update": null
-      },
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "dst_id",
-      "references": {
-        "name": "relationships_dst_id_fkey",
-        "table": "variables",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -126,21 +111,21 @@
       "primary_key?": false
     }
   ],
-  "table": "relationships",
-  "hash": "CA682C06C6879BE4967E5D13DA6D04A448E9DD18937993A75F16785F9DDE285E",
+  "table": "variables",
+  "hash": "4F517186C80467F5B96D0DE045FA95C28102A5CAF01751477711CF6484C0918D",
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "identities": [
     {
-      "name": "unique_relationship",
+      "name": "unique_name",
       "keys": [
-        "src_id",
-        "dst_id"
+        "name",
+        "session_id"
       ],
-      "index_name": "relationships_unique_relationship_index",
+      "index_name": "variables_unique_name_index",
       "base_filter": null
     }
   ],
