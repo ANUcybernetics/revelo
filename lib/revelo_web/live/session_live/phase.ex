@@ -205,33 +205,9 @@ defmodule ReveloWeb.SessionLive.Phase do
 
   @impl true
   def handle_event("phase_transition", %{"direction" => direction}, socket) do
-    current_phase = socket.assigns.live_action
     session_id = socket.assigns.session.id
-
-    new_phase =
-      case direction do
-        "next" ->
-          case current_phase do
-            :prepare -> :identify_work
-            :identify_work -> :identify_discuss
-            :identify_discuss -> :relate_work
-            :relate_work -> :relate_discuss
-            :relate_discuss -> :analyse
-            _ -> current_phase
-          end
-
-        "previous" ->
-          case current_phase do
-            :identify_work -> :prepare
-            :identify_discuss -> :identify_work
-            :relate_work -> :identify_discuss
-            :relate_discuss -> :relate_work
-            :analyse -> :relate_discuss
-            _ -> current_phase
-          end
-      end
-
-    Revelo.SessionServer.transition_to(session_id, new_phase)
+    Revelo.SessionServer.transition_to(session_id, String.to_existing_atom(direction))
+    # TODO the facilitator could push patch immediately if they wanted
     {:noreply, socket}
   end
 

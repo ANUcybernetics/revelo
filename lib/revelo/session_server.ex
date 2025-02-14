@@ -12,6 +12,7 @@ defmodule Revelo.SessionServer do
   use GenServer
 
   @timer_interval_sec 1
+  # @phases [:prepare, :identify_work, :identify_discuss, :relate_work, :relate_discuss, :analyse]
 
   # Client API
 
@@ -79,6 +80,36 @@ defmodule Revelo.SessionServer do
   @impl true
   def handle_call(:get_phase, _from, state) do
     {:reply, state.phase, state}
+  end
+
+  @impl true
+  def handle_call({:transition_to, direction}, from, state) when direction in [:next, :previous] do
+    current_phase = state.phase
+
+    new_phase =
+      case direction do
+        :next ->
+          case current_phase do
+            :prepare -> :identify_work
+            :identify_work -> :identify_discuss
+            :identify_discuss -> :relate_work
+            :relate_work -> :relate_discuss
+            :relate_discuss -> :analyse
+            _ -> current_phase
+          end
+
+        :previous ->
+          case current_phase do
+            :identify_work -> :prepare
+            :identify_discuss -> :identify_work
+            :relate_work -> :identify_discuss
+            :relate_discuss -> :relate_work
+            :analyse -> :relate_discuss
+            _ -> current_phase
+          end
+      end
+
+    handle_call({:transition_to, new_phase}, from, state)
   end
 
   @impl true
