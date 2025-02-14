@@ -55,36 +55,51 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
             <.header class="flex flex-row justify-between !items-start">
               <.card_title class="grow">{@title}</.card_title>
               <:actions>
-                <.dropdown_menu>
-                  <.dropdown_menu_trigger>
-                    <.button variant="outline" size="sm">
-                      <b class="mr-1">Filter:</b> {String.capitalize(to_string(@current_filter))}
-                    </.button>
-                  </.dropdown_menu_trigger>
-                  <.dropdown_menu_content align="end">
-                    <.menu>
-                      <.menu_group>
-                        <.menu_item phx-click="set_filter" phx-value-filter="all" phx-target={@myself}>
-                          All
-                        </.menu_item>
-                        <.menu_item
-                          phx-click="set_filter"
-                          phx-value-filter="active"
-                          phx-target={@myself}
-                        >
-                          Active
-                        </.menu_item>
-                        <.menu_item
-                          phx-click="set_filter"
-                          phx-value-filter="conflicting"
-                          phx-target={@myself}
-                        >
-                          Conflicting
-                        </.menu_item>
-                      </.menu_group>
-                    </.menu>
-                  </.dropdown_menu_content>
-                </.dropdown_menu>
+                <div class="flex gap-2">
+                  <.button
+                    variant="outline"
+                    size="sm"
+                    class="inline-block"
+                    phx-click="refresh"
+                    phx-target={@myself}
+                  >
+                    <.icon name="hero-arrow-path" class="h-4 w-4" />
+                  </.button>
+                  <.dropdown_menu>
+                    <.dropdown_menu_trigger>
+                      <.button variant="outline" size="sm">
+                        <b class="mr-1">Filter:</b> {String.capitalize(to_string(@current_filter))}
+                      </.button>
+                    </.dropdown_menu_trigger>
+                    <.dropdown_menu_content align="end">
+                      <.menu>
+                        <.menu_group>
+                          <.menu_item
+                            phx-click="set_filter"
+                            phx-value-filter="all"
+                            phx-target={@myself}
+                          >
+                            All
+                          </.menu_item>
+                          <.menu_item
+                            phx-click="set_filter"
+                            phx-value-filter="active"
+                            phx-target={@myself}
+                          >
+                            Active
+                          </.menu_item>
+                          <.menu_item
+                            phx-click="set_filter"
+                            phx-value-filter="conflicting"
+                            phx-target={@myself}
+                          >
+                            Conflicting
+                          </.menu_item>
+                        </.menu_group>
+                      </.menu>
+                    </.dropdown_menu_content>
+                  </.dropdown_menu>
+                </div>
               </:actions>
             </.header>
           </.card_header>
@@ -254,6 +269,18 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
      socket
      |> assign(:current_filter, filter_atom)
      |> stream(:relationships, relationships, reset: true)}
+  end
+
+  @impl true
+  def handle_event("refresh", _params, socket) do
+    relationships =
+      case socket.assigns.current_filter do
+        :all -> Diagrams.list_potential_relationships!(socket.assigns.session.id)
+        :conflicting -> Diagrams.list_conflicting_relationships!(socket.assigns.session.id)
+        :active -> Diagrams.list_actual_relationships!(socket.assigns.session.id)
+      end
+
+    {:noreply, stream(socket, :relationships, relationships, reset: true)}
   end
 
   def get_phase(:identify_work), do: :identify
