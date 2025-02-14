@@ -169,32 +169,52 @@ defmodule Revelo.Diagrams.Loop do
       run fn changeset, _context ->
         session_id = changeset.arguments.session_id
 
-        # First get existing loops and delete their relationship records
+        # First get existing loops and actual relationships
         existing_loops = Diagrams.list_loops!(session_id)
+        relationships = Diagrams.list_actual_relationships!(session_id)
+        relationship_ids = MapSet.new(relationships, & &1.id)
 
-        # TODO having to delete the join table rows manually seems a bit gross, but I couldn't get
-        # it to do it automatically via the many_to_many relationship config
-        if not Enum.empty?(existing_loops) do
-          # Delete all loop relationship records (to avoid a FK constraint when we delete the loop later)
+        # Filter loops with missing relationships
+        loops_to_delete =
+          Enum.filter(existing_loops, fn loop ->
+            # Check if any of the loop's relationships are no longer in the actual relationships list
+            Enum.any?(loop.influence_relationships, fn rel ->
+              not MapSet.member?(relationship_ids, rel.id)
+            end)
+          end)
+
+        # Delete join table rows and loops that need to be removed
+        if not Enum.empty?(loops_to_delete) do
+          # Delete loop relationship records for affected loops
           LoopRelationships
-          |> Ash.Query.filter(loop_id in ^Enum.map(existing_loops, & &1.id))
+          |> Ash.Query.filter(loop_id in ^Enum.map(loops_to_delete, & &1.id))
           |> Ash.read!()
           |> Enum.each(&Ash.destroy!/1)
+
+          # Delete the affected loops
+          Enum.each(loops_to_delete, &Ash.destroy!/1)
         end
 
-        # Then delete the loops themselves
-        Enum.each(existing_loops, &Ash.destroy!/1)
+        # First calculate remaining_loops since we'll use it multiple times
+        remaining_loops =
+          Enum.reject(existing_loops, fn loop ->
+            loop_id = loop.id
+            Enum.any?(loops_to_delete, fn deleted -> deleted.id == loop_id end)
+          end)
 
-        # load relationships
-        relationships = Diagrams.list_actual_relationships!(session_id)
-
-        # find cycles and create loops from any found
-        loops =
+        # Find cycles and create new loops
+        new_loops =
           relationships
           |> Analyser.find_loops()
+          |> Enum.reject(fn new_loop ->
+            Enum.any?(remaining_loops, fn existing_loop ->
+              Analyser.loops_equal?(new_loop, existing_loop.influence_relationships)
+            end)
+          end)
           |> Enum.map(&Diagrams.create_loop!/1)
 
-        {:ok, loops}
+        # Return remaining existing loops plus new loops
+        {:ok, remaining_loops ++ new_loops}
       end
     end
   end

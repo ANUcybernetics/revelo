@@ -608,6 +608,180 @@ defmodule Revelo.LoopTest do
       assert loops == []
     end
 
+    test "rescan excludes loops containing :no_relationship relationships" do
+      user = user()
+      session = session(user)
+
+      # Create variables for two different loops
+      variables = Enum.map(1..5, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3, var4, var5] = variables
+
+      # First loop: var1 -> var2 -> var3 -> var1
+      loop1_rels = [
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :direct
+        )
+      ]
+
+      # Second loop: var3 -> var4 -> var5 -> var3
+      loop2_rels = [
+        relationship_with_vote(
+          src: var3,
+          dst: var4,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var4,
+          dst: var5,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var5,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :direct
+        )
+      ]
+
+      # Initial scan should find both loops
+      loops = Revelo.Diagrams.rescan_loops!(session.id)
+      assert length(loops) == 2
+
+      # Override one relationship in first loop to :no_relationship
+      rel_to_override = List.first(loop1_rels)
+      Revelo.Diagrams.override_relationship_type!(rel_to_override, :no_relationship)
+
+      # Rescan should now only find the second loop
+      loops = Revelo.Diagrams.rescan_loops!(session.id)
+      assert length(loops) == 1
+
+      # Verify the remaining loop is loop2
+      loop_with_rels = Ash.load!(List.first(loops), :influence_relationships)
+
+      assert Enum.all?(
+               loop2_rels,
+               fn rel1 ->
+                 Enum.any?(loop_with_rels.influence_relationships, fn rel2 ->
+                   rel1.id == rel2.id
+                 end)
+               end
+             )
+    end
+
+    test "calling rescan twice in a row doesn't change any of the loops" do
+      user = user()
+      session = session(user)
+
+      # Create variables for two different loops
+      variables = Enum.map(1..5, fn _ -> variable(session: session, user: user) end)
+      [var1, var2, var3, var4, var5] = variables
+
+      # First loop: var1 -> var2 -> var3 -> var1
+      loop1_rels = [
+        relationship_with_vote(
+          src: var1,
+          dst: var2,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var2,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var3,
+          dst: var1,
+          session: session,
+          user: user,
+          vote_type: :direct
+        )
+      ]
+
+      # Second loop: var3 -> var4 -> var5 -> var3
+      loop2_rels = [
+        relationship_with_vote(
+          src: var3,
+          dst: var4,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var4,
+          dst: var5,
+          session: session,
+          user: user,
+          vote_type: :direct
+        ),
+        relationship_with_vote(
+          src: var5,
+          dst: var3,
+          session: session,
+          user: user,
+          vote_type: :direct
+        )
+      ]
+
+      # Run rescan twice
+      loops1 = Revelo.Diagrams.rescan_loops!(session.id)
+      loops2 = Revelo.Diagrams.rescan_loops!(session.id)
+
+      # Verify both scans produced same results
+      assert length(loops1) == length(loops2)
+
+      loops1_ids = loops1 |> Enum.map(& &1.id) |> Enum.sort()
+      loops2_ids = loops2 |> Enum.map(& &1.id) |> Enum.sort()
+      assert loops1_ids == loops2_ids
+
+      # Verify relationships in each loop remained the same
+      loops1_with_rels =
+        Enum.map(loops1, fn l ->
+          Ash.load!(l, :influence_relationships).influence_relationships
+        end)
+
+      loops2_with_rels =
+        Enum.map(loops2, fn l ->
+          Ash.load!(l, :influence_relationships).influence_relationships
+        end)
+
+      assert length(loops1_with_rels) == length(loops2_with_rels)
+
+      for loop1_rels <- loops1_with_rels do
+        assert Enum.any?(loops2_with_rels, fn loop2_rels ->
+                 rel_ids1 = MapSet.new(loop1_rels, & &1.id)
+                 rel_ids2 = MapSet.new(loop2_rels, & &1.id)
+                 MapSet.equal?(rel_ids1, rel_ids2)
+               end)
+      end
+    end
+
     test "can create self-loop" do
       user = user()
       session = session(user)
