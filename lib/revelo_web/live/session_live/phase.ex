@@ -185,7 +185,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         :if={@live_action not in [:identify_work, :identify_discuss, :relate_work]}
         class="flex flex-col items-center gap-4"
       >
-        <.task_completed completed={elem(@participant_count, 0)} total={elem(@participant_count, 1)} />
+        <.task_completed completed={elem(@participant_count, 1)} total={elem(@participant_count, 1)} />
       </div>
     </div>
     """
