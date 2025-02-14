@@ -748,7 +748,7 @@ defmodule ReveloWeb.UIComponents do
           <span class="font-bold text-4xl">{@completed}/{@total}</span>
           <span class="text-gray-600 text-lg">completed</span>
         </div>
-        <.progress class="w-full h-2" value={round(@completed / @total * 100)} />
+        <.progress class="w-full h-2" value={round(@completed / max(@total, 1) * 100)} />
       </.card_footer>
     </.card>
     """
