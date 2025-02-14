@@ -74,7 +74,7 @@ defmodule Revelo.Diagrams.Relationship do
         allow_nil? false
       end
 
-      filter expr(session.id == ^arg(:session_id))
+      filter expr(session.id == ^arg(:session_id) and not src.hidden? and not dst.hidden?)
 
       prepare build(
                 sort: [:src_id, :dst_id],

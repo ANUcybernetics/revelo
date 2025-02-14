@@ -307,6 +307,29 @@ defmodule Revelo.RelationshipTest do
       assert rel3.no_relationship_votes == 0
     end
 
+    test "hidden variables hide relationships from list_potential_relationships" do
+      user = user()
+      session = session(user)
+      src = variable(user: user, session: session)
+      dst = variable(user: user, session: session)
+      rel = relationship(user: user, session: session, src: src, dst: dst)
+
+      # Before hiding, relationship should be listed
+      relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
+      assert rel.id in Enum.map(relationships, & &1.id)
+
+      # After hiding src, relationship should not be listed
+      Revelo.Diagrams.hide_variable!(src)
+      relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
+      refute rel.id in Enum.map(relationships, & &1.id)
+
+      # Unhide src and hide dst instead
+      Revelo.Diagrams.unhide_variable!(src)
+      Revelo.Diagrams.hide_variable!(dst)
+      relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
+      refute rel.id in Enum.map(relationships, & &1.id)
+    end
+
     test "enumerate_relationships creates all src->dst relationships" do
       user = user()
       session = session(user)
