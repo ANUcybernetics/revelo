@@ -96,8 +96,9 @@ defmodule Revelo.Diagrams.Relationship do
       end
 
       filter expr(
-               session.id == ^arg(:session_id) and
-                 (inverse_votes > 0 or direct_votes > 0)
+               (session.id == ^arg(:session_id) and
+                  (is_nil(type_override) and (inverse_votes > 0 or direct_votes > 0))) or
+                 type_override != :no_relationship
              )
 
       prepare build(
