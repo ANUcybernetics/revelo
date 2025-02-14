@@ -53,7 +53,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     <.card_content class="mx-6">
       <div class="flex justify-between flex-col gap-2">
         <.card_description>
-          {matching_loop.story}If story existed it'd go here
+          {matching_loop.story}
         </.card_description>
         <div :if={@show_diagram}>
           <div class="flex -ml-8 gap-1">
@@ -129,10 +129,22 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         selected_loop={@selected_loop}
         loops={@loops}
       >
-        <h3 class="text-2xl font-semibold leading-none tracking-tight flex p-6">
-          Loops ({@loop_count})
-        </h3>
-
+        <div class="flex justify-between items-center p-6">
+          <h3 class="text-2xl font-semibold leading-none tracking-tight flex">
+            Loops ({@loop_count})
+          </h3>
+          <.button
+            :if={@current_user.facilitator?}
+            type="button"
+            variant="outline"
+            size="sm"
+            phx-click="generate_stories"
+            phx-target={@myself}
+            id="generate_stories_button"
+          >
+            <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" /> Generate
+          </.button>
+        </div>
         <%= if @selected_loop do %>
           <div class="absolute top-18 z-20 w-[350px] right-full mr-6">
             <.card class="w-full">
@@ -162,9 +174,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                 <div class="flex items-start">
                   <span class="w-6 shrink-0">{index + 1}.</span>
                   <span class="flex-1 mr-2">
-                    <%= for rel <- loop.influence_relationships do %>
-                      <div>{rel.src.name}</div>
-                    <% end %>
+                    {loop.title}
                   </span>
                   <.badge_reinforcing :if={loop.type == "reinforcing"} />
                   <.badge_balancing :if={loop.type == "balancing"} />
@@ -186,5 +196,15 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       <% end %>
     </div>
     """
+  end
+
+  @impl true
+  def handle_event("generate_stories", _params, socket) do
+    loops =
+      Enum.map(socket.assigns.loops, fn loop ->
+        Diagrams.generate_loop_story!(loop)
+      end)
+
+    {:noreply, assign(socket, :loops, loops)}
   end
 end
