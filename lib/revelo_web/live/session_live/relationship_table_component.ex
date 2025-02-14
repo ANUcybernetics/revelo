@@ -248,7 +248,13 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
 
-    new_override = if relationship.type_override == type, do: nil, else: type
+    new_override =
+      cond do
+        relationship.type_override == type -> nil
+        relationship.type == type -> nil
+        true -> type
+      end
+
     updated_relationship = Diagrams.override_relationship_type!(relationship, new_override)
 
     {:noreply, stream_insert(socket, :relationships, updated_relationship)}
