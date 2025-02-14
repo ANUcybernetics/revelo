@@ -232,16 +232,25 @@ defmodule Revelo.Diagrams.Loop do
             "#{rel.src.name} #{if rel.type == :inverse, do: "decreases", else: "increases"} #{rel.dst.name}"
           end)
 
+        session_description = Ash.load!(loop.session, :description).description
+
         {:ok, %{story: story}} =
           Revelo.LLM.generate_story(
-            Ash.load!(loop.session, :description).description,
+            session_description,
+            relationship_string,
+            Atom.to_string(loop.type)
+          )
+
+        {:ok, %{title: title}} =
+          Revelo.LLM.generate_title(
+            session_description,
             relationship_string,
             Atom.to_string(loop.type)
           )
 
         changeset
         |> Ash.Changeset.force_change_attribute(:story, story)
-        |> Ash.Changeset.force_change_attribute(:title, "#{loop.type} loop")
+        |> Ash.Changeset.force_change_attribute(:title, title)
       end
     end
   end
