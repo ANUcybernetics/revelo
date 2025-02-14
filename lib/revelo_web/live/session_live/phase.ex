@@ -269,9 +269,13 @@ defmodule ReveloWeb.SessionLive.Phase do
 
   @impl true
   def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
+    if socket.assigns.variable_count == 0 and not variable.is_key? do
+      Revelo.Diagrams.toggle_key_variable!(variable)
+    end
+
     send_update(ReveloWeb.SessionLive.VariableTableComponent,
       id: "variable-table",
-      new_variable: variable
+      new_variable: Ash.reload!(variable)
     )
 
     {:noreply, assign(socket, :variable_count, socket.assigns.variable_count + 1)}
