@@ -4,7 +4,7 @@ defmodule Revelo.LLMTest do
   import ReveloTest.Generators
 
   describe "test real OpenAI API calls" do
-    @describetag skip: "requires OpenAI API key and costs money"
+    # @describetag skip: "requires OpenAI API key and costs money"
 
     test "LLM.generate_variables returns sensible response" do
       {:ok, variable_list} =
@@ -60,6 +60,17 @@ defmodule Revelo.LLMTest do
       story = Revelo.Diagrams.generate_loop_story!(loop, actor: user)
 
       assert story
+    end
+
+    test "LLM.generate_title returns sensible response" do
+      {:ok, title} =
+        Revelo.LLM.generate_title(
+          "The hobbits in hobbiton are wondering what actions they should take.",
+          "[Level of Sauron's Power increases Size of Orc Armies increases Sauron's Military Control over territories increases Level of Sauron's Power]",
+          "Reinforcing"
+        )
+
+      assert title
     end
   end
 end

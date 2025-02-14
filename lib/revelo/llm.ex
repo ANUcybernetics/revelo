@@ -20,10 +20,22 @@ defmodule Revelo.LLM.Story do
   end
 end
 
+defmodule Revelo.LLM.Title do
+  @moduledoc false
+  use Ecto.Schema
+  use InstructorLite.Instruction
+
+  @primary_key false
+  embedded_schema do
+    field(:title, :string)
+  end
+end
+
 defmodule Revelo.LLM do
   @moduledoc false
 
   alias Revelo.LLM.Story
+  alias Revelo.LLM.Title
   alias Revelo.LLM.VariableList
 
   def generate_variables(description, key_variable, count, variables) do
@@ -84,6 +96,29 @@ defmodule Revelo.LLM do
         ]
       },
       response_model: Story,
+      adapter_context: [api_key: Application.fetch_env!(:instructor_lite, :openai_api_key)]
+    )
+  end
+
+  def generate_title(description, loop, feedback_type) do
+    InstructorLite.instruct(
+      %{
+        messages: [
+          %{
+            role: "system",
+            content: ~S"""
+            You are a systems engineer skilled at crafting concise titles for the dynamics of feedback loops.
+            Using the relationships between the items in the system, write a 3-10 word title for the loop.
+            The context provided is for reference only and should not influence the title.
+            """
+          },
+          %{
+            role: "user",
+            content: "Context: #{description}, loop: #{loop}, feedback type: #{feedback_type}"
+          }
+        ]
+      },
+      response_model: Title,
       adapter_context: [api_key: Application.fetch_env!(:instructor_lite, :openai_api_key)]
     )
   end
