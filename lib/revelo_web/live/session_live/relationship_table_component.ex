@@ -98,7 +98,20 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                         <div class="flex items-center gap-1">
                           <.tooltip>
                             <tooltip_trigger>
-                              <button class="bg-gray-200 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+                              <button
+                                phx-click="toggle_override"
+                                phx-value-src_id={relationship.src_id}
+                                phx-value-dst_id={relationship.dst_id}
+                                phx-value-type="direct"
+                                phx-target={@myself}
+                                class={[
+                                  "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
+                                  if(relationship.type_override == :direct,
+                                    do: "bg-orange-300",
+                                    else: "bg-gray-200 hover:bg-gray-200"
+                                  )
+                                ]}
+                              >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
                                   <.icon name="hero-arrow-long-up" class="h-4 w-4 transition-all" />
                                   <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-orange-300 text-orange-900 text-[0.6rem] flex items-center justify-center h-3 w-3">
@@ -116,7 +129,20 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                           </.tooltip>
                           <.tooltip>
                             <tooltip_trigger>
-                              <button class="bg-gray-200 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+                              <button
+                                phx-click="toggle_override"
+                                phx-value-src_id={relationship.src_id}
+                                phx-value-dst_id={relationship.dst_id}
+                                phx-value-type="no_relationship"
+                                phx-target={@myself}
+                                class={[
+                                  "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
+                                  if(relationship.type_override == :no_relationship,
+                                    do: "bg-gray-300",
+                                    else: "bg-gray-200 hover:bg-gray-200"
+                                  )
+                                ]}
+                              >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
                                   <.icon name="hero-no-symbol" class="h-4 w-4" />
                                   <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-gray-300 text-gray-700 text-[0.6rem] flex items-center justify-center h-3 w-3">
@@ -134,7 +160,20 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                           </.tooltip>
                           <.tooltip>
                             <tooltip_trigger>
-                              <button class="bg-gray-200 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+                              <button
+                                phx-click="toggle_override"
+                                phx-value-src_id={relationship.src_id}
+                                phx-value-dst_id={relationship.dst_id}
+                                phx-value-type="inverse"
+                                phx-target={@myself}
+                                class={[
+                                  "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
+                                  if(relationship.type_override == :inverse,
+                                    do: "bg-blue-200",
+                                    else: "bg-gray-200 hover:bg-gray-200"
+                                  )
+                                ]}
+                              >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
                                   <.icon name="hero-arrows-up-down" class="h-4 w-4" />
                                   <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-200 text-blue-900 text-[0.6rem] flex items-center justify-center h-3 w-3">
@@ -164,6 +203,18 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
       </.card>
     </div>
     """
+  end
+
+  @impl true
+  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
+    type = String.to_existing_atom(type)
+
+    relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
+
+    new_override = if relationship.type_override == type, do: nil, else: type
+    updated_relationship = Diagrams.override_relationship_type!(relationship, new_override)
+
+    {:noreply, stream_insert(socket, :relationships, updated_relationship)}
   end
 
   @impl true

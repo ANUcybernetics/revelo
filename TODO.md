@@ -76,5 +76,7 @@ mix ash.gen.resource \
 
 - Generate variables breaks if there isn't a key variable
 
+- Generated variables also start by displaying the voted icon, instead of the trash icon.
+
 - We should change the style of the relationship votes table, as it's a bit
   confusing and large.

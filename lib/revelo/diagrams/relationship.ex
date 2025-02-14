@@ -163,10 +163,22 @@ defmodule Revelo.Diagrams.Relationship do
     update :override_type do
       argument :type, :atom do
         constraints one_of: [:inverse, :direct, :no_relationship]
-        allow_nil? false
+        allow_nil? true
       end
 
       change set_attribute(:type_override, arg(:type))
+
+      change after_action(fn _changeset, relationship, _context ->
+               {:ok,
+                Ash.load!(relationship, [
+                  :src,
+                  :dst,
+                  :direct_votes,
+                  :inverse_votes,
+                  :no_relationship_votes,
+                  :type
+                ])}
+             end)
     end
 
     action :enumerate, {:array, :struct} do
