@@ -92,8 +92,8 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                 <.table_body phx-update="stream">
                   <.table_row :for={{id, relationship} <- @streams.relationships} id={id}>
                     <.table_cell>
-                      <div class="flex items-center gap-2">
-                        <span>{relationship.src.name}</span>
+                      <div class="flex items-center gap-2 items-start">
+                        <span class="flex-[1_1_25%] text-right">{relationship.src.name}</span>
                         <.icon name="hero-minus" class="h-4 w-4" />
                         <div class="flex items-center gap-1">
                           <.tooltip>
@@ -191,7 +191,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                           </.tooltip>
                         </div>
                         <.icon name="hero-arrow-long-right" class="h-4 w-4" />
-                        <span>{relationship.dst.name}</span>
+                        <span class="flex-[1_1_25%]">{relationship.dst.name}</span>
                       </div>
                     </.table_cell>
                   </.table_row>
