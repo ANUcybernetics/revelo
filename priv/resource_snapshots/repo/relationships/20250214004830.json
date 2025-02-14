@@ -7,8 +7,8 @@
       "source": "id",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": true,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": true
     },
     {
       "default": "nil",
@@ -17,18 +17,8 @@
       "source": "description",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "boolean",
-      "source": "hidden?",
-      "references": null,
-      "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -37,8 +27,8 @@
       "source": "type_override",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -47,8 +37,8 @@
       "source": "inserted_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -57,8 +47,8 @@
       "source": "updated_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -73,17 +63,17 @@
           "attribute": null,
           "strategy": null
         },
-        "destination_attribute": "id",
         "primary_key?": true,
         "on_delete": null,
-        "on_update": null,
+        "destination_attribute": "id",
         "deferrable": false,
         "destination_attribute_default": null,
-        "destination_attribute_generated": null
+        "destination_attribute_generated": null,
+        "on_update": null
       },
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -98,17 +88,17 @@
           "attribute": null,
           "strategy": null
         },
-        "destination_attribute": "id",
         "primary_key?": true,
         "on_delete": null,
-        "on_update": null,
+        "destination_attribute": "id",
         "deferrable": false,
         "destination_attribute_default": null,
-        "destination_attribute_generated": null
+        "destination_attribute_generated": null,
+        "on_update": null
       },
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -123,21 +113,21 @@
           "attribute": null,
           "strategy": null
         },
-        "destination_attribute": "id",
         "primary_key?": true,
         "on_delete": null,
-        "on_update": null,
+        "destination_attribute": "id",
         "deferrable": false,
         "destination_attribute_default": null,
-        "destination_attribute_generated": null
+        "destination_attribute_generated": null,
+        "on_update": null
       },
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     }
   ],
   "table": "relationships",
-  "hash": "A517AC9A38418704BACC179A508944E82A1F39F294FCB36F527E80258C4F8BA4",
+  "hash": "CA682C06C6879BE4967E5D13DA6D04A448E9DD18937993A75F16785F9DDE285E",
   "multitenancy": {
     "global": null,
     "attribute": null,
@@ -150,13 +140,13 @@
         "src_id",
         "dst_id"
       ],
-      "base_filter": null,
-      "index_name": "relationships_unique_relationship_index"
+      "index_name": "relationships_unique_relationship_index",
+      "base_filter": null
     }
   ],
   "repo": "Elixir.Revelo.Repo",
-  "custom_indexes": [],
   "base_filter": null,
+  "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true
 }

@@ -71,14 +71,6 @@ defmodule Revelo.Diagrams.Loop do
       end
 
       validate fn changeset, _context ->
-        if Enum.any?(changeset.arguments.relationships, & &1.hidden?) do
-          {:error, "Cannot create loop with hidden relationships"}
-        else
-          :ok
-        end
-      end
-
-      validate fn changeset, _context ->
         relationships = Enum.map(changeset.arguments.relationships, &Ash.load!(&1, :type))
 
         case Enum.find(relationships, &(&1.type == :no_relationship)) do

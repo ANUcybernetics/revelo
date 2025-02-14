@@ -24,9 +24,6 @@ defmodule Revelo.Diagrams do
       define :list_conflicting_relationships, args: [:session_id], action: :list_conflicting
 
       define :enumerate_relationships, args: [:session], action: :enumerate
-      define :hide_relationship, action: :hide
-      define :unhide_relationship, action: :unhide
-      define :toggle_relationship_visibility, action: :toggle_visibility
     end
 
     resource Revelo.Diagrams.Loop do

@@ -48,21 +48,18 @@ defmodule Revelo.RelationshipTest do
       assert found_rel.id == rel.id
     end
 
-    test "Revelo.Diagrams.list_potential_relationships! returns all relationships (including hidden)" do
+    test "Revelo.Diagrams.list_potential_relationships! returns all relationships" do
       user = user()
       session = session(user)
       var1 = variable(user: user, session: session)
       var2 = variable(user: user, session: session)
-      visible_rel = relationship(user: user, session: session, src: var1, dst: var2)
-      hidden_rel = relationship(user: user, session: session, src: var2, dst: var1)
-
-      hidden_rel = Revelo.Diagrams.hide_relationship!(hidden_rel)
-      assert hidden_rel.hidden? == true
+      rel1 = relationship(user: user, session: session, src: var1, dst: var2)
+      rel2 = relationship(user: user, session: session, src: var2, dst: var1)
 
       relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
 
-      assert visible_rel.id in Enum.map(relationships, & &1.id)
-      assert hidden_rel.id in Enum.map(relationships, & &1.id)
+      assert rel1.id in Enum.map(relationships, & &1.id)
+      assert rel2.id in Enum.map(relationships, & &1.id)
     end
 
     test "no duplicate relationships" do

@@ -97,7 +97,6 @@ defmodule Revelo.Diagrams.Relationship do
 
       filter expr(
                session.id == ^arg(:session_id) and
-                 hidden? == false and
                  (inverse_votes > 0 or direct_votes > 0)
              )
 
@@ -137,7 +136,7 @@ defmodule Revelo.Diagrams.Relationship do
     end
 
     create :create do
-      accept [:description, :hidden?]
+      accept [:description]
 
       argument :session, :struct do
         constraints instance_of: Session
@@ -168,32 +167,6 @@ defmodule Revelo.Diagrams.Relationship do
       end
 
       change set_attribute(:type_override, arg(:type))
-    end
-
-    update :hide do
-      change set_attribute(:hidden?, true)
-    end
-
-    update :unhide do
-      change set_attribute(:hidden?, false)
-    end
-
-    update :toggle_visibility do
-      change fn changeset, _ ->
-        current_value = Ash.Changeset.get_attribute(changeset, :hidden?)
-        Ash.Changeset.force_change_attribute(changeset, :hidden?, !current_value)
-      end
-
-      change after_action(fn _changeset, relationship, _context ->
-               {:ok,
-                Ash.load!(relationship, [
-                  :src,
-                  :dst,
-                  :direct_votes,
-                  :inverse_votes,
-                  :no_relationship_votes
-                ])}
-             end)
     end
 
     action :enumerate, {:array, :struct} do
@@ -230,7 +203,6 @@ defmodule Revelo.Diagrams.Relationship do
     uuid_primary_key :id
 
     attribute :description, :string
-    attribute :hidden?, :boolean, allow_nil?: false, default: false
     attribute :type_override, :atom
 
     timestamps()

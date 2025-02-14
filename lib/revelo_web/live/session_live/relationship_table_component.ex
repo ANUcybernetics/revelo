@@ -87,15 +87,10 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                 <.table_header>
                   <.table_row>
                     <.table_head>Relation</.table_head>
-                    <.table_head>Hide</.table_head>
                   </.table_row>
                 </.table_header>
                 <.table_body phx-update="stream">
-                  <.table_row
-                    :for={{id, relationship} <- @streams.relationships}
-                    id={id}
-                    class={if relationship.hidden?, do: "opacity-40"}
-                  >
+                  <.table_row :for={{id, relationship} <- @streams.relationships} id={id}>
                     <.table_cell>
                       <div class="flex items-center gap-2">
                         <span>{relationship.src.name}</span>
@@ -160,19 +155,6 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                         <span>{relationship.dst.name}</span>
                       </div>
                     </.table_cell>
-                    <.table_cell>
-                      <button
-                        phx-click="toggle_hidden"
-                        phx-value-id={relationship.id}
-                        phx-target={@myself}
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
-                      >
-                        <.icon
-                          name={if relationship.hidden?, do: "hero-eye-slash", else: "hero-eye-solid"}
-                          class="h-4 w-4 transition-all"
-                        />
-                      </button>
-                    </.table_cell>
                   </.table_row>
                 </.table_body>
               </.table>
@@ -182,12 +164,6 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
       </.card>
     </div>
     """
-  end
-
-  @impl true
-  def handle_event("toggle_hidden", %{"id" => relationship_id}, socket) do
-    updated_relationship = Diagrams.toggle_relationship_visibility!(relationship_id)
-    {:noreply, stream_insert(socket, :relationships, updated_relationship)}
   end
 
   @impl true
