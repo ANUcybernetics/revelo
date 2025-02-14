@@ -70,6 +70,7 @@ defmodule Revelo.Diagrams.Variable do
       change relate_actor(:creator)
       change manage_relationship(:session, type: :append)
       change set_attribute(:name, arg(:name))
+      change load :vote_tally
     end
 
     update :rename do
