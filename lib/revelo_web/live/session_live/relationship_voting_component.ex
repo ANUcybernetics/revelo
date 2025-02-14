@@ -15,16 +15,32 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
   @impl true
   def update(assigns, socket) do
-    # note, this is a zipper
+    # these shenanigans are to ensure that the relationships are rotated and each participant
+    # starts at a different, evenly-spaced location in the full list of potential relationships
+    participants = ReveloWeb.Presence.list_online_participants(assigns.session.id)
+
     relationships =
-      assigns.session.id
-      |> Diagrams.list_potential_relationships!(actor: assigns.current_user)
-      |> ZipperList.from_list()
+      Diagrams.list_potential_relationships!(assigns.session.id, actor: assigns.current_user)
+
+    rotate_amount =
+      case participants do
+        [] ->
+          0
+
+        _ ->
+          participants
+          |> Enum.find_index(fn {id, _, _} -> id == assigns.current_user.id end)
+          |> Kernel.*(length(participants))
+          |> div(length(relationships))
+      end
+
+    relationships_zipper =
+      relationships |> rotate(rotate_amount) |> ZipperList.from_list()
 
     socket =
       socket
       |> assign(assigns)
-      |> assign(:relationships, relationships)
+      |> assign(:relationships, relationships_zipper)
 
     {:ok, socket}
   end
@@ -132,5 +148,10 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   @impl true
   def handle_event("navigate_right", _params, socket) do
     {:noreply, update(socket, :relationships, &ZipperList.right/1)}
+  end
+
+  defp rotate(list, n) when n >= 0 do
+    {left, right} = Enum.split(list, rem(n, length(list)))
+    right ++ left
   end
 end
