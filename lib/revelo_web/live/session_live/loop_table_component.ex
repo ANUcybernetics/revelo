@@ -36,75 +36,143 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     {:noreply, assign(socket, :selected_loop, nil)}
   end
 
+  def loop_card(assigns) do
+    ~H"""
+    <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
+    <% loop_index = Enum.find_index(@loops, &(&1.id == @selected_loop)) + 1 %>
+    <.card_header class="pb-2">
+      <.card_title class="flex">
+        <div class="w-6 shrink-0">{loop_index}.</div>
+        {matching_loop.title}
+      </.card_title>
+      <div class="mx-6 pt-2">
+        <.badge_reinforcing :if={matching_loop.type == "reinforcing"} />
+        <.badge_balancing :if={matching_loop.type == "balancing"} />
+      </div>
+    </.card_header>
+    <.card_content class="mx-6">
+      <div class="flex justify-between items-center space-x-4">
+        <.card_description>
+          <%= for _rel <- matching_loop.influence_relationships do %>
+            <div>{matching_loop.story}</div>
+          <% end %>
+        </.card_description>
+        <div :if={@show_diagram}>
+          <div class="flex -ml-8 gap-1">
+            <div class="text-sky-600 border-sky-600 border-2 border-r-0 rounded-l-lg w-8 my-10 relative">
+              <.icon
+                name="hero-arrow-long-right-solid"
+                class="h-8 w-8 absolute -top-[17px] -right-[6px]"
+              />
+            </div>
+            <div class="flex flex-col mb-2 grow">
+              <%= for {relationship, index} <- Enum.with_index(matching_loop.influence_relationships) do %>
+                <div>
+                  <.card class="w-full shadow-none relative">
+                    <.card_content class={
+                      Enum.join(
+                        [
+                          "flex justify-center items-center font-bold",
+                          if(relationship.src.is_key?, do: "pt-7 pb-5", else: "py-6")
+                        ],
+                        " "
+                      )
+                    }>
+                      <div class="absolute top-1 left-1">
+                        <.badge_key :if={relationship.src.is_key?} />
+                      </div>
+                      <span class="text-center">{relationship.src.name}</span>
+                    </.card_content>
+                  </.card>
+
+                  <%= if index < length(matching_loop.influence_relationships) - 1 do %>
+                    <div class="text-sky-600 w-full flex justify-center">
+                      <.icon name="hero-arrow-long-down-solid" class="h-8 w-8" />
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </.card_content>
+    """
+  end
+
+  def loop_wrapper(assigns) do
+    ~H"""
+    <%= if @facilitator? do %>
+      <aside class="fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-white">
+        {render_slot(@inner_block)}
+      </aside>
+    <% else %>
+      <.card class="w-[350px]">
+        <%= if @selected_loop do %>
+          <.loop_card selected_loop={@selected_loop} loops={@loops} show_diagram={true}></.loop_card>
+        <% else %>
+          {render_slot(@inner_block)}
+        <% end %>
+      </.card>
+    <% end %>
+    """
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
-    <aside class="fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-white">
-      <h3 class="text-2xl font-semibold leading-none tracking-tight flex p-6">
-        Loops ({@loop_count})
-      </h3>
+    <div>
+      <.loop_wrapper
+        facilitator?={@current_user.facilitator?}
+        selected_loop={@selected_loop}
+        loops={@loops}
+      >
+        <h3 class="text-2xl font-semibold leading-none tracking-tight flex p-6">
+          Loops ({@loop_count})
+        </h3>
 
-      <%= if @selected_loop do %>
-        <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
-        <% loop_index = Enum.find_index(@loops, &(&1.id == @selected_loop)) + 1 %>
-        <div class="absolute top-18 z-20 w-[350px] right-full mr-6">
-          <.card class="w-full">
-            <.card_header class="pb-2">
-              <.card_title class="flex">
-                <div class="w-6 shrink-0">{loop_index}.</div>
-                {matching_loop.title}
-              </.card_title>
-              <div class="mx-6 pt-2">
-                <.badge_reinforcing :if={matching_loop.type == "reinforcing"} />
-                <.badge_balancing :if={matching_loop.type == "balancing"} />
-              </div>
-            </.card_header>
-            <.card_content class="mx-6">
-              <div class="flex justify-between items-center space-x-4">
-                <.card_description>
-                  <%= for _rel <- matching_loop.influence_relationships do %>
-                    <div>{matching_loop.story}</div>
-                  <% end %>
-                </.card_description>
-              </div>
-            </.card_content>
-          </.card>
-        </div>
-      <% end %>
+        <%= if @selected_loop do %>
+          <div class="absolute top-18 z-20 w-[350px] right-full mr-6">
+            <.card class="w-full">
+              <.loop_card selected_loop={@selected_loop} loops={@loops} show_diagram={false} />
+            </.card>
+          </div>
+        <% end %>
 
-      <nav class="flex h-full flex-col">
-        <div class="flex-1 overflow-y-auto">
-          <%= for {loop, index} <- Enum.with_index(Ash.load!(@loops, influence_relationships: [:src])) do %>
-            <button
-              phx-click="select_loop"
-              phx-target={@myself}
-              phx-value-id={loop.id}
-              phx-click-away="unselect_loop"
-              class={
-                Enum.join(
-                  [
-                    "w-full px-6 py-4 text-left border-b hover:bg-gray-50 transition-colors",
-                    if(loop.id == @selected_loop, do: "bg-gray-100")
-                  ],
-                  " "
-                )
-              }
-            >
-              <div class="flex items-start">
-                <span class="w-6 shrink-0">{index + 1}.</span>
-                <span class="flex-1 mr-2">
-                  <%= for rel <- loop.influence_relationships do %>
-                    <div>{rel.src.name}</div>
-                  <% end %>
-                </span>
-                <.badge_reinforcing :if={loop.type == "reinforcing"} />
-                <.badge_balancing :if={loop.type == "balancing"} />
-              </div>
-            </button>
-          <% end %>
-        </div>
-      </nav>
-    </aside>
+        <nav class="flex h-full flex-col">
+          <div class="flex-1 overflow-y-auto">
+            <%= for {loop, index} <- Enum.with_index(Ash.load!(@loops, influence_relationships: [:src])) do %>
+              <button
+                phx-click="select_loop"
+                phx-target={@myself}
+                phx-value-id={loop.id}
+                phx-click-away="unselect_loop"
+                class={
+                  Enum.join(
+                    [
+                      "w-full px-6 py-4 text-left border-b hover:bg-gray-50 transition-colors",
+                      if(loop.id == @selected_loop, do: "bg-gray-100")
+                    ],
+                    " "
+                  )
+                }
+              >
+                <div class="flex items-start">
+                  <span class="w-6 shrink-0">{index + 1}.</span>
+                  <span class="flex-1 mr-2">
+                    <%= for rel <- loop.influence_relationships do %>
+                      <div>{rel.src.name}</div>
+                    <% end %>
+                  </span>
+                  <.badge_reinforcing :if={loop.type == "reinforcing"} />
+                  <.badge_balancing :if={loop.type == "balancing"} />
+                </div>
+              </button>
+            <% end %>
+          </div>
+        </nav>
+      </.loop_wrapper>
+    </div>
     """
   end
 end

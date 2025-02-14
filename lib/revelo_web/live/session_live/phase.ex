@@ -7,7 +7,10 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def render(assigns) do
     ~H"""
-    <div :if={@current_user.facilitator?} class="p-6 h-full flex flex-col h-svh overflow-y-auto">
+    <div
+      :if={@current_user.facilitator? and @live_action not in [:analyse]}
+      class="p-6 h-full flex flex-col h-svh overflow-y-auto"
+    >
       <div class="grid grid-cols-12 w-full grow gap-6">
         <.live_component
           :if={@live_action in [:prepare, :identify_discuss]}
@@ -29,16 +32,6 @@ defmodule ReveloWeb.SessionLive.Phase do
           live_action={@live_action}
           session={@session}
           title="Relationship Votes"
-        />
-
-        <.live_component
-          :if={@live_action == :analyse}
-          module={ReveloWeb.SessionLive.LoopTableComponent}
-          id="loop-table"
-          class="col-span-12"
-          current_user={@current_user}
-          live_action={@live_action}
-          session={@session}
         />
 
         <div
@@ -157,7 +150,10 @@ defmodule ReveloWeb.SessionLive.Phase do
       </.modal>
     </div>
 
-    <div :if={!@current_user.facilitator?} class="h-full flex flex-col items-center justify-center">
+    <div
+      :if={!@current_user.facilitator? and @live_action not in [:analyse]}
+      class="h-full flex flex-col items-center justify-center"
+    >
       <div
         :if={@live_action in [:identify_work, :identify_discuss]}
         class="flex flex-col items-center gap-4"
@@ -182,11 +178,22 @@ defmodule ReveloWeb.SessionLive.Phase do
         />
       </div>
       <div
-        :if={@live_action not in [:identify_work, :identify_discuss, :relate_work]}
+        :if={@live_action not in [:identify_work, :identify_discuss, :relate_work, :analyse]}
         class="flex flex-col items-center gap-4"
       >
         <.task_completed completed={elem(@participant_count, 1)} total={elem(@participant_count, 1)} />
       </div>
+    </div>
+
+    <div :if={@live_action in [:analyse]} class="h-full flex flex-col items-center justify-center">
+      <.live_component
+        module={ReveloWeb.SessionLive.LoopTableComponent}
+        id="loop-table"
+        class="col-span-12"
+        current_user={@current_user}
+        live_action={@live_action}
+        session={@session}
+      />
     </div>
     """
   end
