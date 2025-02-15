@@ -62,16 +62,19 @@ defmodule ReveloWeb.UIComponents do
         </.dropdown_menu>
 
         <%= if @session_id do %>
-          <.tooltip :for={page <- [:prepare, :identify, :relate, :analyse]}>
+          <.tooltip :for={
+            page <- [
+              :prepare,
+              :identify_work,
+              :identify_discuss,
+              :relate_work,
+              :relate_discuss,
+              :analyse
+            ]
+          }>
             <tooltip_trigger>
               <.link
-                href={
-                  if page in [:identify, :relate] do
-                    "/sessions/#{@session_id}/#{page}/work"
-                  else
-                    "/sessions/#{@session_id}/#{page}"
-                  end
-                }
+                href={"/sessions/#{@session_id}/#{String.replace(to_string(page), "_", "/")}"}
                 class={
                   Enum.join(
                     [
@@ -85,7 +88,10 @@ defmodule ReveloWeb.UIComponents do
                   )
                 }
               >
-                <.icon name={sidebar_icon(page)} class="h-4 w-4 transition-all group-hover:scale-110" />
+                <.icon
+                  name={sidebar_icon(String.to_atom(String.split("#{page}", "_") |> List.first()))}
+                  class="h-4 w-4 transition-all group-hover:scale-110"
+                />
                 <span class="sr-only">{page |> Atom.to_string() |> String.capitalize()}</span>
               </.link>
             </tooltip_trigger>
