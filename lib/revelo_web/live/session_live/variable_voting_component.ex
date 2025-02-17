@@ -62,7 +62,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
         <.scroll_area class="h-72">
           <%= if @completed? do %>
             <.card_content id={"summary-#{@id}"} class="p-0">
-              <%= for variable <- @variables do %>
+              <%= for variable <- Enum.sort_by(@variables, & &1.voted?, :desc) do %>
                 <%= if !variable.is_voi? do %>
                   <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
                     <span>{variable.name}</span>
