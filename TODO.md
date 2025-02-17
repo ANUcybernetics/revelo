@@ -70,3 +70,5 @@ mix ash.gen.resource \
 
 - We should change the style of the relationship votes table, as it's a bit
   confusing and large.
+
+- We sort the voted variables server side in the voting view when completed - might be better to do client side?
