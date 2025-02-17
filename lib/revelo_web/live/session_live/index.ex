@@ -23,9 +23,49 @@ defmodule ReveloWeb.SessionLive.Index do
           <ReveloWeb.CoreComponents.table
             id="Sessions"
             rows={@streams.sessions}
-            row_click={fn {_id, session} -> JS.navigate(~p"/sessions/#{session}/prepare") end}
+            row_click={
+              fn {_id, session} ->
+                phase = Revelo.SessionServer.get_phase(session.id)
+
+                case phase do
+                  :prepare -> JS.navigate(~p"/sessions/#{session}/prepare")
+                  :identify_work -> JS.navigate(~p"/sessions/#{session}/identify/work")
+                  :identify_discuss -> JS.navigate(~p"/sessions/#{session}/identify/discuss")
+                  :relate_work -> JS.navigate(~p"/sessions/#{session}/relate/work")
+                  :relate_discuss -> JS.navigate(~p"/sessions/#{session}/relate/discuss")
+                  :analyse -> JS.navigate(~p"/sessions/#{session}/analyse")
+                end
+              end
+            }
           >
             <:col :let={{_id, session}} label="Name">{session.name}</:col>
+
+            <:col :let={{_id, session}} label="Phase">
+              <% phase = Revelo.SessionServer.get_phase(session.id) %>
+              <div class="flex items-center gap-2">
+                <.icon
+                  name={
+                    case phase do
+                      :prepare -> "hero-adjustments-horizontal-mini"
+                      :identify_work -> "hero-queue-list-mini"
+                      :identify_discuss -> "hero-queue-list-mini"
+                      :relate_work -> "hero-arrows-right-left-mini"
+                      :relate_discuss -> "hero-arrows-right-left-mini"
+                      :analyse -> "hero-arrow-path-rounded-square-mini"
+                    end
+                  }
+                  class="h-4 w-4"
+                />
+                {case phase do
+                  :prepare -> "Prepare"
+                  :identify_work -> "Identify Work"
+                  :identify_discuss -> "Identify Discuss"
+                  :relate_work -> "Relate Work"
+                  :relate_discuss -> "Relate Discuss"
+                  :analyse -> "Analyse"
+                end}
+              </div>
+            </:col>
 
             <:action :let={{id, session}}>
               <.link
