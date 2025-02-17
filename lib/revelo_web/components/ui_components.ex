@@ -90,15 +90,37 @@ defmodule ReveloWeb.UIComponents do
                   )
                 }
               >
-                <.icon
-                  name={sidebar_icon(String.to_atom(String.split("#{page}", "_") |> List.first()))}
-                  class="h-4 w-4 transition-all group-hover:scale-110"
-                />
-                <span class="sr-only">{page |> Atom.to_string() |> String.capitalize()}</span>
+                <%= if String.split("#{page}", "_") |> Enum.at(1) == "work" do %>
+                  <div class="relative">
+                    <.icon
+                      name={
+                        sidebar_icon(String.to_atom(String.split("#{page}", "_") |> List.first()))
+                      }
+                      class="h-3 w-3 transition-all absolute top-[55%] -translate-y-1/2 left-1/2 -translate-x-1/2"
+                    />
+                    <.icon name="hero-clipboard" class="h-6 w-6 transition-all " />
+                  </div>
+                <% else %>
+                  <.icon
+                    name={sidebar_icon(String.to_atom(String.split("#{page}", "_") |> List.first()))}
+                    class="h-4 w-4 transition-all"
+                  />
+                <% end %>
+                <span class="sr-only">
+                  {page
+                  |> Atom.to_string()
+                  |> String.split("_")
+                  |> Enum.map(&String.capitalize/1)
+                  |> Enum.join(" ")}
+                </span>
               </.link>
             </tooltip_trigger>
             <.tooltip_content side="right">
-              {page |> Atom.to_string() |> String.capitalize()}
+              {page
+              |> Atom.to_string()
+              |> String.split("_")
+              |> Enum.map(&String.capitalize/1)
+              |> Enum.join(" ")}
             </.tooltip_content>
           </.tooltip>
         <% end %>
