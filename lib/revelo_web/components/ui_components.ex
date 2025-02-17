@@ -131,7 +131,7 @@ defmodule ReveloWeb.UIComponents do
   def badge_key(assigns) do
     ~H"""
     <.badge class="bg-sky-200 text-sky-950 hover:bg-sky-300 w-fit border-none shrink-0 h-fit">
-      <.icon name="hero-key-mini" class="h-4 w-4 mr-1" /> variable of interest
+      <.icon name="hero-key-mini" class="h-4 w-4 mr-1" /> Variable of Interest
     </.badge>
     """
   end
