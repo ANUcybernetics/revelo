@@ -115,7 +115,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         on_left_click="navigate_left"
         on_right_click="navigate_right"
         left_disabled={ZipperList.beginning?(@relationships)}
-        right_disabled={ZipperList.end?(@relationships)}
+        right_disabled={length(@relationships.right) == 0}
         target={@myself}
       />
     </div>
