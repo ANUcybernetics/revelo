@@ -127,20 +127,23 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 phx-value-type="direct"
                                 phx-target={@myself}
                                 class={[
-                                  "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
+                                  "flex h-9 w-9 items-center justify-center rounded-lg transition-colors ",
                                   cond do
                                     relationship.type_override == :direct ||
                                         (relationship.type_override == nil &&
                                            relationship.type == :direct) ->
-                                      "bg-orange-300"
+                                      "bg-orange-300 text-orange-900"
 
                                     true ->
-                                      "hover:bg-gray-200"
+                                      "text-muted-foreground hover:bg-gray-200 hover:text-foreground"
                                   end
                                 ]}
                               >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
-                                  <.icon name="hero-arrow-long-up" class="h-4 w-4 transition-all" />
+                                  <div
+                                    class="h-4 w-4 transition-all"
+                                    style="mask: url('/images/direct.svg') no-repeat; -webkit-mask: url('/images/direct.svg') no-repeat; background-color: currentColor;"
+                                  />
                                   <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-orange-200 text-orange-900 text-[0.6rem] flex items-center justify-center h-3 w-3">
                                     {relationship.direct_votes}
                                   </div>
@@ -163,15 +166,15 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 phx-value-type="no_relationship"
                                 phx-target={@myself}
                                 class={[
-                                  "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
+                                  "flex h-9 w-9 items-center justify-center rounded-lg transition-colors ",
                                   cond do
                                     relationship.type_override == :no_relationship ||
                                         (relationship.type_override == nil &&
                                            relationship.type == :no_relationship) ->
-                                      "bg-gray-300"
+                                      "bg-gray-300 text-gray-700"
 
                                     true ->
-                                      "hover:bg-gray-200"
+                                      "text-muted-foreground hover:bg-gray-200 hover:text-foreground"
                                   end
                                 ]}
                               >
@@ -199,15 +202,15 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 phx-value-type="inverse"
                                 phx-target={@myself}
                                 class={[
-                                  "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground",
+                                  "flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
                                   cond do
                                     relationship.type_override == :inverse ||
                                         (relationship.type_override == nil &&
                                            relationship.type == :inverse) ->
-                                      "bg-blue-300"
+                                      "bg-blue-300 text-blue-900"
 
                                     true ->
-                                      "hover:bg-gray-200"
+                                      "text-muted-foreground hover:bg-gray-200 hover:text-foreground"
                                   end
                                 ]}
                               >
