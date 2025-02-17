@@ -41,7 +41,11 @@ defmodule Revelo.Diagrams.Variable do
       end
 
       filter expr(session.id == ^arg(:session_id) and (^arg(:include_hidden) or hidden? == false))
-      prepare build(sort: [is_voi?: :desc, name: :asc], load: [:voted?, :vote_tally])
+
+      prepare build(
+                sort: [is_voi?: :desc, hidden?: :asc, name: :asc],
+                load: [:voted?, :vote_tally]
+              )
     end
 
     read :get_voi do
