@@ -70,7 +70,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 phx-value-type="inverse"
                 phx-target={@myself}
               />
-              <.label for="balancing">
+              <.label for="inverse">
                 As {@relationships.cursor.src.name} <b><em>increases</em></b>, {@relationships.cursor.dst.name} <b><em>decreases</em></b>.
               </.label>
             </div>
@@ -84,7 +84,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 phx-value-type="direct"
                 phx-target={@myself}
               />
-              <.label for="reinforcing">
+              <.label for="direct">
                 As {@relationships.cursor.src.name} <b><em>increases</em></b>, {@relationships.cursor.dst.name} <b><em>increases</em></b>.
               </.label>
             </div>
