@@ -32,7 +32,8 @@ defmodule ReveloWeb.Component.Button do
       class={
         classes([
           @variant_class,
-          @class
+          @class,
+          "disabled:text-gray-300"
         ])
       }
       {@rest}
