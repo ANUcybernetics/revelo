@@ -75,6 +75,8 @@ defmodule ReveloWeb.UIComponents do
             <tooltip_trigger>
               <.link
                 href={"/sessions/#{@session_id}/#{String.replace(to_string(page), "_", "/")}"}
+                phx-click="phase_transition"
+                phx-value-direction={Atom.to_string(page)}
                 class={
                   Enum.join(
                     [
