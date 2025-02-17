@@ -18,7 +18,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
   @impl true
   def update(assigns, socket) do
     variables =
-      Diagrams.list_variables!(assigns.session.id, true, actor: assigns.current_user)
+      Diagrams.list_variables!(assigns.session.id, false, actor: assigns.current_user)
 
     voi =
       case Diagrams.get_voi(assigns.session.id) do
