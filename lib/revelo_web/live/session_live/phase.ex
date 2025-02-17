@@ -106,12 +106,20 @@ defmodule ReveloWeb.SessionLive.Phase do
       </div>
 
       <div :if={@current_user.facilitator?} class="flex justify-between mt-4">
-        <.button phx-click="phase_transition" phx-value-direction="previous">
-          Previous Phase
-        </.button>
-        <.button phx-click="phase_transition" phx-value-direction="next">
-          Next Phase
-        </.button>
+        <div>
+          <.button
+            :if={@live_action not in [:prepare, :new_variable]}
+            phx-click="phase_transition"
+            phx-value-direction="previous"
+          >
+            Previous Phase
+          </.button>
+        </div>
+        <div>
+          <.button phx-click="phase_transition" phx-value-direction="next">
+            Next Phase
+          </.button>
+        </div>
       </div>
 
       <.modal
