@@ -162,10 +162,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       :if={!@current_user.facilitator? and @live_action not in [:analyse]}
       class="h-full flex flex-col items-center justify-center"
     >
-      <div
-        :if={@live_action in [:identify_work, :identify_discuss]}
-        class="flex flex-col items-center gap-4"
-      >
+      <div :if={@live_action in [:identify_work]} class="flex flex-col items-center gap-4">
         <.live_component
           module={ReveloWeb.SessionLive.VariableVotingComponent}
           id="variable-voting"
@@ -186,7 +183,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         />
       </div>
       <div
-        :if={@live_action not in [:identify_work, :identify_discuss, :relate_work, :analyse]}
+        :if={@live_action not in [:identify_work, :relate_work, :analyse]}
         class="flex flex-col items-center gap-4"
       >
         <.task_completed completed={elem(@participant_count, 1)} total={elem(@participant_count, 1)} />
