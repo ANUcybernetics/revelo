@@ -97,7 +97,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
           <% end %>
         </.scroll_area>
       </.card>
-      <div class="mt-4 flex justify-between">
+      <div class="mt-4 flex justify-center w-full">
         <%= if @completed? do %>
           <.button class="w-fit px-24" phx-click="back" phx-target={@myself}>
             Back
