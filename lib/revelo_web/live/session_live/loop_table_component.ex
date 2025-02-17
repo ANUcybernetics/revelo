@@ -27,8 +27,10 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   end
 
   @impl true
-  def handle_event("select_loop", %{"id" => id}, socket) do
-    {:noreply, assign(socket, :selected_loop, id)}
+  def handle_event("toggle_loop", %{"id" => id}, socket) do
+    selected_loop = if socket.assigns.selected_loop == id, do: nil, else: id
+    socket = assign(socket, :selected_loop, selected_loop)
+    {:noreply, socket}
   end
 
   @impl true
@@ -50,12 +52,12 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     ~H"""
     <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
     <% loop_index = Enum.find_index(@loops, &(&1.id == @selected_loop)) + 1 %>
-    <.card_header class="pb-2">
-      <.card_title class="flex">
+    <.card_header :if={@participant_view?} class="py-2">
+      <.card_title class="flex py-6">
         <div class="w-6 shrink-0">{loop_index}.</div>
         {matching_loop.title}
       </.card_title>
-      <div class="mx-6 pt-2">
+      <div class="mx-6">
         <.badge_reinforcing :if={Atom.to_string(matching_loop.type) == "reinforcing"} />
         <.badge_balancing :if={Atom.to_string(matching_loop.type) == "balancing"} />
       </div>
@@ -65,7 +67,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <.card_description>
           {matching_loop.story}
         </.card_description>
-        <div :if={@show_diagram}>
+        <div :if={@participant_view?}>
           <div class="flex -ml-8 gap-1">
             <div class={
             "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-blue-500 !border-blue-500", else: "text-orange-500 !border-orange-500"} border-2 border-r-0 rounded-l-lg w-8 my-10 relative"
@@ -115,13 +117,14 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   def loop_wrapper(assigns) do
     ~H"""
     <%= if @facilitator? do %>
-      <aside class="fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-white">
+      <aside class="flex fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-white h-full">
         {render_slot(@inner_block)}
       </aside>
     <% else %>
-      <.card class="w-[350px]">
+      <.card class="w-[350px] h-20 grow flex flex-col overflow-y-auto">
         <%= if @selected_loop do %>
-          <.loop_card selected_loop={@selected_loop} loops={@loops} show_diagram={true}></.loop_card>
+          <.loop_card selected_loop={@selected_loop} loops={@loops} participant_view?={true}>
+          </.loop_card>
         <% else %>
           {render_slot(@inner_block)}
         <% end %>
@@ -133,7 +136,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4 my-8 grow">
       <.loop_wrapper
         facilitator?={@current_user.facilitator?}
         selected_loop={@selected_loop}
@@ -155,41 +158,30 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
             <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" /> Generate
           </.button>
         </div>
-        <%= if @selected_loop do %>
-          <div class="absolute top-18 z-20 w-[350px] right-full mr-6">
-            <.card class="w-full">
-              <.loop_card selected_loop={@selected_loop} loops={@loops} show_diagram={false} />
-            </.card>
-          </div>
-        <% end %>
 
-        <nav class="flex h-full flex-col">
-          <div class="flex-1 overflow-y-auto">
+        <nav class="flex flex-col h-2 grow">
+          <div class="h-full overflow-y-auto">
             <%= for {loop, index} <- Enum.with_index(Ash.load!(@loops, influence_relationships: [:src])) do %>
               <button
-                phx-click="select_loop"
+                phx-click="toggle_loop"
                 phx-target={@myself}
                 phx-value-id={loop.id}
-                phx-click-away="unselect_loop"
-                class={
-                  Enum.join(
-                    [
-                      "w-full px-6 py-4 text-left border-b hover:bg-gray-50 transition-colors",
-                      if(loop.id == @selected_loop, do: "bg-gray-100")
-                    ],
-                    " "
-                  )
-                }
+                class="w-full px-6 py-4 text-left border-t hover:bg-gray-50 transition-colors"
               >
                 <div class="flex items-start">
                   <span class="w-6 shrink-0">{index + 1}.</span>
                   <span class="flex-1 mr-2">
                     {loop.title}
                   </span>
-                  <.badge_reinforcing :if={loop.type == "reinforcing"} />
-                  <.badge_balancing :if={loop.type == "balancing"} />
+                </div>
+                <div class="ml-6 mt-3">
+                  <.badge_reinforcing :if={Atom.to_string(loop.type) == "reinforcing"} />
+                  <.badge_balancing :if={Atom.to_string(loop.type) == "balancing"} />
                 </div>
               </button>
+              <%= if loop.id == @selected_loop do %>
+                <.loop_card selected_loop={@selected_loop} loops={@loops} participant_view?={false} />
+              <% end %>
             <% end %>
           </div>
         </nav>
