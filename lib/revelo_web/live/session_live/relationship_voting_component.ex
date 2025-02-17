@@ -60,7 +60,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             class="gap-0 mb-6"
             value={@relationships.cursor.type}
           >
-            <div class="p-6 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+            <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
               <.radio_group_item
                 builder={builder}
                 value="inverse"
