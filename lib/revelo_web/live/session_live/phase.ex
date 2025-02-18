@@ -111,6 +111,7 @@ defmodule ReveloWeb.SessionLive.Phase do
             :if={@live_action not in [:prepare, :new_variable]}
             phx-click="phase_transition"
             phx-value-direction="previous"
+            variant="outline"
           >
             Previous Phase
           </.button>
