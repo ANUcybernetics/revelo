@@ -22,6 +22,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     relationships =
       Diagrams.list_potential_relationships!(assigns.session.id, actor: assigns.current_user)
 
+    # TODO Breaks if no relationships
+
     rotate_amount =
       case participants do
         [] ->

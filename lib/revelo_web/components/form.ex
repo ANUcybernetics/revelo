@@ -62,6 +62,7 @@ defmodule ReveloWeb.Component.Form do
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
   slot :inner_block, required: true
+  attr :for, :string, default: ""
   attr :rest, :global
 
   def form_label(%{field: field} = assigns) do
@@ -80,6 +81,7 @@ defmodule ReveloWeb.Component.Form do
           @class
         ])
       }
+      for={@for}
       {@rest}
     >
       {render_slot(@inner_block)}

@@ -22,7 +22,9 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
         class="w-full space-y-6"
       >
         <.form_item>
-          <.form_label error={not Enum.empty?(f[:name].errors)}>Variable Name</.form_label>
+          <.form_label for="variable_name" error={not Enum.empty?(f[:name].errors)}>
+            Variable Name
+          </.form_label>
           <.input field={@form[:name]} type="text" phx-debounce="500" required />
           <%= if f.source.type == :create do %>
             <.input type="hidden" field={@form[:is_voi?]} value="false" />

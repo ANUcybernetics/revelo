@@ -109,7 +109,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
                     <.table_head>Actions</.table_head>
                   </.table_row>
                 </.table_header>
-                <.table_body phx-update="stream">
+                <.table_body phx-update="stream" id="variable_table">
                   <.table_row
                     :for={{id, variable} <- @streams.variables}
                     id={id}

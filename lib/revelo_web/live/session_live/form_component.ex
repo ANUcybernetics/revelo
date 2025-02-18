@@ -21,15 +21,19 @@ defmodule ReveloWeb.SessionLive.FormComponent do
       >
         <%= if @form.source.type == :create do %>
           <.form_item>
-            <.form_label error={not Enum.empty?(f[:name].errors)}>Name</.form_label>
+            <.form_label for="session_name" error={not Enum.empty?(f[:name].errors)}>
+              Name
+            </.form_label>
             <.input field={@form[:name]} type="text" phx-debounce="500" required />
             <.form_message field={f[:name]} />
           </.form_item>
 
           <.form_item>
-            <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
+            <.form_label for="session_description" error={not Enum.empty?(f[:description].errors)}>
+              Description
+            </.form_label>
             <.textarea
-              id="session-description"
+              id="session_description"
               name={f[:description].name}
               value={f[:description].value}
               placeholder="Session description"
@@ -42,15 +46,19 @@ defmodule ReveloWeb.SessionLive.FormComponent do
 
         <%= if @form.source.type == :update do %>
           <.form_item>
-            <.form_label error={not Enum.empty?(f[:name].errors)}>Name</.form_label>
+            <.form_label for="session_name" error={not Enum.empty?(f[:name].errors)}>
+              Name
+            </.form_label>
             <.input field={@form[:name]} type="text" phx-debounce="500" required />
             <.form_message field={f[:name]} />
           </.form_item>
 
           <.form_item>
-            <.form_label error={not Enum.empty?(f[:description].errors)}>Description</.form_label>
+            <.form_label for="session_description" error={not Enum.empty?(f[:description].errors)}>
+              Description
+            </.form_label>
             <.textarea
-              id="session-description"
+              id="session_description"
               name={f[:description].name}
               value={f[:description].value}
               placeholder="Session description"
