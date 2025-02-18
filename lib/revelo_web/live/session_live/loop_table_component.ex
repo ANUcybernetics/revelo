@@ -35,30 +35,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     {:noreply, socket}
   end
 
-  def sort_relationships(relationships) do
-    case relationships do
-      [] ->
-        []
-
-      [first | _] ->
-        first_dst_id = first.dst_id
-        sorted = [first]
-
-        relationships
-        |> Enum.reduce_while({sorted, first_dst_id}, fn
-          rel, {sorted, dst_id} ->
-            case Enum.find(relationships, fn r -> r.src_id == dst_id end) do
-              nil -> {:halt, {sorted, dst_id}}
-              next_rel -> {:cont, {[next_rel | sorted], next_rel.dst_id}}
-            end
-        end)
-        |> case do
-          {sorted, _} -> sorted |> Enum.reverse() |> Enum.drop(1)
-          _ -> []
-        end
-    end
-  end
-
   @impl true
   def handle_event("unselect_loop", _params, socket) do
     {:noreply, assign(socket, :selected_loop, nil)}
@@ -72,6 +48,30 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       end)
 
     {:noreply, assign(socket, :loops, loops)}
+  end
+
+  def sort_relationships(relationships) do
+    case relationships do
+      [] ->
+        []
+
+      [first | _] ->
+        first_dst_id = first.dst_id
+        sorted = [first]
+
+        relationships
+        |> Enum.reduce_while({sorted, first_dst_id}, fn
+          _rel, {sorted, dst_id} ->
+            case Enum.find(relationships, fn r -> r.src_id == dst_id end) do
+              nil -> {:halt, {sorted, dst_id}}
+              next_rel -> {:cont, {[next_rel | sorted], next_rel.dst_id}}
+            end
+        end)
+        |> case do
+          {sorted, _} -> sorted |> Enum.reverse() |> Enum.drop(1)
+          _ -> []
+        end
+    end
   end
 
   def loop_card(assigns) do
