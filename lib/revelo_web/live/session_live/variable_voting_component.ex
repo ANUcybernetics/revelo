@@ -38,7 +38,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="w-[350px]">
+    <div class="max-w-5xl min-w-xs w-[80svw]">
       <.card class="overflow-hidden">
         <.card_header>
           <.card_title>

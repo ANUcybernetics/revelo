@@ -68,13 +68,13 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
           {matching_loop.story}
         </.card_description>
         <div :if={@participant_view?}>
-          <div class="flex -ml-8 gap-1">
+          <div class="flex -ml-8 gap-1 mt-4">
             <div class={
-            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-blue-500 !border-blue-500", else: "text-orange-500 !border-orange-500"} border-2 border-r-0 rounded-l-lg w-8 my-10 relative"
+            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-blue-500 !border-blue-500", else: "text-orange-500 !border-orange-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
           }>
               <.icon
                 name="hero-arrow-long-right-solid"
-                class="h-8 w-8 absolute -top-[15px] -right-[6px]"
+                class="h-8 w-8 absolute -top-[1.07rem] -right-[0.4rem]"
               />
             </div>
             <div class="flex flex-col mb-2 grow">
@@ -121,7 +121,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         {render_slot(@inner_block)}
       </aside>
     <% else %>
-      <.card class="w-[350px] h-20 grow flex flex-col overflow-y-auto">
+      <.card class="max-w-5xl min-w-xs w-[80svw] h-20 grow flex flex-col overflow-y-auto">
         <%= if @selected_loop do %>
           <.loop_card selected_loop={@selected_loop} loops={@loops} participant_view?={true}>
           </.loop_card>

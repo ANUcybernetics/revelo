@@ -216,7 +216,7 @@ defmodule ReveloWeb.UIComponents do
 
   def task_completed(assigns) do
     ~H"""
-    <.card class="w-[350px]">
+    <.card class="max-w-5xl min-w-xs w-[80svw]">
       <.card_header>
         <.card_title>Task Completed!</.card_title>
         <.card_description>Look at the main screen for next steps</.card_description>
@@ -243,7 +243,7 @@ defmodule ReveloWeb.UIComponents do
 
   def variable_voting(assigns) do
     ~H"""
-    <.card class="w-[350px] overflow-hidden">
+    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
       <.card_header>
         <.card_title>Which of these are important parts of your system?</.card_title>
       </.card_header>
@@ -285,7 +285,7 @@ defmodule ReveloWeb.UIComponents do
 
   def variable_confirmation(assigns) do
     ~H"""
-    <.card class="w-[350px] overflow-hidden">
+    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
       <.card_header>
         <.card_title>Your Variable Votes</.card_title>
       </.card_header>
@@ -331,7 +331,7 @@ defmodule ReveloWeb.UIComponents do
 
   def relationship_voting(assigns) do
     ~H"""
-    <.card class="w-[350px] overflow-hidden">
+    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
       <.card_header>
         <.card_title>Pick the most accurate relation</.card_title>
       </.card_header>
@@ -384,7 +384,7 @@ defmodule ReveloWeb.UIComponents do
     ~H"""
     <.card class={
       [
-        "w-[350px] overflow-hidden",
+        "max-w-5xl min-w-xs w-[80svw] overflow-hidden",
         if(@time_left == 0, do: "bg-red-600 border-red-200 text-red-200")
       ]
       |> Enum.join(" ")
@@ -436,7 +436,7 @@ defmodule ReveloWeb.UIComponents do
 
   def discussion(assigns) do
     ~H"""
-    <.card class="w-[350px]">
+    <.card class="max-w-5xl min-w-xs w-[80svw]">
       <.card_header class="pb-2">
         <.card_title class="flex">
           <div class="w-6 shrink-0">{@loop_id}.</div>
@@ -498,11 +498,11 @@ defmodule ReveloWeb.UIComponents do
   """
   def loop_nav(assigns) do
     ~H"""
-    <aside class="fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-white">
+    <aside class="fixed inset-y-0 right-0 z-10 max-w-5xl min-w-xs w-[80svw] flex-col border-l bg-white">
       <h3 class="text-2xl font-semibold leading-none tracking-tight flex p-6">Loops</h3>
       <%= if @selected_loop do %>
         <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
-        <div class="absolute top-18 z-20 w-[350px] right-full mr-6">
+        <div class="absolute top-18 z-20 max-w-5xl min-w-xs w-[80svw] right-full mr-6">
           <.card class="w-full">
             <.card_header class="pb-2">
               <.card_title class="flex">

@@ -56,7 +56,7 @@ defmodule Storybook.Examples.Discussion do
         title={@title}
         description={@description}
       />
-      <.card class="w-[350px] h-fit">
+      <.card class="max-w-5xl min-w-xs w-[80svw] h-fit">
         <.card_header>
           <.card_title>Discussion Questions</.card_title>
         </.card_header>

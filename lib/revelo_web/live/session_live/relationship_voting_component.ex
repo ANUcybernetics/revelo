@@ -48,8 +48,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="w-[350px] flex flex-col items-center gap-4">
-      <.card class="overflow-hidden">
+    <div class="max-w-5xl min-w-xs w-[80svw] flex flex-col items-center gap-4">
+      <.card class="overflow-hidden w-full">
         <.card_header>
           <.card_title>Pick the most accurate relation</.card_title>
         </.card_header>
