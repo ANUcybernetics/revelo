@@ -186,26 +186,29 @@ defmodule ReveloWeb.UserFlowTest do
         |> assert_has("h3", text: "Variable Votes")
         |> assert_has("div.bg-blue-400", text: "1")
 
-      _anon_session =
+      anon_session =
         anon_session.conn
         |> visit("/sessions/#{session.id}/identify/discuss")
         |> assert_has("h3", text: "Task Completed!")
 
+      facilitator_session =
+        facilitator_session.conn
+        |> visit("/sessions/#{session.id}/identify/discuss")
+        |> click_button("Next Phase")
+        |> assert_has("h3", text: "Identify relationships")
+
+      _anon_session =
+        anon_session.conn
+        |> visit("/sessions/#{session.id}/relate/work")
+        |> assert_has("h3", text: "Pick the most accurate relation")
+        |> choose("direct", exact: false)
+
+      # TODO This fails sometimes with a disconnect error?
       _facilitator_session =
         facilitator_session.conn
         |> visit("/sessions/#{session.id}/relate/work")
-        |> assert_has("h3", text: "Identify relationships")
-
-      _variables = Revelo.Diagrams.list_variables!(session.id)
-      _relationships = Revelo.Diagrams.list_potential_relationships!(session.id)
-
-      # TODO: relationships is empty at this point for some reason?
-
-      # anon_session =
-      #   anon_session.conn
-      #   |> visit("/sessions/#{session.id}/relate/work")
-      #   |> assert_has("h3", text: "Pick the most accurate relation")
-      #   |> check("As Test Variable 1 increases, Test Variable 2 decreases.")
+        |> click_button("Next Phase")
+        |> assert_has("h3", text: "Relationship Votes")
     end
   end
 end

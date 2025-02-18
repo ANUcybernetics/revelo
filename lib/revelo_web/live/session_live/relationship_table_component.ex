@@ -111,7 +111,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                     <.table_head>Relation</.table_head>
                   </.table_row>
                 </.table_header>
-                <.table_body phx-update="stream">
+                <.table_body phx-update="stream" id="relationship_table">
                   <.table_row :for={{id, relationship} <- @streams.relationships} id={id}>
                     <.table_cell>
                       <div class="flex items-center gap-2 items-start">
