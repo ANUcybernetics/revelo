@@ -80,7 +80,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     <% loop_index = Enum.find_index(@loops, &(&1.id == @selected_loop)) + 1 %>
     <.card_header :if={@participant_view?} class="py-2">
       <.card_title class="flex py-6">
-        <div class="w-6 shrink-0">{loop_index}.</div>
+        <div class="shrink-0 flex justify-end w-6 mr-1">{loop_index}.</div>
         {matching_loop.title}
       </.card_title>
       <%!-- <div class="mx-6">
