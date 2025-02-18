@@ -13,6 +13,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   import ReveloWeb.CoreComponents, except: [table: 1, button: 1, input: 1]
 
   alias Revelo.Diagrams
+  alias Revelo.LLM.VariableList
 
   @impl true
   def mount(socket) do
@@ -316,11 +317,11 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
 
     case Revelo.LLM.generate_variables(
            session.description,
-           voi.name,
+           if(voi, do: voi.name, else: "None"),
            count,
            variable_names
          ) do
-      {:ok, %Revelo.LLM.VariableList{variables: var_list}} ->
+      {:ok, %VariableList{variables: var_list}} ->
         new_variables =
           Enum.map(var_list, fn name ->
             Diagrams.create_variable!(name, session, actor: actor)
