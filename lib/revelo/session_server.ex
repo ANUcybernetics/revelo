@@ -132,8 +132,10 @@ defmodule Revelo.SessionServer do
           %{state | phase: new_phase, timer: 60}
 
         :analyse ->
+          schedule_tick()
+
           Revelo.Diagrams.rescan_loops!(state.session_id)
-          %{state | phase: new_phase, timer: 0}
+          %{state | phase: new_phase, timer: 60}
 
         _ ->
           %{state | phase: new_phase, timer: 0}
@@ -158,7 +160,7 @@ defmodule Revelo.SessionServer do
       {phase, 0} when phase in [:identify_work, :relate_work] ->
         {:noreply, %{state | phase: :analyse}}
 
-      {phase, timer} when phase in [:identify_work, :relate_work] ->
+      {phase, timer} when phase in [:identify_work, :relate_work, :analyse] ->
         broadcast_tick(state.session_id, timer)
         schedule_tick()
         {:noreply, %{state | timer: timer - @timer_interval_sec}}

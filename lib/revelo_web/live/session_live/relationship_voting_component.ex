@@ -112,7 +112,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
       </.card>
       <.countdown
         type="both_buttons"
-        time_left={40}
+        time_left={@time_left}
         initial_time={60}
         on_left_click="navigate_left"
         on_right_click="navigate_right"

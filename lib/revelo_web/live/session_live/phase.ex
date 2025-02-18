@@ -180,7 +180,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           session={@session}
           start_index={0}
-          time_left={40}
+          time_left={@timer}
         />
       </div>
       <div
@@ -199,6 +199,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         current_user={@current_user}
         live_action={@live_action}
         session={@session}
+        time_left={@timer}
       />
     </div>
     """
@@ -247,6 +248,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:participant_count, {0, 1})
       |> assign(:variable_count, 0)
       |> assign(:page_title, page_title(socket.assigns.live_action))
+      |> assign(:timer, 60)
 
     # Redirect non-facilitator to the current phase
     if current_user.facilitator? do
@@ -283,7 +285,7 @@ defmodule ReveloWeb.SessionLive.Phase do
 
   @impl true
   def handle_info({:tick, timer}, socket) do
-    {:noreply, assign(socket, :timer, timer)}
+    {:noreply, assign(socket, :timer, timer - 1)}
   end
 
   @impl true
