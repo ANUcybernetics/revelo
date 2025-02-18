@@ -72,3 +72,5 @@ mix ash.gen.resource \
   confusing and large.
 
 - We sort the voted variables server side in the voting view when completed - might be better to do client side?
+
+- I've added a very gross sort_relationships() to the mobile loop view. The loops weren't displaying properly, as influence_relationships order doesn't match src->dst. Might be best to sort the influence relationships in each loop?

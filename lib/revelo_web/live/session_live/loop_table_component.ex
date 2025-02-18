@@ -35,6 +35,30 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     {:noreply, socket}
   end
 
+  def sort_relationships(relationships) do
+    case relationships do
+      [] ->
+        []
+
+      [first | _] ->
+        first_dst_id = first.dst_id
+        sorted = [first]
+
+        relationships
+        |> Enum.reduce_while({sorted, first_dst_id}, fn
+          rel, {sorted, dst_id} ->
+            case Enum.find(relationships, fn r -> r.src_id == dst_id end) do
+              nil -> {:halt, {sorted, dst_id}}
+              next_rel -> {:cont, {[next_rel | sorted], next_rel.dst_id}}
+            end
+        end)
+        |> case do
+          {sorted, _} -> sorted |> Enum.reverse() |> Enum.drop(1)
+          _ -> []
+        end
+    end
+  end
+
   @impl true
   def handle_event("unselect_loop", _params, socket) do
     {:noreply, assign(socket, :selected_loop, nil)}
@@ -72,7 +96,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <div :if={@participant_view?}>
           <div class="flex -ml-8 gap-1 mt-4">
             <div class={
-            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-orange-500 !border-orange-500", else: "text-blue-500 !border-blue-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
+            "#{if sort_relationships(matching_loop.influence_relationships) |> List.last() |> Map.get(:type) == :direct, do: "text-orange-500 !border-orange-500", else: "text-blue-500 !border-blue-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
           }>
               <.icon
                 name="hero-arrow-long-right-solid"
@@ -80,7 +104,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
               />
             </div>
             <div class="flex flex-col mb-2 grow">
-              <%= for {relationship, index} <- Enum.with_index(matching_loop.influence_relationships) do %>
+              <%= for {relationship, index} <- Enum.with_index(sort_relationships(matching_loop.influence_relationships)) do %>
                 <div>
                   <.card class="w-full shadow-none relative">
                     <.card_content class={
