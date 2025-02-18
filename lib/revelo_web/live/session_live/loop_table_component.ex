@@ -29,6 +29,8 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def handle_event("toggle_loop", %{"id" => id}, socket) do
     selected_loop = if socket.assigns.selected_loop == id, do: nil, else: id
+    selected_loop_data = Enum.find(socket.assigns.loops, fn loop -> loop.id == id end)
+    IO.inspect(selected_loop_data.influence_relationships, label: "Influence Relationships")
     socket = assign(socket, :selected_loop, selected_loop)
     {:noreply, socket}
   end
@@ -70,7 +72,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <div :if={@participant_view?}>
           <div class="flex -ml-8 gap-1 mt-4">
             <div class={
-            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-blue-500 !border-blue-500", else: "text-orange-500 !border-orange-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
+            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-orange-500 !border-orange-500", else: "text-blue-500 !border-blue-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
           }>
               <.icon
                 name="hero-arrow-long-right-solid"
@@ -99,7 +101,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
 
                   <%= if index < length(matching_loop.influence_relationships) - 1 do %>
                     <div class={
-                      "#{if relationship.type == :direct, do: "text-blue-500", else: "text-orange-500"} w-full flex justify-center"
+                      "#{if relationship.type == :direct, do: "text-orange-500", else: "text-blue-500"} w-full flex justify-center"
                     }>
                       <.icon name="hero-arrow-long-down-solid" class="h-8 w-8" />
                     </div>
