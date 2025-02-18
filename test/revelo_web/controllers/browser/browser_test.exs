@@ -1,5 +1,5 @@
 defmodule ReveloWeb.BrowserTest do
-  use PhoenixTest.Case, async: true
+  use PhoenixTest.Playwright.Case, async: true
 
   @moduletag :playwright
   @moduletag skip: "playwright tests"
