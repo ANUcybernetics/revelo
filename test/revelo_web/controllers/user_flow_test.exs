@@ -45,6 +45,8 @@ defmodule ReveloWeb.UserFlowTest do
       user = user()
       session = session(user)
 
+      Revelo.SessionServer.transition_to(session.id, :identify_work)
+
       conn
       |> visit("/qr/sessions/#{session.id}/identify/work")
       |> assert_path("/sessions/#{session.id}/identify/work")
@@ -56,6 +58,8 @@ defmodule ReveloWeb.UserFlowTest do
       session = session(user)
       var1 = variable(user: user, session: session, name: "Test Variable 1")
       var2 = variable(user: user, session: session, name: "Test Variable 2")
+
+      Revelo.SessionServer.transition_to(session.id, :identify_work)
 
       conn
       |> visit("/qr/sessions/#{session.id}/identify/work")

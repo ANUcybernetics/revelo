@@ -72,6 +72,8 @@ defmodule ReveloWeb.PresenceTest do
       user = user()
       session = session(user)
 
+      Revelo.SessionServer.transition_to(session.id, :identify_work)
+
       %{conn: conn} =
         conn
         |> visit("/qr/sessions/#{session.id}/identify/work")
@@ -89,6 +91,8 @@ defmodule ReveloWeb.PresenceTest do
     test "tracker reflects completion status for individual participants", %{conn: conn} do
       user = user()
       session = session(user)
+
+      Revelo.SessionServer.transition_to(session.id, :identify_work)
 
       # First anon user joins
       %{conn: %{assigns: %{current_user: _first_user}}} =
@@ -144,6 +148,7 @@ defmodule ReveloWeb.PresenceTest do
       user = user()
       session = session(user)
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
+      Revelo.SessionServer.transition_to(session.id, :identify_work)
 
       # First user joins
       conn
