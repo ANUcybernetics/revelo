@@ -57,10 +57,10 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <div class="w-6 shrink-0">{loop_index}.</div>
         {matching_loop.title}
       </.card_title>
-      <div class="mx-6">
+      <%!-- <div class="mx-6">
         <.badge_reinforcing :if={Atom.to_string(matching_loop.type) == "reinforcing"} />
         <.badge_balancing :if={Atom.to_string(matching_loop.type) == "balancing"} />
-      </div>
+      </div> --%>
     </.card_header>
     <.card_content class="mx-6">
       <div class="flex justify-between flex-col gap-2">
@@ -174,10 +174,10 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                     {loop.title}
                   </span>
                 </div>
-                <div class="ml-6 mt-3">
+                <%!-- <div class="ml-6 mt-3">
                   <.badge_reinforcing :if={Atom.to_string(loop.type) == "reinforcing"} />
                   <.badge_balancing :if={Atom.to_string(loop.type) == "balancing"} />
-                </div>
+                </div> --%>
               </button>
               <%= if loop.id == @selected_loop do %>
                 <.loop_card selected_loop={@selected_loop} loops={@loops} participant_view?={false} />
