@@ -246,7 +246,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:modal, modal)
       # :participant_count is a {completed, total} tuple
       |> assign(:participant_count, {0, 1})
-      |> assign(:variable_count, 0)
+      |> assign_new(:variable_count, fn -> 0 end)
       |> assign(:page_title, page_title(socket.assigns.live_action))
       |> assign(:timer, 60)
 
@@ -270,7 +270,10 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
+  def handle_info(
+        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}},
+        socket
+      ) do
     if socket.assigns.variable_count == 0 and not variable.is_voi? do
       Revelo.Diagrams.toggle_voi!(variable)
     end
