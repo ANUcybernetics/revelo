@@ -151,9 +151,15 @@ defmodule Revelo.Diagrams.Loop do
       # this is necessary as an :after_action because in the loop's create action there's no loop ID yet,
       # so it can't be set in the join table
       change after_action(fn changeset, record, _context ->
-               Enum.each(changeset.arguments.relationships, fn relationship ->
+               changeset.arguments.relationships
+               |> Enum.with_index()
+               |> Enum.each(fn {relationship, index} ->
                  LoopRelationships
-                 |> Ash.Changeset.for_create(:create, %{loop: record, relationship: relationship})
+                 |> Ash.Changeset.for_create(:create, %{
+                   loop: record,
+                   relationship: relationship,
+                   loop_index: index
+                 })
                  |> Ash.create!()
                end)
 

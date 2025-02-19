@@ -13,6 +13,10 @@ defmodule Revelo.Diagrams.LoopRelationships do
     repo Revelo.Repo
   end
 
+  attributes do
+    attribute :loop_index, :integer, allow_nil?: false
+  end
+
   actions do
     defaults [:read, :destroy, update: :*]
 
@@ -27,8 +31,13 @@ defmodule Revelo.Diagrams.LoopRelationships do
         allow_nil? false
       end
 
+      argument :loop_index, :integer do
+        allow_nil? false
+      end
+
       change manage_relationship(:loop, type: :append)
       change manage_relationship(:relationship, type: :append)
+      change set_attribute(:loop_index, arg(:loop_index))
     end
   end
 

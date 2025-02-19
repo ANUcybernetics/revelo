@@ -3,6 +3,16 @@
     {
       "default": "nil",
       "size": null,
+      "type": "bigint",
+      "source": "loop_index",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
       "type": "uuid",
       "source": "loop_id",
       "references": {
@@ -52,7 +62,7 @@
     }
   ],
   "table": "loop_relationships",
-  "hash": "0C4382EF97DBE8FC2E575D51771878DBACC8B28279E1A29A37CE1C5E3DC096A1",
+  "hash": "73C993DC670F619C8F01A5B363381DE1D226B62DFE20D7C837860B0560AF74BB",
   "multitenancy": {
     "global": null,
     "strategy": null,
