@@ -13,7 +13,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def update(assigns, socket) do
     loops = Diagrams.list_loops!(assigns.session.id)
-
     loop_count = Enum.count(loops)
 
     socket =
@@ -21,7 +20,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       |> assign(assigns)
       |> assign(:loops, loops)
       |> assign(:loop_count, loop_count)
-      |> assign(:selected_loop, nil)
+      |> assign_new(:selected_loop, fn -> nil end)
 
     {:ok, socket}
   end
@@ -29,8 +28,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def handle_event("toggle_loop", %{"id" => id}, socket) do
     selected_loop = if socket.assigns.selected_loop == id, do: nil, else: id
-    selected_loop_data = Enum.find(socket.assigns.loops, fn loop -> loop.id == id end)
-    IO.inspect(selected_loop_data.influence_relationships, label: "Influence Relationships")
     socket = assign(socket, :selected_loop, selected_loop)
     {:noreply, socket}
   end

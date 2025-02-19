@@ -83,7 +83,8 @@ defmodule Revelo.SessionServer do
   end
 
   @impl true
-  def handle_call({:transition_to, direction}, from, state) when direction in [:next, :previous] do
+  def handle_call({:transition_to, direction}, from, state)
+      when direction in [:next, :previous] do
     current_phase = state.phase
 
     new_phase =
@@ -135,6 +136,7 @@ defmodule Revelo.SessionServer do
           schedule_tick()
 
           Revelo.Diagrams.rescan_loops!(state.session_id)
+
           %{state | phase: new_phase, timer: 60}
 
         _ ->
@@ -157,7 +159,7 @@ defmodule Revelo.SessionServer do
   @impl true
   def handle_info(:tick, state) do
     case {state.phase, state.timer} do
-      {phase, 0} when phase in [:identify_work, :relate_work] ->
+      {phase, 0} when phase in [:identify_work, :relate_work, :analyse] ->
         {:noreply, %{state | phase: :analyse}}
 
       {phase, timer} when phase in [:identify_work, :relate_work, :analyse] ->
