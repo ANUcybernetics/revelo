@@ -47,30 +47,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     {:noreply, assign(socket, :loops, loops)}
   end
 
-  def sort_relationships(relationships) do
-    case relationships do
-      [] ->
-        []
-
-      [first | _] ->
-        first_dst_id = first.dst_id
-        sorted = [first]
-
-        relationships
-        |> Enum.reduce_while({sorted, first_dst_id}, fn
-          _rel, {sorted, dst_id} ->
-            case Enum.find(relationships, fn r -> r.src_id == dst_id end) do
-              nil -> {:halt, {sorted, dst_id}}
-              next_rel -> {:cont, {[next_rel | sorted], next_rel.dst_id}}
-            end
-        end)
-        |> case do
-          {sorted, _} -> sorted |> Enum.reverse() |> Enum.drop(1)
-          _ -> []
-        end
-    end
-  end
-
   def loop_card(assigns) do
     ~H"""
     <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
@@ -93,7 +69,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <div :if={@participant_view?}>
           <div class="flex -ml-8 gap-1 mt-4">
             <div class={
-            "#{if sort_relationships(matching_loop.influence_relationships) |> List.last() |> Map.get(:type) == :direct, do: "text-orange-500 !border-orange-500", else: "text-blue-500 !border-blue-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
+            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-orange-500 !border-orange-500", else: "text-blue-500 !border-blue-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
           }>
               <.icon
                 name="hero-arrow-long-right-solid"
@@ -101,7 +77,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
               />
             </div>
             <div class="flex flex-col mb-2 grow">
-              <%= for {relationship, index} <- Enum.with_index(sort_relationships(matching_loop.influence_relationships)) do %>
+              <%= for {relationship, index} <- Enum.with_index(matching_loop.influence_relationships) do %>
                 <div>
                   <.card class="w-full shadow-none relative">
                     <.card_content class={
@@ -184,7 +160,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
 
         <nav class="flex flex-col h-2 grow">
           <div class="h-full overflow-y-auto">
-            <%= for {loop, index} <- Enum.with_index(Ash.load!(@loops, influence_relationships: [:src])) do %>
+            <%= for {loop, index} <- Enum.with_index(@loops) do %>
               <button
                 phx-click="toggle_loop"
                 phx-target={@myself}
