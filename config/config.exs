@@ -46,7 +46,7 @@ config :revelo, Revelo.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configures the endpoint
 config :revelo, ReveloWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: System.get_env("SYSTEM_IP") || "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: ReveloWeb.ErrorHTML, json: ReveloWeb.ErrorJSON],

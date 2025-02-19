@@ -44,7 +44,7 @@ config :revelo, ReveloWeb.Endpoint,
   # Run `mix help phx.gen.cert` for more information.
   #
   # The `http:` config above can be replaced with:
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
