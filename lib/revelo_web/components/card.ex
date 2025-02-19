@@ -65,7 +65,7 @@ defmodule ReveloWeb.Component.Card do
 
   def card_description(assigns) do
     ~H"""
-    <p class={classes(["text-sm text-muted-foreground", @class])} {@rest}>
+    <p class={classes(["text-base md:text-xs text-muted-foreground", @class])} {@rest}>
       {render_slot(@inner_block)}
     </p>
     """
