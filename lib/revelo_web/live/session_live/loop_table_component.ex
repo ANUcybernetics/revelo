@@ -116,7 +116,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   def loop_wrapper(assigns) do
     ~H"""
     <%= if @facilitator? do %>
-      <aside class="flex fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-white h-full">
+      <aside class="flex fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-background h-full">
         {render_slot(@inner_block)}
       </aside>
     <% else %>
@@ -165,7 +165,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                 phx-click="toggle_loop"
                 phx-target={@myself}
                 phx-value-id={loop.id}
-                class="w-full px-6 py-4 text-left border-t hover:bg-gray-50 transition-colors"
+                class="w-full px-6 py-4 text-left border-t hover:bg-muted transition-colors"
               >
                 <div class="flex items-start">
                   <span class="w-6 shrink-0">{index + 1}.</span>

@@ -80,7 +80,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
               <%= for variable <- @variables do %>
                 <%= if !variable.is_voi? do %>
                   <.label id={variable.id} for={"#{variable.id}-checkbox"}>
-                    <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
+                    <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-muted">
                       <.checkbox
                         id={"#{variable.id}-checkbox"}
                         value={variable.voted?}

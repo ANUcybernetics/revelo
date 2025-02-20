@@ -26,14 +26,14 @@ defmodule ReveloWeb.UIComponents do
 
   def sidebar(assigns) do
     ~H"""
-    <aside class="fixed inset-y-0 left-0 z-10 w-14 flex-col border-r bg-white flex">
+    <aside class="fixed inset-y-0 left-0 z-10 w-14 flex-col border-r bg-background flex">
       <nav class="flex flex-col items-center gap-4 px-2 py-5">
         <.dropdown_menu>
           <.dropdown_menu_trigger class={
             Enum.join(
               [
                 "cursor-pointer group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground ",
-                (@current_page == :index && "outline outline-white -outline-offset-4") || ""
+                (@current_page == :index && "outline outline-background -outline-offset-4") || ""
               ],
               " "
             )
@@ -125,9 +125,26 @@ defmodule ReveloWeb.UIComponents do
           </.tooltip>
         <% end %>
       </nav>
-      <nav class="mt-auto flex flex-col items-center gap-4 px-2 cursor-pointer">
+      <nav class="mt-auto flex flex-col items-center gap-4 px-2 cursor-pointer mb-4">
+      <.tooltip>
+        <.tooltip_trigger>
+        <button
+          phx-click={JS.dispatch("toggle-darkmode")}
+          class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <div id="theme-icon-container">
+            <.icon name="hero-moon" class="h-4 w-4 transition-all" />
+            <.icon name="hero-sun" class="h-4 w-4 transition-all" />
+          </div>
+          <span class="sr-only">Toggle Theme</span>
+        </button>
+        </.tooltip_trigger>
+        <.tooltip_content side="right">
+          Toggle Theme
+        </.tooltip_content>
+      </.tooltip>
         <.dropdown_menu>
-          <.dropdown_menu_trigger class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground py-8">
+          <.dropdown_menu_trigger class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
             <.icon name="hero-user-circle-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
             <span class="sr-only">User</span>
           </.dropdown_menu_trigger>
@@ -262,7 +279,7 @@ defmodule ReveloWeb.UIComponents do
           <form phx-submit="vote" id="variable-voting-form">
             <%= for variable <- Enum.reject(@variables, & &1.is_voi?) do %>
               <.label for={"var" <> variable.id}>
-                <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-gray-200">
+                <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-muted">
                   <.checkbox
                     id={"var" <> variable.id}
                     name={"var" <> variable.id}
@@ -337,19 +354,19 @@ defmodule ReveloWeb.UIComponents do
       </.card_header>
       <.card_content class="px-0 pb-0">
         <.radio_group :let={builder} name="relationship" class="gap-0">
-          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-muted">
             <.radio_group_item builder={builder} value="decreases" id="decreases" />
             <.label for="decreases">
               As {@variable1.name} <b><em>increases</em></b>, {@variable2.name} <b><em>decreases</em></b>.
             </.label>
           </div>
-          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-muted">
             <.radio_group_item builder={builder} value="increases" id="increases" />
             <.label for="increases">
               As {@variable1.name} <b><em>increases</em></b>, {@variable2.name} <b><em>increases</em></b>.
             </.label>
           </div>
-          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+          <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-muted">
             <.radio_group_item builder={builder} value="none" id="none" />
             <.label for="none">
               There is <b><em>no direct relationship</em></b>
@@ -587,7 +604,7 @@ defmodule ReveloWeb.UIComponents do
       data-cancel={JS.exec(@on_cancel, "phx-remove")}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="bg-zinc-50/90 fixed inset-0 transition-opacity" aria-hidden="true" />
+      <div id={"#{@id}-bg"} class="bg-background/70 fixed inset-0 transition-opacity" aria-hidden="true" />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -603,7 +620,7 @@ defmodule ReveloWeb.UIComponents do
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
               phx-key="escape"
               phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-zinc-700/10 ring-zinc-700/10 relative hidden rounded-2xl bg-white p-14 shadow-lg ring-1 transition"
+              class="shadow-primary/10 ring-primary/10 relative hidden rounded-2xl bg-background p-14 shadow-lg ring-1 transition"
             >
               <div class="absolute top-6 right-5">
                 <button
@@ -636,7 +653,7 @@ defmodule ReveloWeb.UIComponents do
     ~H"""
     <div class={"flex flex-col items-center scale-[#{@scale}]"}>
       <.link href={@text}>
-        <img src={"data:image/png;base64," <>
+        <img class="qr_code" src={"data:image/png;base64," <>
             (@text
             |> EQRCode.encode()
             |> EQRCode.png()

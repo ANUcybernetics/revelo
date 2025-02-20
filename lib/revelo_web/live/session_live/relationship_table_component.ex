@@ -143,7 +143,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                       "bg-orange-300 text-orange-900"
 
                                     true ->
-                                      "text-muted-foreground hover:bg-gray-200 hover:text-foreground"
+                                      "text-muted-foreground hover:bg-muted hover:text-foreground"
                                   end
                                 ]}
                               >
@@ -182,7 +182,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                       "bg-gray-300 text-gray-700"
 
                                     true ->
-                                      "text-muted-foreground hover:bg-gray-200 hover:text-foreground"
+                                      "text-muted-foreground hover:bg-muted hover:text-foreground"
                                   end
                                 ]}
                               >
@@ -218,7 +218,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                       "bg-blue-300 text-blue-900"
 
                                     true ->
-                                      "text-muted-foreground hover:bg-gray-200 hover:text-foreground"
+                                      "text-muted-foreground hover:bg-muted hover:text-foreground"
                                   end
                                 ]}
                               >

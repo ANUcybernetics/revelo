@@ -62,7 +62,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             class="gap-0 mb-6"
             value={@relationships.cursor.type}
           >
-            <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+            <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-muted">
               <.radio_group_item
                 builder={builder}
                 value="inverse"
@@ -76,7 +76,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 As {@relationships.cursor.src.name} <b><em>increases</em></b>, {@relationships.cursor.dst.name} <b><em>decreases</em></b>.
               </.label>
             </div>
-            <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+            <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-muted">
               <.radio_group_item
                 builder={builder}
                 value="direct"
@@ -90,7 +90,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                 As {@relationships.cursor.src.name} <b><em>increases</em></b>, {@relationships.cursor.dst.name} <b><em>increases</em></b>.
               </.label>
             </div>
-            <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-gray-200">
+            <div class="px-6 py-3 flex items-center space-x-2 has-[input:checked]:bg-muted">
               <.radio_group_item
                 builder={builder}
                 value="no_relationship"

@@ -150,7 +150,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       <.tooltip>
         <tooltip_trigger>
           <.link patch={"/sessions/#{@session.id}/#{get_phase(@live_action)}/variables/#{@variable.id}"}>
-            <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+            <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">
               <.icon name="hero-pencil-square" class="h-4 w-4 transition-all" />
               <span class="sr-only">
                 Edit
@@ -165,7 +165,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       <.tooltip>
         <tooltip_trigger>
           <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
             phx-click="toggle_voi"
             phx-value-id={@variable.id}
             phx-target={@myself}
@@ -186,7 +186,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       <.tooltip>
         <tooltip_trigger>
           <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
             phx-click="toggle_hidden"
             phx-value-id={@variable.id}
             phx-target={@myself}
@@ -207,7 +207,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       <.tooltip :if={@variable.vote_tally == 0}>
         <tooltip_trigger>
           <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
             phx-click="delete_variable"
             phx-value-id={@variable.id}
             phx-target={@myself}
@@ -224,7 +224,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       </.tooltip>
       <.tooltip :if={@variable.vote_tally > 0}>
         <tooltip_trigger>
-          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-gray-200">
+          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">
             <div class="relative h-4 w-4 flex items-center justify-center">
               <.icon name="hero-chart-bar-solid" class="h-4 w-4 transition-all" />
               <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-400 text-white text-[0.6rem] flex items-center justify-center h-3 w-3">
