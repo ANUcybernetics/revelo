@@ -20,7 +20,8 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
     {:ok,
      socket
      |> stream(:variables, [])
-     |> assign(:variable_count, 0)}
+     |> assign(:variable_count, 0)
+     |> assign(:included_count, 0)}
   end
 
   # recieve message from parent LiveView about a new variable
@@ -35,6 +36,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
     variables = Diagrams.list_variables!(assigns.session.id, true)
 
     variable_count = Enum.count(variables)
+    included_count = Enum.count(variables, fn variable -> not variable.hidden? end)
 
     send(self(), {:increment_variable_count, variable_count})
 
@@ -43,6 +45,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
       |> assign(assigns)
       |> stream(:variables, variables, reset: true)
       |> assign(:variable_count, variable_count)
+      |> assign(:included_count, included_count)
 
     {:ok, socket}
   end
@@ -64,6 +67,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
           <.card_header class="w-full flex-none">
             <.header class="flex flex-row justify-between !items-start">
               <.card_title class="grow">{@title}</.card_title>
+              <.card_description :if={get_phase(@live_action) == :identify} class="mt-1">Variables Included: {@included_count} </.card_description>
               <:actions>
                 <div class="flex flex-row gap-2 shrink flex-wrap items-end justify-end">
                   <.link patch={"/sessions/#{@session.id}/#{get_phase(@live_action)}/variables/new"}>
@@ -262,6 +266,13 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   @impl true
   def handle_event("toggle_hidden", %{"id" => variable_id}, socket) do
     updated_variable = Diagrams.toggle_variable_visibility!(variable_id)
+
+    included_count =
+      if updated_variable.hidden?,
+        do: socket.assigns.included_count - 1,
+        else: socket.assigns.included_count + 1
+
+    socket = assign(socket, :included_count, included_count)
     {:noreply, stream_insert(socket, :variables, updated_variable)}
   end
 
@@ -303,7 +314,14 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   @impl true
   def handle_event("delete_variable", %{"id" => variable_id}, socket) do
     destroyed_variable = Diagrams.destroy_variable!(variable_id, return_destroyed?: true)
+
+    included_count =
+      if destroyed_variable.hidden?,
+        do: socket.assigns.included_count,
+        else: socket.assigns.included_count - 1
+
     send(self(), :decrement_variable_count)
+    socket = assign(socket, :included_count, included_count)
     {:noreply, stream_delete(socket, :variables, destroyed_variable)}
   end
 
@@ -328,8 +346,11 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
           end)
 
         variables = existing_variables ++ new_variables
+        included_count = socket.assigns.included_count + length(new_variables)
         send(self(), {:increment_variable_count, length(new_variables)})
-        {:noreply, stream(socket, :variables, variables)}
+
+        {:noreply,
+         stream(socket, :variables, variables) |> assign(:included_count, included_count)}
 
       {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Failed to generate variables")}
