@@ -20,3 +20,14 @@ Revelo.Accounts.User
 |> Ash.create!(authorize?: false)
 |> Ash.Changeset.for_update(:promote_to_admin, %{})
 |> Ash.update!(authorize?: false)
+
+Revelo.Accounts.User
+|> Ash.Changeset.for_create(:register_with_password, %{
+  email: "adrian.g.schmidt@gmail.com",
+  password: "password",
+  password_confirmation: "password"
+})
+|> Ash.Changeset.force_change_attribute(:confirmed_at, DateTime.utc_now())
+|> Ash.create!(authorize?: false)
+|> Ash.Changeset.for_update(:promote_to_admin, %{})
+|> Ash.update!(authorize?: false)
