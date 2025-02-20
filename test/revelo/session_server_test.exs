@@ -27,10 +27,10 @@ defmodule Revelo.SessionServerTest do
     assert_receive {:transition, :identify_work}
 
     state = SessionServer.get_state(session.id)
-    assert state.timer == 60
+    assert state.timer == 300
 
     Process.sleep(2000)
-    assert_receive {:tick, 60}
-    assert_receive {:tick, 59}
+    assert_receive {:tick, 300}
+    assert_receive {:tick, 299}
   end
 end

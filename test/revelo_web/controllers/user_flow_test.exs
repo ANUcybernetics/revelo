@@ -147,7 +147,7 @@ defmodule ReveloWeb.UserFlowTest do
         |> fill_in("Name", with: "Test Session")
         |> fill_in("Description", with: "This is a test session.")
         |> click_button("Save Session")
-        |> assert_has("span", text: "Test Session")
+        |> assert_has("td", text: "Test Session")
 
       sessions =
         Revelo.Sessions.Session
