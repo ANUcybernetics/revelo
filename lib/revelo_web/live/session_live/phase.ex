@@ -136,7 +136,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           action={@live_action}
           session={@session}
-          patch={JS.patch(phase_to_path(@live_action, @session.id))}
+          patch={phase_to_path(@live_action, @session.id)}
         />
       </.modal>
 
@@ -296,17 +296,6 @@ defmodule ReveloWeb.SessionLive.Phase do
     {:noreply, push_patch(socket, to: path)}
   end
 
-  defp phase_to_path(phase, session_id) do
-    case phase do
-      :identify_work -> ~p"/sessions/#{session_id}/identify/work"
-      :identify_discuss -> ~p"/sessions/#{session_id}/identify/discuss"
-      :relate_work -> ~p"/sessions/#{session_id}/relate/work"
-      :relate_discuss -> ~p"/sessions/#{session_id}/relate/discuss"
-      :prepare -> ~p"/sessions/#{session_id}/prepare"
-      :analyse -> ~p"/sessions/#{session_id}/analyse"
-    end
-  end
-
   @impl true
   def handle_info({:participant_count, counts}, socket) do
     {:noreply, assign(socket, :participant_count, counts)}
@@ -320,6 +309,17 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def handle_info(:decrement_variable_count, socket) do
     {:noreply, assign(socket, :variable_count, socket.assigns.variable_count - 1)}
+  end
+
+  defp phase_to_path(phase, session_id) do
+    case phase do
+      :identify_work -> ~p"/sessions/#{session_id}/identify/work"
+      :identify_discuss -> ~p"/sessions/#{session_id}/identify/discuss"
+      :relate_work -> ~p"/sessions/#{session_id}/relate/work"
+      :relate_discuss -> ~p"/sessions/#{session_id}/relate/discuss"
+      :prepare -> ~p"/sessions/#{session_id}/prepare"
+      :analyse -> ~p"/sessions/#{session_id}/analyse"
+    end
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"
