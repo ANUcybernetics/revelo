@@ -64,7 +64,7 @@ defmodule Revelo.Diagrams.Loop do
       after_action(fn records, _context ->
         Enum.map(records, fn record ->
           record
-          |> Ash.load!(:influence_relationships)
+          |> Ash.load!(influence_relationships: [:src, :dst])
           |> Map.get(:influence_relationships)
           |> Enum.sort_by(fn rel ->
             LoopRelationships
