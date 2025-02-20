@@ -121,7 +121,7 @@ defmodule Revelo.SessionServer do
       case new_phase do
         :identify_work ->
           schedule_tick()
-          %{state | phase: new_phase, timer: 60}
+          %{state | phase: new_phase, timer: 300}
 
         :relate_work ->
           schedule_tick()
@@ -130,14 +130,14 @@ defmodule Revelo.SessionServer do
           |> Ash.get!(state.session_id)
           |> Revelo.Diagrams.enumerate_relationships!()
 
-          %{state | phase: new_phase, timer: 60}
+          %{state | phase: new_phase, timer: 300}
 
         :analyse ->
           schedule_tick()
 
           Revelo.Diagrams.rescan_loops!(state.session_id)
 
-          %{state | phase: new_phase, timer: 60}
+          %{state | phase: new_phase, timer: 300}
 
         _ ->
           %{state | phase: new_phase, timer: 0}
@@ -160,7 +160,7 @@ defmodule Revelo.SessionServer do
   def handle_info(:tick, state) do
     case {state.phase, state.timer} do
       {phase, 0} when phase in [:identify_work, :relate_work, :analyse] ->
-        {:noreply, %{state | phase: :analyse}}
+        {:noreply, state}
 
       {phase, timer} when phase in [:identify_work, :relate_work, :analyse] ->
         broadcast_tick(state.session_id, timer)

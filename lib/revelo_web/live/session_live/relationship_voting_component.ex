@@ -113,7 +113,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
       <.countdown
         type="both_buttons"
         time_left={@time_left}
-        initial_time={60}
+        initial_time={300}
         on_left_click="navigate_left"
         on_right_click="navigate_right"
         left_disabled={ZipperList.beginning?(@relationships)}

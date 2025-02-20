@@ -189,7 +189,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <.countdown
           type="left_button"
           time_left={@time_left}
-          initial_time={60}
+          initial_time={300}
           on_left_click="unselect_loop"
           target={@myself}
           left_disabled={is_nil(@selected_loop)}

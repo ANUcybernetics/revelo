@@ -247,7 +247,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:participant_count, {0, 1})
       |> assign_new(:variable_count, fn -> 0 end)
       |> assign(:page_title, page_title(socket.assigns.live_action))
-      |> assign(:timer, 60)
+      |> assign(:timer, 300)
 
     # Redirect non-facilitator to the current phase
     if current_user.facilitator? do
