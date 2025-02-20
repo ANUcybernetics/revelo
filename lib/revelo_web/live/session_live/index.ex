@@ -20,62 +20,54 @@ defmodule ReveloWeb.SessionLive.Index do
           </.header>
         </.card_header>
         <.card_content class="h-2 grow">
-          <ReveloWeb.CoreComponents.table
-            id="Sessions"
-            rows={@streams.sessions}
-            row_click={
-              fn {_id, session} ->
-                phase = Revelo.SessionServer.get_phase(session.id)
-
-                case phase do
-                  :prepare -> JS.navigate(~p"/sessions/#{session}/prepare")
-                  :identify_work -> JS.navigate(~p"/sessions/#{session}/identify/work")
-                  :identify_discuss -> JS.navigate(~p"/sessions/#{session}/identify/discuss")
-                  :relate_work -> JS.navigate(~p"/sessions/#{session}/relate/work")
-                  :relate_discuss -> JS.navigate(~p"/sessions/#{session}/relate/discuss")
-                  :analyse -> JS.navigate(~p"/sessions/#{session}/analyse")
-                end
-              end
-            }
-          >
-            <:col :let={{_id, session}} label="Name">{session.name}</:col>
-
-            <:col :let={{_id, session}} label="Phase">
-              <% phase = Revelo.SessionServer.get_phase(session.id) %>
-              <div class="flex items-center gap-2">
-                <.icon
-                  name={
-                    case phase do
-                      :prepare -> "hero-adjustments-horizontal-mini"
-                      :identify_work -> "hero-queue-list-mini"
-                      :identify_discuss -> "hero-queue-list-mini"
-                      :relate_work -> "hero-arrows-right-left-mini"
-                      :relate_discuss -> "hero-arrows-right-left-mini"
-                      :analyse -> "hero-arrow-path-rounded-square-mini"
-                    end
-                  }
-                  class="h-4 w-4"
-                />
-                {case phase do
-                  :prepare -> "Prepare"
-                  :identify_work -> "Identify Work"
-                  :identify_discuss -> "Identify Discuss"
-                  :relate_work -> "Relate Work"
-                  :relate_discuss -> "Relate Discuss"
-                  :analyse -> "Analyse"
-                end}
-              </div>
-            </:col>
-
-            <:action :let={{id, session}}>
-              <.link
-                phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
-                data-confirm="Are you sure?"
-              >
-                Delete
-              </.link>
-            </:action>
-          </ReveloWeb.CoreComponents.table>
+        <.table>
+          <.table_header>
+            <.table_row>
+              <.table_head>Name</.table_head>
+              <.table_head>Phase</.table_head>
+              <.table_head class="text-right">Action</.table_head>
+            </.table_row>
+          </.table_header>
+          <.table_body>
+          <.table_row :for={{id, session} <- @streams.sessions} id={id} phx-click="navigate_to_phase" phx-value-id={session.id} class="cursor-pointer">
+            <.table_cell class="font-medium"><%= session.name %></.table_cell>
+              <.table_cell>
+                <% phase = Revelo.SessionServer.get_phase(session.id) %>
+                <div class="flex items-center gap-2">
+                  <.icon
+                    name={
+                      case phase do
+                        :prepare -> "hero-adjustments-horizontal-mini"
+                        :identify_work -> "hero-queue-list-mini"
+                        :identify_discuss -> "hero-queue-list-mini"
+                        :relate_work -> "hero-arrows-right-left-mini"
+                        :relate_discuss -> "hero-arrows-right-left-mini"
+                        :analyse -> "hero-arrow-path-rounded-square-mini"
+                      end
+                    }
+                    class="h-4 w-4"
+                  />
+                  {case phase do
+                    :prepare -> "Prepare"
+                    :identify_work -> "Identify Work"
+                    :identify_discuss -> "Identify Discuss"
+                    :relate_work -> "Relate Work"
+                    :relate_discuss -> "Relate Discuss"
+                    :analyse -> "Analyse"
+                  end}
+                </div>
+              </.table_cell>
+              <.table_cell class="text-right">
+                <.link
+                  phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
+                  data-confirm="Are you sure?"
+                >
+                  Delete
+                </.link>
+              </.table_cell>
+            </.table_row>
+          </.table_body>
+        </.table>
         </.card_content>
       </.card>
     </div>
@@ -144,5 +136,32 @@ defmodule ReveloWeb.SessionLive.Index do
     Ash.destroy!(session, actor: socket.assigns.current_user)
 
     {:noreply, stream_delete(socket, :sessions, session)}
+  end
+
+  @impl true
+  def handle_event("navigate_to_phase", %{"id" => id}, socket) do
+    session = Ash.get!(Session, id, actor: socket.assigns.current_user)
+    phase = Revelo.SessionServer.get_phase(session.id)
+
+    {:noreply,
+     case phase do
+       :prepare ->
+         push_navigate(socket, to: ~p"/sessions/#{session.id}/prepare")
+
+       :identify_work ->
+         push_navigate(socket, to: ~p"/sessions/#{session.id}/identify/work")
+
+       :identify_discuss ->
+         push_navigate(socket, to: ~p"/sessions/#{session.id}/identify/discuss")
+
+       :relate_work ->
+         push_navigate(socket, to: ~p"/sessions/#{session.id}/relate/work")
+
+       :relate_discuss ->
+         push_navigate(socket, to: ~p"/sessions/#{session.id}/relate/discuss")
+
+       :analyse ->
+         push_navigate(socket, to: ~p"/sessions/#{session.id}/analyse")
+     end}
   end
 end
