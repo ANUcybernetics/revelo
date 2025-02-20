@@ -67,6 +67,41 @@ defmodule Revelo.LoopTest do
       assert loop.session.id == session.id
     end
 
+    test "influence_relationships are ordered in sequence" do
+      user = user()
+      session = session(user)
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+      relationships =
+        variables
+        # add the first variable to the end to "close" the loop
+        |> List.insert_at(-1, List.first(variables))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session,
+            user: user,
+            vote_type: :direct
+          )
+        end)
+
+      Revelo.Diagrams.create_loop!(relationships, actor: user)
+
+      [loop] = Revelo.Diagrams.list_loops!(session.id)
+
+      relationships =
+        Ash.load!(loop, influence_relationships: [:src, :dst]).influence_relationships
+
+      # Check that each relationship's dst matches the next's src
+      pairs = Enum.chunk_every(relationships ++ [List.first(relationships)], 2, 1, :discard)
+
+      for [rel1, rel2] <- pairs do
+        assert rel1.dst.id == rel2.src.id
+      end
+    end
+
     test "list_loops only returns loops from specified session" do
       user = user()
       session1 = session(user)

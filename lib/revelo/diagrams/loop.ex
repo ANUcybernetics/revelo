@@ -60,6 +60,21 @@ defmodule Revelo.Diagrams.Loop do
         |> Ash.Query.load([:type, influence_relationships: [:type, src: :session]])
         |> Ash.Query.filter(influence_relationships: [src: [session: [id: query.arguments.session_id]]])
       end
+
+      after_action(fn records, _context ->
+        Enum.map(records, fn record ->
+          record
+          |> Ash.load!(:influence_relationships)
+          |> Map.get(:influence_relationships)
+          |> Enum.sort_by(fn rel ->
+            LoopRelationships
+            |> Ash.Query.filter(loop_id == ^record.id and relationship_id == ^rel.id)
+            |> Ash.Query.select(:loop_index)
+            |> Ash.Query.get!()
+            |> Map.get(:loop_index)
+          end)
+        end)
+      end)
     end
 
     create :create do
