@@ -3,18 +3,18 @@ defmodule Revelo.Diagrams.RelationshipVote do
   use Ash.Resource,
     otp_app: :revelo,
     domain: Revelo.Diagrams,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias Revelo.Diagrams.Relationship
+
+  postgres do
+    table "relationship_votes"
+    repo Revelo.Repo
+  end
 
   calculations do
     calculate :src_name, :string, expr(relationship.src.name)
     calculate :dst_name, :string, expr(relationship.dst.name)
-  end
-
-  sqlite do
-    table "relationship_votes"
-    repo Revelo.Repo
   end
 
   actions do

@@ -1,5 +1,7 @@
 import Config
 
+config :ash, disable_async?: true
+
 # Print only warnings and errors during test
 config :logger, level: :warning
 
@@ -23,11 +25,13 @@ config :phoenix_test, otp_app: :revelo, playwright: [cli: "assets/node_modules/p
 config :revelo, Revelo.Mailer, adapter: Swoosh.Adapters.Test
 
 config :revelo, Revelo.Repo,
-  database: Path.expand("../revelo_test.db", __DIR__),
-  pool_size: 5,
-  # We don't run a server during test. If one is required,
-  # you can enable the server option below.
-  pool: Ecto.Adapters.SQL.Sandbox
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost",
+  database: "revelo_test#{System.get_env("MIX_TEST_PARTITION")}",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 5
 
 config :revelo, ReveloWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],

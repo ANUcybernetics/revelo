@@ -32,6 +32,7 @@ defmodule Revelo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ash_postgres, "~> 2.0"},
       {:phoenix_test, "~> 0.5", only: :test, runtime: false},
       {:phoenix_test_playwright, "~> 0.1", only: :test, runtime: false},
       {:phoenix_storybook, "~> 0.8"},
@@ -42,11 +43,9 @@ defmodule Revelo.MixProject do
       {:ash_authentication_phoenix, "~> 2.0"},
       {:ash, "~> 3.4"},
       {:ash_phoenix, "~> 2.1"},
-      {:ash_sqlite, "~> 0.2"},
       {:phoenix, "~> 1.7.18"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.10"},
-      {:ecto_sqlite3, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.0.0"},
@@ -83,10 +82,10 @@ defmodule Revelo.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: ["deps.get", "ash.setup", "assets.setup", "assets.build", "run priv/repo/seeds.exs"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      test: ["ash.setup --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind revelo", "esbuild revelo"],
       "assets.deploy": [

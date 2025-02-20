@@ -3,14 +3,14 @@ defmodule Revelo.Sessions.Session do
   use Ash.Resource,
     otp_app: :revelo,
     domain: Revelo.Sessions,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias Revelo.Accounts.User
   alias Revelo.Sessions.SessionParticipants
 
   require Logger
 
-  sqlite do
+  postgres do
     table "sessions"
     repo Revelo.Repo
   end

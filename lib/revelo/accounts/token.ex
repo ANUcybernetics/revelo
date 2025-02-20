@@ -5,7 +5,12 @@ defmodule Revelo.Accounts.Token do
     domain: Revelo.Accounts,
     authorizers: [Ash.Policy.Authorizer],
     extensions: [AshAuthentication.TokenResource],
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
+
+  postgres do
+    table "tokens"
+    repo Revelo.Repo
+  end
 
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
@@ -17,11 +22,6 @@ defmodule Revelo.Accounts.Token do
       description "No one aside from AshAuthentication can interact with the tokens resource."
       forbid_if always()
     end
-  end
-
-  sqlite do
-    table "tokens"
-    repo Revelo.Repo
   end
 
   actions do
@@ -52,6 +52,7 @@ defmodule Revelo.Accounts.Token do
 
     create :revoke_token do
       description "Revoke a token. Creates a revocation token corresponding to the provided token."
+
       accept [:extra_data]
       argument :token, :string, allow_nil?: false, sensitive?: true
 

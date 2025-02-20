@@ -3,18 +3,14 @@ defmodule Revelo.Diagrams.LoopRelationships do
   use Ash.Resource,
     otp_app: :revelo,
     domain: Revelo.Diagrams,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias Revelo.Diagrams.Loop
   alias Revelo.Diagrams.Relationship
 
-  sqlite do
+  postgres do
     table "loop_relationships"
     repo Revelo.Repo
-  end
-
-  attributes do
-    attribute :loop_index, :integer, allow_nil?: false
   end
 
   actions do
@@ -39,6 +35,10 @@ defmodule Revelo.Diagrams.LoopRelationships do
       change manage_relationship(:relationship, type: :append)
       change set_attribute(:loop_index, arg(:loop_index))
     end
+  end
+
+  attributes do
+    attribute :loop_index, :integer, allow_nil?: false
   end
 
   relationships do

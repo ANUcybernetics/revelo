@@ -3,10 +3,15 @@ defmodule Revelo.Diagrams.Relationship do
   use Ash.Resource,
     otp_app: :revelo,
     domain: Revelo.Diagrams,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias Revelo.Diagrams.Variable
   alias Revelo.Sessions.Session
+
+  postgres do
+    table "relationships"
+    repo Revelo.Repo
+  end
 
   calculations do
     calculate :direct_votes,
@@ -61,11 +66,6 @@ defmodule Revelo.Diagrams.Relationship do
               load: [:direct_votes, :inverse_votes]
 
     calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
-  end
-
-  sqlite do
-    table "relationships"
-    repo Revelo.Repo
   end
 
   actions do

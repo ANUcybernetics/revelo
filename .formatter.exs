@@ -6,7 +6,7 @@
     :ecto_sql,
     :phoenix,
     :ash,
-    :ash_sqlite
+    :ash_postgres
   ],
   subdirectories: ["priv/*/migrations"],
   plugins: [Phoenix.LiveView.HTMLFormatter, Spark.Formatter, Styler],

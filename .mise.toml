@@ -1,5 +1,5 @@
 [tools]
 elixir = "latest"
 erlang = "latest"
-sqlite = "latest"
+postgres = "latest"
 npm = "latest"

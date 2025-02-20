@@ -5,10 +5,15 @@ defmodule Revelo.Accounts.User do
     domain: Revelo.Accounts,
     authorizers: [Ash.Policy.Authorizer],
     extensions: [AshAuthentication],
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias AshAuthentication.Strategy.Password.HashPasswordChange
   alias AshAuthentication.Strategy.Password.PasswordConfirmationValidation
+
+  postgres do
+    table "users"
+    repo Revelo.Repo
+  end
 
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
@@ -42,11 +47,6 @@ defmodule Revelo.Accounts.User do
     calculate :anonymous?, :boolean do
       calculation expr(is_nil(email))
     end
-  end
-
-  sqlite do
-    table "users"
-    repo Revelo.Repo
   end
 
   authentication do

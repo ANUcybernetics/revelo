@@ -66,6 +66,7 @@ config :spark, :formatter,
   "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]],
   "Ash.Resource": [
     section_order: [
+      :postgres,
       :resource,
       :code_interface,
       :policies,
@@ -76,7 +77,6 @@ config :spark, :formatter,
       :multitenancy,
       :calculations,
       :aggregates,
-      :sqlite,
       :authentication,
       :tokens,
       # any section not in this list is left where it is

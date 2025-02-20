@@ -3,10 +3,15 @@ defmodule Revelo.Diagrams.Variable do
   use Ash.Resource,
     otp_app: :revelo,
     domain: Revelo.Diagrams,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias Revelo.Accounts.User
   alias Revelo.Sessions.Session
+
+  postgres do
+    table "variables"
+    repo Revelo.Repo
+  end
 
   calculations do
     # TODO this seems to be required because ash_sqlite doesn't support count
@@ -21,11 +26,6 @@ defmodule Revelo.Diagrams.Variable do
               )
 
     calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
-  end
-
-  sqlite do
-    table "variables"
-    repo Revelo.Repo
   end
 
   actions do
@@ -74,7 +74,7 @@ defmodule Revelo.Diagrams.Variable do
       change relate_actor(:creator)
       change manage_relationship(:session, type: :append)
       change set_attribute(:name, arg(:name))
-      change load :vote_tally
+      change load(:vote_tally)
     end
 
     update :rename do

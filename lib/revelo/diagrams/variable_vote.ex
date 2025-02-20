@@ -3,17 +3,17 @@ defmodule Revelo.Diagrams.VariableVote do
   use Ash.Resource,
     otp_app: :revelo,
     domain: Revelo.Diagrams,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias Revelo.Diagrams.Variable
 
-  calculations do
-    calculate :variable_name, :string, expr(variable.name)
-  end
-
-  sqlite do
+  postgres do
     table "variable_votes"
     repo Revelo.Repo
+  end
+
+  calculations do
+    calculate :variable_name, :string, expr(variable.name)
   end
 
   actions do

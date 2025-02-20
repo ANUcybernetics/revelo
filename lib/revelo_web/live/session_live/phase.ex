@@ -269,10 +269,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info(
-        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}},
-        socket
-      ) do
+  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
     if socket.assigns.variable_count == 0 and not variable.is_voi? do
       Revelo.Diagrams.toggle_voi!(variable)
     end

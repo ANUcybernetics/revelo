@@ -3,7 +3,7 @@ defmodule Revelo.Diagrams.Loop do
   use Ash.Resource,
     otp_app: :revelo,
     domain: Revelo.Diagrams,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   alias Revelo.Diagrams
   alias Revelo.Diagrams.Analyser
@@ -11,6 +11,11 @@ defmodule Revelo.Diagrams.Loop do
   alias Revelo.Diagrams.Relationship
 
   require Ash.Query
+
+  postgres do
+    table "loops"
+    repo Revelo.Repo
+  end
 
   calculations do
     calculate :type,
@@ -40,11 +45,6 @@ defmodule Revelo.Diagrams.Loop do
                 end)
               end,
               load: [influence_relationships: [src: [:session]]]
-  end
-
-  sqlite do
-    table "loops"
-    repo Revelo.Repo
   end
 
   actions do

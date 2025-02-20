@@ -25,10 +25,14 @@ config :phoenix_live_view,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :revelo, Revelo.Repo,
-  database: Path.expand("../revelo_dev.db", __DIR__),
+  adapter: Ecto.Adapters.Postgres,
+  database: "revelo_dev",
   pool_size: 5,
   stacktrace: true,
-  show_sensitive_data_on_connection_error: true
+  show_sensitive_data_on_connection_error: true,
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost"
 
 config :revelo, ReveloWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
