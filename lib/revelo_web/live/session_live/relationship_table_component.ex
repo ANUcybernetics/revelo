@@ -19,7 +19,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
      socket
      |> stream(:relationships, [])
      |> assign(:relationship_count, 0)
-     |> assign(:current_filter, :all)}
+     |> assign(:current_filter, :active)}
   end
 
   @impl true
@@ -27,7 +27,8 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
     relationships =
       case socket.assigns[:current_filter] || :all do
         :all -> Diagrams.list_potential_relationships!(assigns.session.id)
-        :conflicting -> Diagrams.list_conflicting_relationships!(socket.assigns.session.id)
+        :conflicting -> Diagrams.list_conflicting_relationships!(assigns.session.id)
+        :active -> Diagrams.list_actual_relationships!(assigns.session.id)
       end
 
     socket =
@@ -246,7 +247,11 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
   end
 
   @impl true
-  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
+  def handle_event(
+        "toggle_override",
+        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type},
+        socket
+      ) do
     type = String.to_existing_atom(type)
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
