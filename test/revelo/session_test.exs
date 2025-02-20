@@ -29,7 +29,9 @@ defmodule Revelo.SessionTest do
 
       assert SessionParticipants |> Ash.read!() |> Enum.count() == 2
       assert length(session.participants) == 2
-      assert Enum.map(session.participants, & &1.id) == [creator.id, participant.id]
+
+      assert MapSet.new(Enum.map(session.participants, & &1.id)) ==
+               MapSet.new([creator.id, participant.id])
     end
 
     test "add_participant! works with facilitator option" do
