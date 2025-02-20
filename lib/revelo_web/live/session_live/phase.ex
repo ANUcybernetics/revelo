@@ -13,14 +13,14 @@ defmodule ReveloWeb.SessionLive.Phase do
     >
       <div class="grid grid-cols-12 w-full grow gap-6">
         <.live_component
-          :if={@live_action in [:prepare, :identify_discuss]}
+          :if={@live_action in [:prepare, :identify_discuss, :edit]}
           module={ReveloWeb.SessionLive.VariableTableComponent}
           id="variable-table"
-          class={"#{if(@live_action == :prepare, do: "md:col-span-8", else: "md:col-span-12")} col-span-12"}
+          class={"#{if(@live_action in [:prepare, :edit], do: "md:col-span-8", else: "md:col-span-12")} col-span-12"}
           current_user={@current_user}
           live_action={@live_action}
           session={@session}
-          title={if @live_action == :prepare, do: "Prepare your variables", else: "Variable Votes"}
+          title={if @live_action in [:prepare, :edit], do: "Prepare your variables", else: "Variable Votes"}
         />
 
         <.live_component
@@ -35,7 +35,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         />
 
         <div
-          :if={@live_action in [:prepare, :new_variable]}
+          :if={@live_action in [:prepare, :edit]}
           class="flex gap-5 flex-col col-span-12 md:col-span-4"
         >
           <.session_details session={@session} variable_count={@variable_count} />
@@ -108,7 +108,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       <div :if={@current_user.facilitator?} class="flex justify-between mt-4">
         <div>
           <.button
-            :if={@live_action not in [:prepare, :new_variable]}
+            :if={@live_action not in [:prepare]}
             phx-click="phase_transition"
             phx-value-direction="previous"
             variant="outline"
@@ -127,17 +127,16 @@ defmodule ReveloWeb.SessionLive.Phase do
         :if={@modal}
         id="variable-modal"
         show
-        on_cancel={JS.patch(~p"/sessions/#{@session.id}/prepare")}
+        on_cancel={JS.patch(if @live_action == :identify_discuss, do: "#{ReveloWeb.Endpoint.url()}/sessions/#{@session.id}/identify/discuss", else: "#{ReveloWeb.Endpoint.url()}/sessions/#{@session.id}/prepare")}
       >
         <.live_component
           module={ReveloWeb.SessionLive.VariableFormComponent}
           id="variable-modal-component"
           variable={@modal}
-          title={@page_title}
           current_user={@current_user}
           action={@live_action}
           session={@session}
-          patch={~p"/sessions/#{@session.id}/prepare"}
+          patch={JS.patch(phase_to_path(@live_action, @session.id))}
         />
       </.modal>
 
@@ -293,17 +292,19 @@ defmodule ReveloWeb.SessionLive.Phase do
 
   @impl true
   def handle_info({:transition, phase}, socket) do
-    path =
-      case phase do
-        :identify_work -> ~p"/sessions/#{socket.assigns.session.id}/identify/work"
-        :identify_discuss -> ~p"/sessions/#{socket.assigns.session.id}/identify/discuss"
-        :relate_work -> ~p"/sessions/#{socket.assigns.session.id}/relate/work"
-        :relate_discuss -> ~p"/sessions/#{socket.assigns.session.id}/relate/discuss"
-        :prepare -> ~p"/sessions/#{socket.assigns.session.id}/prepare"
-        :analyse -> ~p"/sessions/#{socket.assigns.session.id}/analyse"
-      end
-
+    path = phase_to_path(phase, socket.assigns.session.id)
     {:noreply, push_patch(socket, to: path)}
+  end
+
+  defp phase_to_path(phase, session_id) do
+    case phase do
+      :identify_work -> ~p"/sessions/#{session_id}/identify/work"
+      :identify_discuss -> ~p"/sessions/#{session_id}/identify/discuss"
+      :relate_work -> ~p"/sessions/#{session_id}/relate/work"
+      :relate_discuss -> ~p"/sessions/#{session_id}/relate/discuss"
+      :prepare -> ~p"/sessions/#{session_id}/prepare"
+      :analyse -> ~p"/sessions/#{session_id}/analyse"
+    end
   end
 
   @impl true
