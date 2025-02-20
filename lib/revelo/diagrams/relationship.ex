@@ -46,10 +46,12 @@ defmodule Revelo.Diagrams.Relationship do
                   direct_votes > 0 and inverse_votes > 0 ->
                     :conflicting
 
-                  direct_votes > 0 and inverse_votes == 0 ->
+                  direct_votes > 0 and direct_votes >= no_relationship_votes and
+                      inverse_votes == 0 ->
                     :direct
 
-                  inverse_votes > 0 and direct_votes == 0 ->
+                  inverse_votes > 0 and inverse_votes >= no_relationship_votes and
+                      direct_votes == 0 ->
                     :inverse
 
                   true ->
