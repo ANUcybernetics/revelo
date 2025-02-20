@@ -137,7 +137,13 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     relationships =
       socket.assigns.relationships
       |> ZipperList.replace(Ash.load!(relationship, [:voted?, :type], actor: voter))
-      |> ZipperList.right()
+
+    relationships =
+      if length(relationships.right) == 0 do
+        relationships
+      else
+        ZipperList.right(relationships)
+      end
 
     {:noreply, assign(socket, :relationships, relationships)}
   end
