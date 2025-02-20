@@ -31,9 +31,15 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
         :active -> Diagrams.list_actual_relationships!(assigns.session.id)
       end
 
+    Revelo.Diagrams.rescan_loops!(assigns.session.id)
+    loops = Diagrams.list_loops!(assigns.session.id)
+    loop_count = Enum.count(loops)
+
     socket =
       socket
       |> assign(assigns)
+      |> assign(:loops, loops)
+      |> assign(:loop_count, loop_count)
       |> stream(:relationships, relationships, reset: true)
 
     {:ok, socket}
@@ -55,6 +61,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
           <.card_header class="w-full flex-none">
             <.header class="flex flex-row justify-between !items-start">
               <.card_title class="grow">{@title}</.card_title>
+              <.card_description class="mt-1">Total Loops: {@loop_count} </.card_description>
               <:actions>
                 <div class="flex gap-2">
                   <.button
@@ -265,7 +272,15 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
 
     updated_relationship = Diagrams.override_relationship_type!(relationship, new_override)
 
-    {:noreply, stream_insert(socket, :relationships, updated_relationship)}
+    Revelo.Diagrams.rescan_loops!(socket.assigns.session.id)
+    loops = Diagrams.list_loops!(socket.assigns.session.id)
+    loop_count = Enum.count(loops)
+
+    {:noreply,
+     socket
+     |> assign(:loops, loops)
+     |> assign(:loop_count, loop_count)
+     |> stream_insert(:relationships, updated_relationship)}
   end
 
   @impl true
