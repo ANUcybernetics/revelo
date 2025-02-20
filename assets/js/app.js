@@ -61,11 +61,7 @@ window.addEventListener("phx:js-exec", ({ detail }) => {
 });
 
 function darkExpected() {
-  return (
-    localStorage.theme === "dark" ||
-    (!("theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-  );
+  return localStorage.theme === "dark";
 }
 
 function initDarkMode() {
