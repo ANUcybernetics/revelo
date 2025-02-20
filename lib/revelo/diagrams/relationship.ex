@@ -97,7 +97,10 @@ defmodule Revelo.Diagrams.Relationship do
         allow_nil? false
       end
 
-      filter expr(session.id == ^arg(:session_id) and type != :no_relationship)
+      filter expr(
+               session.id == ^arg(:session_id) and type != :no_relationship and
+                 type != :conflicting
+             )
 
       prepare build(
                 sort: [:src_id, :dst_id],
