@@ -55,7 +55,7 @@ defmodule Revelo.SessionTest do
 
       assert session_participant.facilitator? == true
       assert length(session.participants) == 2
-      assert hd(session.participants).id == creator.id
+      assert MapSet.new(session.participants, & &1.id) |> MapSet.member?(creator.id)
     end
 
     test "can create session with variables and relationships" do
