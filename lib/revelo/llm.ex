@@ -88,7 +88,7 @@ defmodule Revelo.LLM do
             content: ~S"""
             You are a systems engineer skilled at crafting engaging, concise, and imaginative 1-2 sentence stories that illustrate the dynamics of feedback loops.
             Using the relationships between the items in the system, explain whether the loop is balancing or reinforcing.
-            Ensure the story highlights the system's state as it evolves, staying true to the actual dynamics.
+            Ensure the story highlights the system's state as it evolves, staying true to the actual dynamics. Try to be concise!
 
             The context provided is for reference only and should not influence the content of the loop.
             """
