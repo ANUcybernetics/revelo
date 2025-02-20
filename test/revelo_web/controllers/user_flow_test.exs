@@ -178,8 +178,9 @@ defmodule ReveloWeb.UserFlowTest do
         |> assert_has("h3", text: "Which of these are important parts of your system?")
         |> assert_has("div", text: "Test Variable 1")
         |> assert_has("div", text: "Test Variable 2")
-        |> check("Test Variable 1")
+        # can't check variable 1, because it's the VoI
         |> check("Test Variable 2")
+        |> check("Test Variable 3")
         |> click_button("Done")
         |> assert_has("div", text: "Important")
 
