@@ -163,6 +163,8 @@ defmodule Revelo.Diagrams.Relationship do
     end
 
     update :override_type do
+      require_atomic? false
+
       argument :type, :atom do
         constraints one_of: [:inverse, :direct, :no_relationship]
         allow_nil? true

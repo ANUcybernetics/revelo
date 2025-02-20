@@ -33,42 +33,10 @@ defmodule Revelo.Sessions.Session do
 
       change set_attribute(:name, arg(:name))
 
-      change after_action(fn _changeset, session, context ->
-               session =
-                 Revelo.Sessions.add_participant!(session, context.actor, true)
-
-               {:ok, session}
-             end)
-    end
-
-    update :update do
-      accept [:name, :description]
-      primary? true
-    end
-
-    update :add_participant do
-      argument :participant, :struct do
-        constraints instance_of: User
-        allow_nil? false
-      end
-
-      argument :facilitator?, :boolean, default: false
-
-      change manage_relationship(:participant, :participants, type: :append)
-
       change after_transaction(fn
-               changeset, {:ok, session}, _context ->
-                 participant_id = changeset.arguments.participant.id
-
-                 SessionParticipants
-                 |> Ash.get!(
-                   session_id: session.id,
-                   participant_id: participant_id
-                 )
-                 |> Ash.Changeset.for_update(:set_facilitation_status, %{
-                   facilitator?: changeset.arguments.facilitator?
-                 })
-                 |> Ash.update!()
+               _changeset, {:ok, session}, context ->
+                 session =
+                   Revelo.Sessions.add_participant!(session, context.actor, true)
 
                  {:ok, session}
 
@@ -78,6 +46,40 @@ defmodule Revelo.Sessions.Session do
                  )
 
                  {:error, reason}
+             end)
+    end
+
+    update :update do
+      accept [:name, :description]
+      primary? true
+    end
+
+    update :add_participant do
+      require_atomic? false
+
+      argument :participant, :struct do
+        constraints instance_of: User
+        allow_nil? false
+      end
+
+      argument :facilitator?, :boolean, default: false
+
+      change manage_relationship(:participant, :participants, type: :append)
+
+      change after_action(fn changeset, session, _context ->
+               participant_id = changeset.arguments.participant.id
+
+               SessionParticipants
+               |> Ash.get!(
+                 session_id: session.id,
+                 participant_id: participant_id
+               )
+               |> Ash.Changeset.for_update(:set_facilitation_status, %{
+                 facilitator?: changeset.arguments.facilitator?
+               })
+               |> Ash.update!()
+
+               {:ok, session}
              end)
     end
   end

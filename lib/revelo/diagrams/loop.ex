@@ -240,6 +240,8 @@ defmodule Revelo.Diagrams.Loop do
     end
 
     update :generate_story do
+      require_atomic? false
+
       change fn changeset, _ ->
         loop =
           Ash.load!(changeset.data, [

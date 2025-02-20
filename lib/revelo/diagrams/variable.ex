@@ -90,6 +90,8 @@ defmodule Revelo.Diagrams.Variable do
     end
 
     update :toggle_voi do
+      require_atomic? false
+
       change fn changeset, _ ->
         current_value = Ash.Changeset.get_attribute(changeset, :is_voi?)
         Ash.Changeset.force_change_attribute(changeset, :is_voi?, !current_value)
@@ -121,6 +123,8 @@ defmodule Revelo.Diagrams.Variable do
     end
 
     update :toggle_visibility do
+      require_atomic? false
+
       change fn changeset, _ ->
         current_value = Ash.Changeset.get_attribute(changeset, :hidden?)
         Ash.Changeset.force_change_attribute(changeset, :hidden?, !current_value)
