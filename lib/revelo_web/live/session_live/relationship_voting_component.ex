@@ -42,7 +42,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     socket =
       socket
       |> assign(assigns)
-      |> assign(:relationships, relationships_zipper)
+      |> assign_new(:relationships, fn -> relationships_zipper end)
 
     {:ok, socket}
   end
