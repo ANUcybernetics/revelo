@@ -28,6 +28,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   @impl true
   def update(%{new_variable: variable}, socket) do
     # Insert the new variable into the stream
+    variable = Ash.load!(variable, [:vote_tally, :voted?])
     {:ok, stream_insert(socket, :variables, variable)}
   end
 

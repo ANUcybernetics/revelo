@@ -29,6 +29,7 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
           <%= if f.source.type == :create do %>
             <.input type="hidden" field={@form[:is_voi?]} value="false" />
             <.input type="hidden" field={@form[:hidden?]} value="false" />
+            <.input type="hidden" field={@form[:vote_tally]} value={0} />
           <% end %>
           <.form_message field={f[:name]} />
         </.form_item>
