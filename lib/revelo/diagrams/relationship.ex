@@ -65,7 +65,15 @@ defmodule Revelo.Diagrams.Relationship do
               ),
               load: [:direct_votes, :inverse_votes]
 
-    calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
+    calculate :voted?,
+              :string,
+              expr(
+                fragment(
+                  "(SELECT type FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.voter_id = ?::uuid LIMIT 1)",
+                  id,
+                  type(^actor(:id), :binary_id)
+                )
+              )
   end
 
   actions do

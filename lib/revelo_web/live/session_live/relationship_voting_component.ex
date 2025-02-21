@@ -66,7 +66,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                   <div class="flex gap-2 w-full">
                     <.button
                       variant="outline"
-                      class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? && rel.type == :direct, do: "bg-orange-200 text-orange-900 border-0", else: ""}"}
+                      class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? == "direct", do: "bg-orange-200 text-orange-900 border-0", else: ""}"}
                       value="direct"
                       id={"direct-" <> rel.id}
                       phx-click="vote"
@@ -83,7 +83,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                     </.button>
                     <.button
                       variant="outline"
-                      class={"hover:bg-blue-100 font-normal w-full #{if rel.voted? && rel.type == :inverse, do: "bg-blue-200 text-blue-900 border-0", else: ""}"}
+                      class={"hover:bg-blue-100 font-normal w-full #{if rel.voted? == "inverse", do: "bg-blue-200 text-blue-900 border-0", else: ""}"}
                       value="inverse"
                       id={"inverse-" <> rel.id}
                       phx-click="vote"
@@ -97,7 +97,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                   </div>
                   <.button
                     variant="outline"
-                    class={"hover:bg-gray-100 font-normal w-full #{if rel.voted? && rel.type == :no_relationship, do: "bg-gray-300 text-gray-700 border-0", else: ""}"}
+                    class={"hover:bg-gray-100 font-normal w-full #{if rel.voted? == "no_relationship", do: "bg-gray-300 text-gray-700 border-0", else: ""}"}
                     value="no_relationship"
                     id={"no_relationship-" <> rel.id}
                     phx-click="vote"
@@ -138,6 +138,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
       {:ok, relationship} ->
         type = String.to_existing_atom(type)
         Diagrams.relationship_vote!(relationship, type, actor: voter)
+
+        IO.inspect(type, label: "TYPEIS:")
 
         # TODO this partitions the thing each time and could be done better with a stream
         relationships =
