@@ -134,7 +134,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         relationships =
           socket.assigns.session.id
           |> Diagrams.list_potential_relationships!(actor: socket.assigns.current_user)
-          |> Enum.group_by(& &1.src.id)
+          |> Enum.group_by(& &1.src.name)
 
         {:noreply, assign(socket, :relationships, relationships)}
 
