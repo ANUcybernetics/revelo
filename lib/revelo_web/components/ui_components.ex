@@ -448,6 +448,62 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
+  Renders a pagination component. The component shows the current page and total pages with optional
+  navigation buttons. It can be configured to show left, right, or both navigation buttons.
+  """
+  attr :current_page, :integer, required: true, doc: "current page number"
+  attr :total_pages, :integer, required: true, doc: "total number of pages"
+
+  attr :type, :string,
+    default: "none",
+    doc: "button type - can be 'left_button', 'both_buttons' or 'none'"
+
+  attr :target, :any, default: nil, doc: "the phx-target for button clicks"
+  attr :on_left_click, :any, default: nil, doc: "the phx-click event for the left button"
+  attr :on_right_click, :any, default: nil, doc: "the phx-click event for the right button"
+  attr :left_disabled, :boolean, default: false, doc: "whether the left button is disabled"
+  attr :right_disabled, :boolean, default: false, doc: "whether the right button is disabled"
+
+  def pagination(assigns) do
+    ~H"""
+    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
+      <.card_content class="border-gray-300 p-0 flex justify-between items-center h-full">
+        <%= if @type == "left_button" or @type == "both_buttons" do %>
+          <ReveloWeb.Component.Button.button
+            variant="outline"
+            class="h-full border-0 border-r-[1px] rounded-none"
+            phx-click={@on_left_click}
+            disabled={@left_disabled}
+            phx-target={@target}
+          >
+            <.icon name="hero-arrow-left" class="h-5 w-5" />
+          </ReveloWeb.Component.Button.button>
+        <% end %>
+        <div class="p-6 flex grow justify-center items-center space-x-4 flex-col gap-2">
+          <span class="text-2xl">
+            <b>
+              Page {@current_page} of {@total_pages}
+            </b>
+          </span>
+          <.progress class="w-full h-2 !m-0" value={round(@current_page / @total_pages * 100)} />
+        </div>
+        <%= if @type == "both_buttons" do %>
+          <ReveloWeb.Component.Button.button
+            variant="outline"
+            class="h-full border-0 border-l-[1px] rounded-none"
+            phx-target={@target}
+            phx-click={@on_right_click}
+            disabled={@right_disabled}
+          >
+            <.icon name="hero-arrow-right" class="h-5 w-5" />
+          </ReveloWeb.Component.Button.button>
+        <% end %>
+      </.card_content>
+    </.card>
+    """
+  end
+
+  @doc """
     Renders the discussion page for a given feedback loop
   """
 
