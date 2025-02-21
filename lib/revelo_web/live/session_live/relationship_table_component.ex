@@ -61,7 +61,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
           <.card_header class="w-full flex-none">
             <.header class="flex flex-row justify-between !items-start">
               <.card_title class="grow">{@title}</.card_title>
-              <.card_description class="mt-1">Total Loops: {@loop_count} </.card_description>
+              <.card_description class="mt-1">Total Loops: {@loop_count}</.card_description>
               <:actions>
                 <div class="flex gap-2">
                   <.button
@@ -254,11 +254,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
   end
 
   @impl true
-  def handle_event(
-        "toggle_override",
-        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type},
-        socket
-      ) do
+  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
     type = String.to_existing_atom(type)
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)

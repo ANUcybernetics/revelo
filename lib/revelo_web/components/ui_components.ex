@@ -126,23 +126,23 @@ defmodule ReveloWeb.UIComponents do
         <% end %>
       </nav>
       <nav class="mt-auto flex flex-col items-center gap-4 px-2 cursor-pointer mb-4">
-      <.tooltip>
-        <.tooltip_trigger>
-        <button
-          phx-click={JS.dispatch("toggle-darkmode")}
-          class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <div id="theme-icon-container">
-            <.icon name="hero-moon" class="h-4 w-4 transition-all" />
-            <.icon name="hero-sun" class="h-4 w-4 transition-all" />
-          </div>
-          <span class="sr-only">Toggle Theme</span>
-        </button>
-        </.tooltip_trigger>
-        <.tooltip_content side="right">
-          Toggle Theme
-        </.tooltip_content>
-      </.tooltip>
+        <.tooltip>
+          <.tooltip_trigger>
+            <button
+              phx-click={JS.dispatch("toggle-darkmode")}
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <div id="theme-icon-container">
+                <.icon name="hero-moon" class="h-4 w-4 transition-all" />
+                <.icon name="hero-sun" class="h-4 w-4 transition-all" />
+              </div>
+              <span class="sr-only">Toggle Theme</span>
+            </button>
+          </.tooltip_trigger>
+          <.tooltip_content side="right">
+            Toggle Theme
+          </.tooltip_content>
+        </.tooltip>
         <.dropdown_menu>
           <.dropdown_menu_trigger class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground">
             <.icon name="hero-user-circle-mini" class="h-4 w-4 transition-all group-hover:scale-110" />
@@ -604,7 +604,11 @@ defmodule ReveloWeb.UIComponents do
       data-cancel={JS.exec(@on_cancel, "phx-remove")}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="bg-background/70 fixed inset-0 transition-opacity" aria-hidden="true" />
+      <div
+        id={"#{@id}-bg"}
+        class="bg-background/70 fixed inset-0 transition-opacity"
+        aria-hidden="true"
+      />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -653,11 +657,14 @@ defmodule ReveloWeb.UIComponents do
     ~H"""
     <div class={"flex flex-col items-center scale-[#{@scale}]"}>
       <.link href={@text}>
-        <img class="qr_code" src={"data:image/png;base64," <>
+        <img
+          class="qr_code"
+          src={"data:image/png;base64," <>
             (@text
             |> EQRCode.encode()
             |> EQRCode.png()
-            |> Base.encode64())} />
+            |> Base.encode64())}
+        />
       </.link>
     </div>
     """

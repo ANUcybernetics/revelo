@@ -9,7 +9,7 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
     ~H"""
     <div>
       <.header class="mb-6">
-      {if @form.source.type == :create, do: "Add Variable", else: "Update Variable"}
+        {if @form.source.type == :create, do: "Add Variable", else: "Update Variable"}
       </.header>
 
       <.form
@@ -52,8 +52,7 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
 
   @impl true
   def handle_event("validate", %{"variable" => variable_params}, socket) do
-    {:noreply,
-     assign(socket, form: AshPhoenix.Form.validate(socket.assigns.form, variable_params))}
+    {:noreply, assign(socket, form: AshPhoenix.Form.validate(socket.assigns.form, variable_params))}
   end
 
   # def handle_event("save", %{"session" => session_params}, socket) do
@@ -88,8 +87,7 @@ defmodule ReveloWeb.SessionLive.VariableFormComponent do
         {:noreply, socket}
 
       {:error, changeset} ->
-        {:noreply,
-         put_flash(socket, :error, "Failed to save variable: #{inspect(changeset.errors)}")}
+        {:noreply, put_flash(socket, :error, "Failed to save variable: #{inspect(changeset.errors)}")}
     end
   end
 

@@ -20,54 +20,60 @@ defmodule ReveloWeb.SessionLive.Index do
           </.header>
         </.card_header>
         <.card_content class="h-2 grow">
-        <.table>
-          <.table_header>
-            <.table_row>
-              <.table_head>Name</.table_head>
-              <.table_head>Phase</.table_head>
-              <.table_head class="text-right">Action</.table_head>
-            </.table_row>
-          </.table_header>
-          <.table_body>
-          <.table_row :for={{id, session} <- @streams.sessions} id={id} phx-click="navigate_to_phase" phx-value-id={session.id} class="cursor-pointer">
-            <.table_cell class="font-medium"><%= session.name %></.table_cell>
-              <.table_cell>
-                <% phase = Revelo.SessionServer.get_phase(session.id) %>
-                <div class="flex items-center gap-2">
-                  <.icon
-                    name={
-                      case phase do
-                        :prepare -> "hero-adjustments-horizontal-mini"
-                        :identify_work -> "hero-queue-list-mini"
-                        :identify_discuss -> "hero-queue-list-mini"
-                        :relate_work -> "hero-arrows-right-left-mini"
-                        :relate_discuss -> "hero-arrows-right-left-mini"
-                        :analyse -> "hero-arrow-path-rounded-square-mini"
-                      end
-                    }
-                    class="h-4 w-4"
-                  />
-                  {case phase do
-                    :prepare -> "Prepare"
-                    :identify_work -> "Identify Work"
-                    :identify_discuss -> "Identify Discuss"
-                    :relate_work -> "Relate Work"
-                    :relate_discuss -> "Relate Discuss"
-                    :analyse -> "Analyse"
-                  end}
-                </div>
-              </.table_cell>
-              <.table_cell class="text-right">
-                <.link
-                  phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
-                  data-confirm="Are you sure?"
-                >
-                  Delete
-                </.link>
-              </.table_cell>
-            </.table_row>
-          </.table_body>
-        </.table>
+          <.table>
+            <.table_header>
+              <.table_row>
+                <.table_head>Name</.table_head>
+                <.table_head>Phase</.table_head>
+                <.table_head class="text-right">Action</.table_head>
+              </.table_row>
+            </.table_header>
+            <.table_body>
+              <.table_row
+                :for={{id, session} <- @streams.sessions}
+                id={id}
+                phx-click="navigate_to_phase"
+                phx-value-id={session.id}
+                class="cursor-pointer"
+              >
+                <.table_cell class="font-medium">{session.name}</.table_cell>
+                <.table_cell>
+                  <% phase = Revelo.SessionServer.get_phase(session.id) %>
+                  <div class="flex items-center gap-2">
+                    <.icon
+                      name={
+                        case phase do
+                          :prepare -> "hero-adjustments-horizontal-mini"
+                          :identify_work -> "hero-queue-list-mini"
+                          :identify_discuss -> "hero-queue-list-mini"
+                          :relate_work -> "hero-arrows-right-left-mini"
+                          :relate_discuss -> "hero-arrows-right-left-mini"
+                          :analyse -> "hero-arrow-path-rounded-square-mini"
+                        end
+                      }
+                      class="h-4 w-4"
+                    />
+                    {case phase do
+                      :prepare -> "Prepare"
+                      :identify_work -> "Identify Work"
+                      :identify_discuss -> "Identify Discuss"
+                      :relate_work -> "Relate Work"
+                      :relate_discuss -> "Relate Discuss"
+                      :analyse -> "Analyse"
+                    end}
+                  </div>
+                </.table_cell>
+                <.table_cell class="text-right">
+                  <.link
+                    phx-click={JS.push("delete", value: %{id: session.id}) |> hide("##{id}")}
+                    data-confirm="Are you sure?"
+                  >
+                    Delete
+                  </.link>
+                </.table_cell>
+              </.table_row>
+            </.table_body>
+          </.table>
         </.card_content>
       </.card>
     </div>

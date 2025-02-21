@@ -68,7 +68,9 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
           <.card_header class="w-full flex-none">
             <.header class="flex flex-row justify-between !items-start">
               <.card_title class="grow">{@title}</.card_title>
-              <.card_description :if={get_phase(@live_action) == :identify} class="mt-1">Variables Included: {@included_count} </.card_description>
+              <.card_description :if={get_phase(@live_action) == :identify} class="mt-1">
+                Variables Included: {@included_count}
+              </.card_description>
               <:actions>
                 <div class="flex flex-row gap-2 shrink flex-wrap items-end justify-end">
                   <.link patch={"/sessions/#{@session.id}/#{get_phase(@live_action)}/variables/new"}>
@@ -350,8 +352,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
         included_count = socket.assigns.included_count + length(new_variables)
         send(self(), {:increment_variable_count, length(new_variables)})
 
-        {:noreply,
-         stream(socket, :variables, variables) |> assign(:included_count, included_count)}
+        {:noreply, socket |> stream(:variables, variables) |> assign(:included_count, included_count)}
 
       {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Failed to generate variables")}

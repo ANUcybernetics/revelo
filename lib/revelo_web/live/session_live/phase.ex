@@ -20,7 +20,9 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           live_action={@live_action}
           session={@session}
-          title={if @live_action in [:prepare, :edit], do: "Prepare your variables", else: "Variable Votes"}
+          title={
+            if @live_action in [:prepare, :edit], do: "Prepare your variables", else: "Variable Votes"
+          }
         />
 
         <.live_component
@@ -127,7 +129,13 @@ defmodule ReveloWeb.SessionLive.Phase do
         :if={@modal}
         id="variable-modal"
         show
-        on_cancel={JS.patch(if @live_action == :identify_discuss, do: "#{ReveloWeb.Endpoint.url()}/sessions/#{@session.id}/identify/discuss", else: "#{ReveloWeb.Endpoint.url()}/sessions/#{@session.id}/prepare")}
+        on_cancel={
+          JS.patch(
+            if @live_action == :identify_discuss,
+              do: "#{ReveloWeb.Endpoint.url()}/sessions/#{@session.id}/identify/discuss",
+              else: "#{ReveloWeb.Endpoint.url()}/sessions/#{@session.id}/prepare"
+          )
+        }
       >
         <.live_component
           module={ReveloWeb.SessionLive.VariableFormComponent}
