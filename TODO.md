@@ -68,6 +68,8 @@ mix ash.gen.resource \
   phase, as we the votes aren't loaded at any point before needing to destroy
   them.
 
+- Rescan loops is trying to recreate loops that already exist sometimes
+
 - We should change the style of the relationship votes table, as it's a bit
   confusing and large.
 
