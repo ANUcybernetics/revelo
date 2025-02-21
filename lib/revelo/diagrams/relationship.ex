@@ -5,6 +5,7 @@ defmodule Revelo.Diagrams.Relationship do
     domain: Revelo.Diagrams,
     data_layer: AshPostgres.DataLayer
 
+  alias Revelo.Diagrams.Relationship
   alias Revelo.Diagrams.Variable
   alias Revelo.Sessions.Session
 
@@ -209,7 +210,7 @@ defmodule Revelo.Diagrams.Relationship do
           for src <- variables,
               dst <- variables,
               src.id != dst.id do
-            case Ash.get(Revelo.Diagrams.Relationship, src_id: src.id, dst_id: dst.id) do
+            case Ash.get(Relationship, src_id: src.id, dst_id: dst.id) do
               {:ok, existing} ->
                 existing
 
@@ -247,6 +248,12 @@ defmodule Revelo.Diagrams.Relationship do
 
     has_many :votes, Revelo.Diagrams.RelationshipVote do
       destination_attribute :relationship_id
+    end
+
+    many_to_many :loops, Revelo.Diagrams.Loop do
+      through Revelo.Diagrams.LoopRelationships
+      source_attribute_on_join_resource :relationship_id
+      destination_attribute_on_join_resource :loop_id
     end
   end
 
