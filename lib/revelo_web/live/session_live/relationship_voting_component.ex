@@ -19,13 +19,22 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
       assigns.session.id
       |> Diagrams.list_potential_relationships!(actor: assigns.current_user)
       |> Enum.group_by(& &1.src.name)
+      |> Map.values()
+      |> then(fn relationships ->
+        rotation = :erlang.phash2(assigns.current_user.id, length(relationships))
+
+        case rotation do
+          0 -> relationships
+          n -> Enum.slice(relationships, n..-1) ++ Enum.slice(relationships, 0..(n - 1))
+        end
+      end)
 
     socket =
       socket
       |> assign(assigns)
       |> assign_new(:relationships, fn -> relationships end)
       |> assign_new(:current_page, fn -> 1 end)
-      |> assign(:total_pages, length(Map.keys(relationships)))
+      |> assign(:total_pages, length(relationships))
 
     {:ok, socket}
   end
@@ -40,17 +49,17 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             Increasing the <br />
             <b>
               {@relationships
-              |> Map.keys()
-              |> Enum.at(@current_page - 1)}
+              |> Enum.at(@current_page - 1, [])
+              |> List.first()
+              |> Map.get(:src)
+              |> Map.get(:name)}
             </b>
             <br /> causes...
           </.card_title>
         </.card_header>
         <.scroll_area class="overflow-y-auto h-72 grow shrink">
           <.card_content class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2">
-            <%= for rel <- @relationships
-            |> Map.values()
-            |> Enum.at(@current_page - 1, []) do %>
+            <%= for rel <- @relationships|> Enum.at(@current_page - 1, []) do %>
               <div class="w-full border-b-[1px] border-gray-300 pt-4 pb-6 flex justify-center">
                 <div class="flex items-center flex-col gap-2 mx-4 max-w-md grow">
                   <p class="font-bold">{rel.dst.name}</p>
@@ -135,6 +144,15 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
           socket.assigns.session.id
           |> Diagrams.list_potential_relationships!(actor: socket.assigns.current_user)
           |> Enum.group_by(& &1.src.name)
+          |> Map.values()
+          |> then(fn relationships ->
+            rotation = :erlang.phash2(socket.assigns.current_user.id, length(relationships))
+
+            case rotation do
+              0 -> relationships
+              n -> Enum.slice(relationships, n..-1) ++ Enum.slice(relationships, 0..(n - 1))
+            end
+          end)
 
         {:noreply, assign(socket, :relationships, relationships)}
 
