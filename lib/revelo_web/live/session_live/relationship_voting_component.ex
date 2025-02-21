@@ -18,7 +18,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     relationships =
       assigns.session.id
       |> Diagrams.list_potential_relationships!(actor: assigns.current_user)
-      |> Enum.group_by(& &1.src.id)
+      |> Enum.group_by(& &1.src.name)
 
     socket =
       socket
@@ -40,11 +40,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             Increasing the <br />
             <b>
               {@relationships
-              |> Map.values()
-              |> Enum.at(@current_page - 1, [])
-              |> List.first()
-              |> Map.get(:src)
-              |> Map.get(:name)}
+              |> Map.keys()
+              |> Enum.at(@current_page - 1)}
             </b>
             <br /> causes...
           </.card_title>
@@ -65,7 +62,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                       id="direct"
                       phx-click="vote"
                       phx-value-type="direct"
-                      phx-value-relationship_id={rel.id}
+                      phx-value-src_id={rel.src.id}
+                      phx-value-dst_id={rel.dst.id}
                       phx-target={@myself}
                     >
                       to increase
@@ -81,7 +79,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                       id="inverse"
                       phx-click="vote"
                       phx-value-type="inverse"
-                      phx-value-relationship_id={rel.id}
+                      phx-value-src_id={rel.src.id}
+                      phx-value-dst_id={rel.dst.id}
                       phx-target={@myself}
                     >
                       to decrease <.icon name="hero-arrows-up-down" class="h-4 w-4 ml-2" />
@@ -94,7 +93,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                     id="no_relationship"
                     phx-click="vote"
                     phx-value-type="no_relationship"
-                    phx-value-relationship_id={rel.id}
+                    phx-value-src_id={rel.src.id}
+                    phx-value-dst_id={rel.dst.id}
                     phx-target={@myself}
                   >
                     no direct effect <.icon name="hero-no-symbol-solid" class="h-4 w-4 ml-2" />
@@ -122,25 +122,25 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   end
 
   @impl true
-  def handle_event("vote", %{"type" => type, "relationship_id" => relationship_id}, socket) do
+  def handle_event("vote", %{"type" => type, "src_id" => src_id, "dst_id" => dst_id}, socket) do
     voter = socket.assigns.current_user
 
-    relationship =
-      socket.assigns.relationships
-      |> Map.values()
-      |> List.flatten()
-      |> Enum.find(&(&1.id == relationship_id))
+    case Ash.get(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id) do
+      {:ok, relationship} ->
+        type = String.to_existing_atom(type)
+        Diagrams.relationship_vote!(relationship, type, actor: voter)
 
-    type = String.to_existing_atom(type)
+        # TODO this partitions the thing each time and could be done better with a stream
+        relationships =
+          socket.assigns.session.id
+          |> Diagrams.list_potential_relationships!(actor: socket.assigns.current_user)
+          |> Enum.group_by(& &1.src.id)
 
-    Diagrams.relationship_vote!(relationship, type, actor: voter)
+        {:noreply, assign(socket, :relationships, relationships)}
 
-    relationships =
-      socket.assigns.session.id
-      |> Diagrams.list_potential_relationships!(actor: socket.assigns.current_user)
-      |> Enum.group_by(& &1.src.id)
-
-    {:noreply, assign(socket, :relationships, relationships)}
+      {:error, _reason} ->
+        {:noreply, socket}
+    end
   end
 
   @impl true
