@@ -205,8 +205,7 @@ defmodule ReveloWeb.UserFlowTest do
       _anon_session =
         anon_session.conn
         |> visit("/sessions/#{session.id}/relate/work")
-        |> assert_has("h3", text: "Pick the most accurate relation")
-        |> choose("direct", exact: false)
+        |> assert_has("h3", text: "Increasing the")
 
       # TODO This fails sometimes with a disconnect error?
       _facilitator_session =
