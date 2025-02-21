@@ -89,16 +89,14 @@ defmodule Revelo.LoopTest do
 
       Revelo.Diagrams.create_loop!(relationships, actor: user)
 
-      [loop] = Revelo.Diagrams.list_loops!(session.id)
-
-      relationships =
-        Ash.load!(loop, influence_relationships: [:src, :dst]).influence_relationships
+      [%Revelo.Diagrams.Loop{influence_relationships: relationships}] =
+        Revelo.Diagrams.list_loops!(session.id)
 
       # Check that each relationship's dst matches the next's src
       pairs = Enum.chunk_every(relationships ++ [List.first(relationships)], 2, 1, :discard)
 
       for [rel1, rel2] <- pairs do
-        assert rel1.dst.id == rel2.src.id
+        assert rel1.dst.name == rel2.src.name
       end
     end
 
