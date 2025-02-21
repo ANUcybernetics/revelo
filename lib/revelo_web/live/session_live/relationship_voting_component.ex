@@ -59,7 +59,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                       variant="outline"
                       class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? && rel.type == :direct, do: "bg-orange-200 text-orange-900 border-0", else: ""}"}
                       value="direct"
-                      id="direct"
+                      id={"direct-" <> rel.id}
                       phx-click="vote"
                       phx-value-type="direct"
                       phx-value-src_id={rel.src.id}
@@ -76,7 +76,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                       variant="outline"
                       class={"hover:bg-blue-100 font-normal w-full #{if rel.voted? && rel.type == :inverse, do: "bg-blue-200 text-blue-900 border-0", else: ""}"}
                       value="inverse"
-                      id="inverse"
+                      id={"inverse-" <> rel.id}
                       phx-click="vote"
                       phx-value-type="inverse"
                       phx-value-src_id={rel.src.id}
@@ -90,7 +90,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                     variant="outline"
                     class={"hover:bg-gray-100 font-normal w-full #{if rel.voted? && rel.type == :no_relationship, do: "bg-gray-300 text-gray-700 border-0", else: ""}"}
                     value="no_relationship"
-                    id="no_relationship"
+                    id={"no_relationship-" <> rel.id}
                     phx-click="vote"
                     phx-value-type="no_relationship"
                     phx-value-src_id={rel.src.id}
