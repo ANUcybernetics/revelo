@@ -38,8 +38,8 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-5xl min-w-xs w-[80svw]">
-      <.card class="overflow-hidden">
+    <div class="max-w-5xl min-w-xs w-[80svw] h-svh p-5 flex flex-col">
+      <.card class="overflow-hidden grow flex flex-col">
         <.card_header>
           <.card_title>
             <%= if @completed? do %>
@@ -59,12 +59,12 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
           </div>
         </.card_content>
 
-        <.scroll_area class="h-72">
+        <.scroll_area class="overflow-y-auto h-72 grow shrink">
           <%= if @completed? do %>
             <.card_content id={"summary-#{@id}"} class="p-0">
               <%= for variable <- Enum.sort_by(@variables, & &1.voted?, :desc) do %>
                 <%= if !variable.is_voi? do %>
-                  <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
+                  <div class="flex items-center justify-between py-8 px-6 gap-2 text-sm font-semibold">
                     <span>{variable.name}</span>
                     <%= if variable.voted? do %>
                       <.badge_vote />
@@ -80,7 +80,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
               <%= for variable <- @variables do %>
                 <%= if !variable.is_voi? do %>
                   <.label id={variable.id} for={"#{variable.id}-checkbox"}>
-                    <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-muted">
+                    <div class="flex items-center py-8 px-6 gap-2 has-[input:checked]:bg-muted">
                       <.checkbox
                         id={"#{variable.id}-checkbox"}
                         value={variable.voted?}

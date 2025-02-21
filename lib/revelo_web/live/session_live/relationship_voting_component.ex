@@ -33,8 +33,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-5xl min-w-xs w-[80svw]">
-      <.card class="overflow-hidden ">
+    <div class="max-w-5xl min-w-xs w-[80svw] h-svh p-5 flex flex-col">
+      <.card class="overflow-hidden grow flex flex-col">
         <.card_header class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
           <.card_title class="font-normal leading-2 text-xl">
             Increasing the <br />
@@ -46,7 +46,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             <br /> causes...
           </.card_title>
         </.card_header>
-        <.scroll_area class="h-72">
+        <.scroll_area class="overflow-y-auto h-72 grow shrink">
           <.card_content class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2">
             <%= for rel <- @relationships
             |> Map.values()
