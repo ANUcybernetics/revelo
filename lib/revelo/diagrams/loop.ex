@@ -11,6 +11,7 @@ defmodule Revelo.Diagrams.Loop do
   alias Revelo.Diagrams.Relationship
 
   require Ash.Query
+  require Ash.Sort
 
   postgres do
     table "loops"
@@ -280,6 +281,7 @@ defmodule Revelo.Diagrams.Loop do
       through LoopRelationships
       source_attribute_on_join_resource :loop_id
       destination_attribute_on_join_resource :relationship_id
+      sort [Ash.Sort.expr_sort(source(influence_relationships_join_assoc.loop_index))]
     end
   end
 end
