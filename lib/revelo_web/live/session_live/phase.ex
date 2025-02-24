@@ -257,12 +257,16 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:page_title, page_title(socket.assigns.live_action))
       |> assign(:timer, 300)
 
-    # Redirect non-facilitator to the current phase
+    current_phase = Revelo.SessionServer.get_phase(session.id)
+
+    # Set phase and redirect non-facilitator to the current phase
     if current_user.facilitator? do
+      if socket.assigns.live_action != current_phase do
+        Revelo.SessionServer.transition_to(session_id, socket.assigns.live_action)
+      end
+
       {:noreply, socket}
     else
-      current_phase = Revelo.SessionServer.get_phase(session.id)
-
       if socket.assigns.live_action != current_phase do
         send(self(), {:transition, current_phase})
       end
