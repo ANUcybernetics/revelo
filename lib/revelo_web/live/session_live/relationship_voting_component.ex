@@ -139,8 +139,6 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         type = String.to_existing_atom(type)
         Diagrams.relationship_vote!(relationship, type, actor: voter)
 
-        IO.inspect(type, label: "TYPEIS:")
-
         # TODO this partitions the thing each time and could be done better with a stream
         relationships =
           socket.assigns.session.id
