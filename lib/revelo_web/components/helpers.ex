@@ -135,7 +135,7 @@ defmodule ReveloWeb.ComponentHelpers do
     variation_classes = Enum.map_join(variants, " ", fn {key, value} -> @variants[key][value] end)
 
     shared_classes =
-      "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50"
+      "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:text-opacity-50"
 
     "#{shared_classes} #{variation_classes}"
   end
