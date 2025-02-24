@@ -116,35 +116,20 @@ defmodule Revelo.SessionServer do
   def handle_call({:transition_to, new_phase}, _from, state) do
     state =
       case new_phase do
-        :identify_work ->
-          if state.timer == 0 do
-            schedule_tick()
-          end
-
-          %{state | phase: new_phase, timer: 300}
-
         :relate_work ->
-          if state.timer == 0 do
-            schedule_tick()
-          end
-
           Revelo.Sessions.Session
           |> Ash.get!(state.session_id)
           |> Revelo.Diagrams.enumerate_relationships!()
 
-          %{state | phase: new_phase, timer: 300}
+          %{state | phase: new_phase}
 
         :analyse ->
-          if state.timer == 0 do
-            schedule_tick()
-          end
-
           Revelo.Diagrams.rescan_loops!(state.session_id)
 
-          %{state | phase: new_phase, timer: 300}
+          %{state | phase: new_phase}
 
         _ ->
-          %{state | phase: new_phase, timer: 0}
+          %{state | phase: new_phase}
       end
 
     broadcast_transition(state.session_id, new_phase)

@@ -186,14 +186,15 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         </nav>
       </.loop_wrapper>
       <%= if !@current_user.facilitator? do %>
-        <.countdown
-          type="left_button"
-          time_left={@time_left}
-          initial_time={300}
-          on_left_click="unselect_loop"
-          target={@myself}
-          left_disabled={is_nil(@selected_loop)}
-        />
+        <.button
+          type="button"
+          variant="outline"
+          phx-click="unselect_loop"
+          phx-target={@myself}
+          disabled={is_nil(@selected_loop)}
+        >
+          Back
+        </.button>
       <% end %>
     </div>
     """

@@ -18,19 +18,4 @@ defmodule Revelo.SessionServerTest do
     assert state.phase == :prepare
     assert state.timer == 0
   end
-
-  test "relates phase has timer countdown", %{session: session} do
-    Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
-
-    # Move to relate phase
-    SessionServer.transition_to(session.id, :identify_work)
-    assert_receive {:transition, :identify_work}
-
-    state = SessionServer.get_state(session.id)
-    assert state.timer == 300
-
-    Process.sleep(2000)
-    assert_receive {:tick, 300}
-    assert_receive {:tick, 299}
-  end
 end

@@ -187,7 +187,6 @@ defmodule ReveloWeb.SessionLive.Phase do
           current_user={@current_user}
           session={@session}
           start_index={0}
-          time_left={@timer}
         />
       </div>
       <div
@@ -206,7 +205,6 @@ defmodule ReveloWeb.SessionLive.Phase do
         current_user={@current_user}
         live_action={@live_action}
         session={@session}
-        time_left={@timer}
       />
     </div>
     """
@@ -255,7 +253,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:participant_count, {0, 1})
       |> assign_new(:variable_count, fn -> 0 end)
       |> assign(:page_title, page_title(socket.assigns.live_action))
-      |> assign(:timer, 300)
+      |> assign(:timer, 0)
 
     current_phase = Revelo.SessionServer.get_phase(session.id)
 
