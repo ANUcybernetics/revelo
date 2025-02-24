@@ -169,7 +169,7 @@ defmodule ReveloWeb.UserFlowTest do
         |> click_link("Add Variable")
         |> fill_in("Variable Name", with: "Test Variable 3")
         |> click_button("Create Variable")
-        |> click_button("Next Phase")
+        |> click_link("Next Phase")
         |> assert_has("h3", text: "Identify variables")
 
       anon_session =
@@ -186,8 +186,8 @@ defmodule ReveloWeb.UserFlowTest do
 
       facilitator_session =
         facilitator_session.conn
-        |> visit("/sessions/#{session.id}/prepare")
-        |> click_button("Next Phase")
+        |> visit("/sessions/#{session.id}/identify/work")
+        |> click_link("Next Phase")
         |> assert_has("h3", text: "Variable Votes")
         |> assert_has("div.bg-blue-400", text: "1")
 
@@ -199,7 +199,7 @@ defmodule ReveloWeb.UserFlowTest do
       facilitator_session =
         facilitator_session.conn
         |> visit("/sessions/#{session.id}/identify/discuss")
-        |> click_button("Next Phase")
+        |> click_link("Next Phase")
         |> assert_has("h3", text: "Identify relationships")
 
       _anon_session =
@@ -211,7 +211,7 @@ defmodule ReveloWeb.UserFlowTest do
       _facilitator_session =
         facilitator_session.conn
         |> visit("/sessions/#{session.id}/relate/work")
-        |> click_button("Next Phase")
+        |> click_link("Next Phase")
         |> assert_has("h3", text: "Relationship Votes")
     end
   end

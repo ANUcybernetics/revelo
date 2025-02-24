@@ -109,19 +109,17 @@ defmodule ReveloWeb.SessionLive.Phase do
 
       <div :if={@current_user.facilitator?} class="flex justify-between mt-4">
         <div>
-          <.button
+          <.link
             :if={@live_action not in [:prepare]}
-            phx-click="phase_transition"
-            phx-value-direction="previous"
-            variant="outline"
+            href={phase_to_path(previous_phase(@live_action), @session.id)}
           >
-            Previous Phase
-          </.button>
+            <.button variant="outline">Previous Phase</.button>
+          </.link>
         </div>
         <div>
-          <.button phx-click="phase_transition" phx-value-direction="next">
-            Next Phase
-          </.button>
+          <.link href={phase_to_path(next_phase(@live_action), @session.id)}>
+            <.button>Next Phase</.button>
+          </.link>
         </div>
       </div>
 
@@ -326,6 +324,28 @@ defmodule ReveloWeb.SessionLive.Phase do
       :relate_discuss -> ~p"/sessions/#{session_id}/relate/discuss"
       :prepare -> ~p"/sessions/#{session_id}/prepare"
       :analyse -> ~p"/sessions/#{session_id}/analyse"
+    end
+  end
+
+  defp next_phase(phase) do
+    case phase do
+      :prepare -> :identify_work
+      :identify_work -> :identify_discuss
+      :identify_discuss -> :relate_work
+      :relate_work -> :relate_discuss
+      :relate_discuss -> :analyse
+      :analyse -> :analyse
+    end
+  end
+
+  defp previous_phase(phase) do
+    case phase do
+      :prepare -> :prepare
+      :identify_work -> :prepare
+      :identify_discuss -> :identify_work
+      :relate_work -> :identify_discuss
+      :relate_discuss -> :relate_work
+      :analyse -> :relate_discuss
     end
   end
 
