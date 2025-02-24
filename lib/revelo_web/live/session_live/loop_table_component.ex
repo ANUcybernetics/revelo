@@ -13,12 +13,16 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def update(assigns, socket) do
     loops = Diagrams.list_loops!(assigns.session.id)
+    variables = Diagrams.list_variables!(assigns.session.id, false)
+    relationships = Diagrams.list_actual_relationships!(assigns.session.id)
     loop_count = Enum.count(loops)
 
     socket =
       socket
       |> assign(assigns)
       |> assign(:loops, loops)
+      |> assign(:variables, variables)
+      |> assign(:relationships, relationships)
       |> assign(:loop_count, loop_count)
       |> assign_new(:selected_loop, fn -> nil end)
 
@@ -135,7 +139,66 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 my-8 grow">
+    <div class="flex flex-col gap-4 my-8 grow h-full">
+      <%= if @current_user.facilitator? do %>
+        <div
+          id="plot-loops"
+          phx-hook="PlotLoops"
+          phx-update="ignore"
+          class="h-full w-[calc(100%-350px)]"
+          data-elements={
+            Jason.encode!(
+              Enum.concat(
+                Enum.map(@variables, fn var ->
+                  %{group: "nodes", data: %{id: var.id, label: var.name, isKey: var.is_voi?}}
+                end),
+                Enum.map(@relationships, fn rel ->
+                  %{
+                    group: "edges",
+                    data: %{
+                      source: rel.src_id,
+                      target: rel.dst_id,
+                      relation: Atom.to_string(rel.type),
+                      id: rel.id
+                    }
+                  }
+                end)
+              )
+            )
+          }
+          data-selected-loop={@selected_loop}
+          data-loops={
+            Jason.encode!(
+              Enum.map(@loops, fn loop ->
+                %{
+                  id: loop.id,
+                  title: loop.title,
+                  story: loop.story,
+                  type: loop.type,
+                  influence_relationships:
+                    Enum.map(loop.influence_relationships, fn rel ->
+                      %{
+                        id: rel.id,
+                        src: %{
+                          id: rel.src_id,
+                          name: rel.src.name,
+                          is_voi?: rel.src.is_voi?
+                        },
+                        dst: %{
+                          id: rel.dst_id,
+                          name: rel.dst.name,
+                          is_voi?: rel.dst.is_voi?
+                        },
+                        type: rel.type
+                      }
+                    end)
+                }
+              end)
+            )
+          }
+        >
+        </div>
+      <% end %>
       <.loop_wrapper
         facilitator?={@current_user.facilitator?}
         selected_loop={@selected_loop}

@@ -195,11 +195,17 @@ defmodule ReveloWeb.SessionLive.Phase do
       </div>
     </div>
 
-    <div :if={@live_action in [:analyse]} class="h-full flex flex-col items-center justify-center">
+    <div
+      :if={@live_action in [:analyse]}
+      class={
+        if @current_user.facilitator?,
+          do: "h-full flex items-center justify-center",
+          else: "h-full flex flex-col items-center justify-center"
+      }
+    >
       <.live_component
         module={ReveloWeb.SessionLive.LoopTableComponent}
         id="loop-table"
-        class="col-span-12"
         current_user={@current_user}
         live_action={@live_action}
         session={@session}
