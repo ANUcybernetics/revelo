@@ -9,7 +9,7 @@ defmodule ReveloTest.Generators do
     input =
       %{
         name: sequence(:title, &"Session #{&1}"),
-        description: StreamData.repeatedly(fn -> Faker.Lorem.paragraph() end)
+        description: StreamData.repeatedly(fn -> "this is the description" end)
       }
       |> StreamData.fixed_map()
       |> ExUnitProperties.pick()
@@ -105,7 +105,10 @@ defmodule ReveloTest.Generators do
     input =
       %{
         relationships: StreamData.constant(relationships),
-        story: StreamData.repeatedly(fn -> Faker.Lorem.paragraph() end),
+        story:
+          StreamData.repeatedly(fn ->
+            "this is the story of a loop/who cried a river and drowned in the goop"
+          end),
         display_order: StreamData.positive_integer()
       }
       |> StreamData.fixed_map()

@@ -67,7 +67,6 @@ defmodule Revelo.MixProject do
       {:eqrcode, "~> 0.2"},
       {:req, "~> 0.5"},
       {:zipper_list, "~> 1.0"},
-      {:faker, "~> 0.18", only: :test},
       {:styler, "~> 1.2", only: [:dev, :test], runtime: false},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       {:sourceror, "~> 1.7", only: [:dev, :test]}
