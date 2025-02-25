@@ -42,7 +42,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-5xl min-w-xs w-[80svw] h-svh p-5 flex flex-col">
+    <div class="max-w-5xl w-md min-w-[80svw] h-full p-5 pb-2 flex flex-col">
       <.card class="overflow-hidden grow flex flex-col">
         <.card_header class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
           <.card_title class="font-normal leading-2 text-xl">

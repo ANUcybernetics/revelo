@@ -10,6 +10,7 @@ const keySVG = encodeURIComponent(`
 `);
 
 function updateNodeStyles(selectedLoop, loops, cy, relationships) {
+  //TODO: Use cytoscape selectors to improve performance
   if (!cy || !selectedLoop) {
     cy?.elements().style({
       opacity: 1,

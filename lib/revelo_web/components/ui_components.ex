@@ -231,7 +231,7 @@ defmodule ReveloWeb.UIComponents do
 
   def task_completed(assigns) do
     ~H"""
-    <.card class="max-w-5xl min-w-xs w-[80svw]">
+    <.card class="max-w-5xl w-md min-w-[80svw] ">
       <.card_header>
         <.card_title>Task Completed!</.card_title>
         <.card_description>Look at the main screen for next steps</.card_description>
@@ -258,7 +258,7 @@ defmodule ReveloWeb.UIComponents do
 
   def variable_voting(assigns) do
     ~H"""
-    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
+    <.card class="max-w-5xl w-md min-w-[80svw]  overflow-hidden">
       <.card_header>
         <.card_title>Which of these are important parts of your system?</.card_title>
       </.card_header>
@@ -300,7 +300,7 @@ defmodule ReveloWeb.UIComponents do
 
   def variable_confirmation(assigns) do
     ~H"""
-    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
+    <.card class="max-w-5xl w-md min-w-[80svw]  overflow-hidden">
       <.card_header>
         <.card_title>Your Variable Votes</.card_title>
       </.card_header>
@@ -346,7 +346,7 @@ defmodule ReveloWeb.UIComponents do
 
   def relationship_voting(assigns) do
     ~H"""
-    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
+    <.card class="max-w-5xl w-md min-w-[80svw]  overflow-hidden">
       <.card_header>
         <.card_title>Pick the most accurate relation</.card_title>
       </.card_header>
@@ -399,7 +399,7 @@ defmodule ReveloWeb.UIComponents do
     ~H"""
     <.card class={
       [
-        "max-w-5xl min-w-xs w-[80svw] overflow-hidden",
+        "max-w-5xl w-md min-w-[80svw]  overflow-hidden",
         if(@time_left == 0, do: "bg-red-600 border-red-200 text-red-200")
       ]
       |> Enum.join(" ")
@@ -464,7 +464,7 @@ defmodule ReveloWeb.UIComponents do
 
   def pagination(assigns) do
     ~H"""
-    <.card class="max-w-5xl min-w-xs w-[80svw] overflow-hidden">
+    <.card class="max-w-5xl w-md min-w-[80svw] grow overflow-hidden">
       <.card_content class="border-gray-300 p-0 flex justify-between items-center h-full">
         <%= if @type == "left_button" or @type == "both_buttons" do %>
           <ReveloWeb.Component.Button.button

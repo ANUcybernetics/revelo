@@ -124,7 +124,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         {render_slot(@inner_block)}
       </aside>
     <% else %>
-      <.card class="max-w-5xl min-w-xs w-[80svw] h-20 grow flex flex-col overflow-y-auto">
+      <.card class="max-w-5xl w-md min-w-[80svw] h-20 grow flex flex-col overflow-y-auto">
         <%= if @selected_loop do %>
           <.loop_card selected_loop={@selected_loop} loops={@loops} participant_view?={true}>
           </.loop_card>
@@ -139,7 +139,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 my-8 grow h-full">
+    <div class="flex flex-col gap-4 grow h-full p-5 pb-2 ">
       <%= if @current_user.facilitator? do %>
         <div
           id="plot-loops"
