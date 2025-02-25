@@ -56,7 +56,7 @@ defmodule Revelo.Diagrams.RelationshipVote do
   end
 
   relationships do
-    belongs_to :relationship, Revelo.Diagrams.Relationship do
+    belongs_to :relationship, Relationship do
       allow_nil? false
       primary_key? true
     end

@@ -48,7 +48,7 @@ defmodule Revelo.SessionTest do
       session = Ash.load!(session, :participants, authorize?: false)
 
       session_participant =
-        Ash.get!(Revelo.Sessions.SessionParticipants,
+        Ash.get!(SessionParticipants,
           session_id: session.id,
           participant_id: participant.id
         )

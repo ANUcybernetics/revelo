@@ -162,7 +162,7 @@ defmodule Revelo.SessionServer do
   end
 
   defp schedule_tick do
-    Process.send_after(self(), :tick, :timer.seconds(@timer_interval_sec))
+    Process.send_after(self(), :tick, to_timeout(second: @timer_interval_sec))
   end
 
   defp via_tuple(session_id) do
