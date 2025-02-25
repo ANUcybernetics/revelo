@@ -23,10 +23,10 @@ end
 config :instructor_lite, :openai_api_key, System.fetch_env!("OPENAI_API_KEY")
 
 if config_env() == :prod do
-  database_path =
-    System.get_env("DATABASE_PATH") ||
+  database_url =
+    System.get_env("DATABASE_URL") ||
       raise """
-      environment variable DATABASE_PATH is missing.
+      environment variable DATABASE_URL is missing.
       For example: /etc/revelo/revelo.db
       """
 
@@ -57,7 +57,7 @@ if config_env() == :prod do
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
   config :revelo, Revelo.Repo,
-    database: database_path,
+    database: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
 
   config :revelo, ReveloWeb.Endpoint,
