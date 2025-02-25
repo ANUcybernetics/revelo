@@ -39,6 +39,8 @@ defmodule Revelo.LLM do
   alias Revelo.LLM.VariableList
 
   def generate_variables(description, voi, count, variables) do
+    ensure_api_key_present!()
+
     if count == "0" do
       {:ok, %VariableList{variables: []}}
     else
@@ -81,6 +83,8 @@ defmodule Revelo.LLM do
   end
 
   def generate_story(description, loop, feedback_type) do
+    ensure_api_key_present!()
+
     InstructorLite.instruct(
       %{
         messages: [
@@ -110,5 +114,15 @@ defmodule Revelo.LLM do
         api_key: Application.fetch_env!(:instructor_lite, :openai_api_key)
       ]
     )
+  end
+
+  defp ensure_api_key_present! do
+    case Application.fetch_env!(:instructor_lite, :openai_api_key) do
+      nil ->
+        raise "OpenAI API key is required but not configured. Set the OPENAI_API_KEY environment variable."
+
+      _ ->
+        :ok
+    end
   end
 end
