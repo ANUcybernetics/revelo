@@ -161,7 +161,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 </span>
                               </button>
                             </tooltip_trigger>
-                            <.tooltip_content side="right">
+                            <.tooltip_content side="top">
                               Direct Votes
                             </.tooltip_content>
                           </.tooltip>
@@ -197,7 +197,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 </span>
                               </button>
                             </tooltip_trigger>
-                            <.tooltip_content side="right">
+                            <.tooltip_content side="top">
                               No Relationship Votes
                             </.tooltip_content>
                           </.tooltip>
@@ -233,7 +233,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                 </span>
                               </button>
                             </tooltip_trigger>
-                            <.tooltip_content side="right">
+                            <.tooltip_content side="top">
                               Inverse Votes
                             </.tooltip_content>
                           </.tooltip>
