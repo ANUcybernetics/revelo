@@ -25,7 +25,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
         case rotation do
           0 -> relationships
-          n -> Enum.slice(relationships, n..-1) ++ Enum.slice(relationships, 0..(n - 1))
+          n -> Enum.slice(relationships, n..-1//1) ++ Enum.slice(relationships, 0..(n - 1))
         end
       end)
 
