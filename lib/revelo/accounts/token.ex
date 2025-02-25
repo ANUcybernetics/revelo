@@ -73,8 +73,6 @@ defmodule Revelo.Accounts.Token do
   end
 
   attributes do
-    uuid_primary_key :id
-
     attribute :jti, :string do
       primary_key? true
       public? true
