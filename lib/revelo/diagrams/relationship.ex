@@ -14,69 +14,6 @@ defmodule Revelo.Diagrams.Relationship do
     repo Revelo.Repo
   end
 
-  calculations do
-    calculate :direct_votes,
-              :integer,
-              expr(
-                fragment(
-                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'direct')",
-                  id
-                )
-              )
-
-    calculate :inverse_votes,
-              :integer,
-              expr(
-                fragment(
-                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'inverse')",
-                  id
-                )
-              )
-
-    calculate :no_relationship_votes,
-              :integer,
-              expr(
-                fragment(
-                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'no_relationship')",
-                  id
-                )
-              )
-
-    calculate :type,
-              :atom,
-              expr(
-                cond do
-                  not is_nil(type_override) ->
-                    type_override
-
-                  direct_votes > 0 and inverse_votes > 0 ->
-                    :conflicting
-
-                  direct_votes > 0 and direct_votes >= no_relationship_votes and
-                      inverse_votes == 0 ->
-                    :direct
-
-                  inverse_votes > 0 and inverse_votes >= no_relationship_votes and
-                      direct_votes == 0 ->
-                    :inverse
-
-                  true ->
-                    :no_relationship
-                end
-              ),
-              load: [:direct_votes, :inverse_votes]
-
-    calculate :voted?,
-              :string,
-              expr(
-                fragment(
-                  "(SELECT type FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.voter_id = ?::uuid LIMIT 1)",
-                  id,
-                  type(^actor(:id), :binary_id)
-                )
-              )
-  end
-
   actions do
     defaults [:read, :destroy, update: :*]
 
@@ -255,6 +192,69 @@ defmodule Revelo.Diagrams.Relationship do
       source_attribute_on_join_resource :relationship_id
       destination_attribute_on_join_resource :loop_id
     end
+  end
+
+  calculations do
+    calculate :direct_votes,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'direct')",
+                  id
+                )
+              )
+
+    calculate :inverse_votes,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'inverse')",
+                  id
+                )
+              )
+
+    calculate :no_relationship_votes,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.type = 'no_relationship')",
+                  id
+                )
+              )
+
+    calculate :type,
+              :atom,
+              expr(
+                cond do
+                  not is_nil(type_override) ->
+                    type_override
+
+                  direct_votes > 0 and inverse_votes > 0 ->
+                    :conflicting
+
+                  direct_votes > 0 and direct_votes >= no_relationship_votes and
+                      inverse_votes == 0 ->
+                    :direct
+
+                  inverse_votes > 0 and inverse_votes >= no_relationship_votes and
+                      direct_votes == 0 ->
+                    :inverse
+
+                  true ->
+                    :no_relationship
+                end
+              ),
+              load: [:direct_votes, :inverse_votes]
+
+    calculate :voted?,
+              :string,
+              expr(
+                fragment(
+                  "(SELECT type FROM relationship_votes WHERE relationship_votes.relationship_id = ? AND relationship_votes.voter_id = ?::uuid LIMIT 1)",
+                  id,
+                  type(^actor(:id), :binary_id)
+                )
+              )
   end
 
   identities do

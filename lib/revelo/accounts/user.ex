@@ -10,45 +10,6 @@ defmodule Revelo.Accounts.User do
   alias AshAuthentication.Strategy.Password.HashPasswordChange
   alias AshAuthentication.Strategy.Password.PasswordConfirmationValidation
 
-  postgres do
-    table "users"
-    repo Revelo.Repo
-  end
-
-  policies do
-    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
-      authorize_if always()
-    end
-
-    policy always() do
-      forbid_if always()
-    end
-  end
-
-  calculations do
-    calculate :facilitator?, :boolean do
-      argument :session_id, :uuid do
-        allow_nil? false
-      end
-
-      calculation fn users, context ->
-        Enum.map(users, fn user ->
-          participant =
-            Ash.get!(Revelo.Sessions.SessionParticipants,
-              session_id: context.arguments.session_id,
-              participant_id: user.id
-            )
-
-          participant.facilitator?
-        end)
-      end
-    end
-
-    calculate :anonymous?, :boolean do
-      calculation expr(is_nil(email))
-    end
-  end
-
   authentication do
     tokens do
       enabled? true
@@ -85,6 +46,11 @@ defmodule Revelo.Accounts.User do
         sender Revelo.Accounts.User.Senders.SendNewUserConfirmationEmail
       end
     end
+  end
+
+  postgres do
+    table "users"
+    repo Revelo.Repo
   end
 
   actions do
@@ -278,6 +244,16 @@ defmodule Revelo.Accounts.User do
     end
   end
 
+  policies do
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+
+    policy always() do
+      forbid_if always()
+    end
+  end
+
   attributes do
     uuid_primary_key :id
 
@@ -291,6 +267,30 @@ defmodule Revelo.Accounts.User do
     attribute :hashed_password, :string do
       allow_nil? true
       sensitive? true
+    end
+  end
+
+  calculations do
+    calculate :facilitator?, :boolean do
+      argument :session_id, :uuid do
+        allow_nil? false
+      end
+
+      calculation fn users, context ->
+        Enum.map(users, fn user ->
+          participant =
+            Ash.get!(Revelo.Sessions.SessionParticipants,
+              session_id: context.arguments.session_id,
+              participant_id: user.id
+            )
+
+          participant.facilitator?
+        end)
+      end
+    end
+
+    calculate :anonymous?, :boolean do
+      calculation expr(is_nil(email))
     end
   end
 

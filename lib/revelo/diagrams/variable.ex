@@ -13,21 +13,6 @@ defmodule Revelo.Diagrams.Variable do
     repo Revelo.Repo
   end
 
-  calculations do
-    # TODO this seems to be required because ash_sqlite doesn't support count
-    # aggregates in expressions (or in aggregates)
-    calculate :vote_tally,
-              :integer,
-              expr(
-                fragment(
-                  "(SELECT COUNT(*) FROM variable_votes WHERE variable_votes.variable_id = ?)",
-                  id
-                )
-              )
-
-    calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
-  end
-
   actions do
     defaults [:read, :destroy]
 
@@ -158,6 +143,21 @@ defmodule Revelo.Diagrams.Variable do
     has_many :votes, Revelo.Diagrams.VariableVote do
       destination_attribute :variable_id
     end
+  end
+
+  calculations do
+    # TODO this seems to be required because ash_sqlite doesn't support count
+    # aggregates in expressions (or in aggregates)
+    calculate :vote_tally,
+              :integer,
+              expr(
+                fragment(
+                  "(SELECT COUNT(*) FROM variable_votes WHERE variable_votes.variable_id = ?)",
+                  id
+                )
+              )
+
+    calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
   end
 
   identities do

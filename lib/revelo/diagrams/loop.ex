@@ -18,36 +18,6 @@ defmodule Revelo.Diagrams.Loop do
     repo Revelo.Repo
   end
 
-  calculations do
-    calculate :type,
-              :atom,
-              fn loops, _context ->
-                Enum.map(loops, fn loop ->
-                  if Enum.any?(loop.influence_relationships, &(&1.type == :conflicting)) do
-                    :conflicting
-                  else
-                    inverse_count =
-                      Enum.count(loop.influence_relationships, &(&1.type == :inverse))
-
-                    if rem(inverse_count, 2) == 0, do: :reinforcing, else: :balancing
-                  end
-                end)
-              end,
-              load: [influence_relationships: [:type]]
-
-    calculate :session,
-              :uuid,
-              fn loops, _context ->
-                Enum.map(loops, fn loop ->
-                  loop.influence_relationships
-                  |> List.first()
-                  |> Map.get(:src)
-                  |> Map.get(:session)
-                end)
-              end,
-              load: [influence_relationships: [src: [:session]]]
-  end
-
   actions do
     defaults [:read, :destroy]
 
@@ -310,5 +280,35 @@ defmodule Revelo.Diagrams.Loop do
       destination_attribute_on_join_resource :relationship_id
       sort [Ash.Sort.expr_sort(source(influence_relationships_join_assoc.loop_index))]
     end
+  end
+
+  calculations do
+    calculate :type,
+              :atom,
+              fn loops, _context ->
+                Enum.map(loops, fn loop ->
+                  if Enum.any?(loop.influence_relationships, &(&1.type == :conflicting)) do
+                    :conflicting
+                  else
+                    inverse_count =
+                      Enum.count(loop.influence_relationships, &(&1.type == :inverse))
+
+                    if rem(inverse_count, 2) == 0, do: :reinforcing, else: :balancing
+                  end
+                end)
+              end,
+              load: [influence_relationships: [:type]]
+
+    calculate :session,
+              :uuid,
+              fn loops, _context ->
+                Enum.map(loops, fn loop ->
+                  loop.influence_relationships
+                  |> List.first()
+                  |> Map.get(:src)
+                  |> Map.get(:session)
+                end)
+              end,
+              load: [influence_relationships: [src: [:session]]]
   end
 end

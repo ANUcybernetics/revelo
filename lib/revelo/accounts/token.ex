@@ -12,18 +12,6 @@ defmodule Revelo.Accounts.Token do
     repo Revelo.Repo
   end
 
-  policies do
-    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
-      description "AshAuthentication can interact with the token resource"
-      authorize_if always()
-    end
-
-    policy always() do
-      description "No one aside from AshAuthentication can interact with the tokens resource."
-      forbid_if always()
-    end
-  end
-
   actions do
     defaults [:read]
 
@@ -69,6 +57,18 @@ defmodule Revelo.Accounts.Token do
     destroy :expunge_expired do
       description "Deletes expired tokens."
       change filter expr(expires_at < now())
+    end
+  end
+
+  policies do
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      description "AshAuthentication can interact with the token resource"
+      authorize_if always()
+    end
+
+    policy always() do
+      description "No one aside from AshAuthentication can interact with the tokens resource."
+      forbid_if always()
     end
   end
 

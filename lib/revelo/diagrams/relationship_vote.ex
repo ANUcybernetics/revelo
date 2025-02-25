@@ -12,11 +12,6 @@ defmodule Revelo.Diagrams.RelationshipVote do
     repo Revelo.Repo
   end
 
-  calculations do
-    calculate :src_name, :string, expr(relationship.src.name)
-    calculate :dst_name, :string, expr(relationship.dst.name)
-  end
-
   actions do
     defaults [:read]
 
@@ -65,6 +60,11 @@ defmodule Revelo.Diagrams.RelationshipVote do
       allow_nil? false
       primary_key? true
     end
+  end
+
+  calculations do
+    calculate :src_name, :string, expr(relationship.src.name)
+    calculate :dst_name, :string, expr(relationship.dst.name)
   end
 
   identities do

@@ -12,10 +12,6 @@ defmodule Revelo.Diagrams.VariableVote do
     repo Revelo.Repo
   end
 
-  calculations do
-    calculate :variable_name, :string, expr(variable.name)
-  end
-
   actions do
     defaults [:read, :destroy]
 
@@ -57,6 +53,10 @@ defmodule Revelo.Diagrams.VariableVote do
       allow_nil? false
       primary_key? true
     end
+  end
+
+  calculations do
+    calculate :variable_name, :string, expr(variable.name)
   end
 
   identities do
