@@ -16,27 +16,27 @@ config :phoenix_live_view,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 
+# Configure your database
 # For development, we disable any cache and enable
 # debugging and code reloading.
-
-# Configure your database
 #
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
+# Binding to loopback ipv4 address prevents access from other machines.
 config :revelo, Revelo.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  database: "revelo_dev",
-  pool_size: 5,
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost"
+  hostname: "localhost",
+  database: "revelo_dev",
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
 
 config :revelo, ReveloWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  # use `ip: {0, 0, 0, 0}` to allow access from other machines.
+  # http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   # ## SSL Support
   #
   # In order to use HTTPS in development, a self-signed
@@ -47,8 +47,6 @@ config :revelo, ReveloWeb.Endpoint,
   #
   # Run `mix help phx.gen.cert` for more information.
   #
-  # The `http:` config above can be replaced with:
-  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -80,12 +78,11 @@ config :revelo, ReveloWeb.Endpoint,
     ]
   ]
 
+# Enable dev routes for dashboard and mailbox
 config :revelo, dev_routes: true, token_signing_secret: "Ssj516I0uX6JqBiR4n1YWXPnr2eKJQXK"
 
 # Path to install SaladUI components
 config :salad_ui, components_path: Path.join(File.cwd!(), "lib/revelo_web/components")
 
-# Enable dev routes for dashboard and mailbox
-# different ports.
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false

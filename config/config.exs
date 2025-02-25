@@ -7,20 +7,18 @@
 # General application configuration
 import Config
 
-config :ash, :policies, no_filter_static_forbidden_reads?: false
-
 config :ash,
-  include_embedded_source_by_default?: false,
-  default_page_type: :keyset,
   allow_forbidden_field_for_relationships_by_default?: true,
-  show_keysets_for_all_actions?: false
+  include_embedded_source_by_default?: false,
+  show_keysets_for_all_actions?: false,
+  default_page_type: :keyset,
+  policies: [no_filter_static_forbidden_reads?: false]
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
   revelo: [
-    args:
-      ~w(js/app.js js/storybook.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    args: ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -40,9 +38,9 @@ config :phoenix, :json_library, Jason
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
+# Configures the endpoint
 config :revelo, Revelo.Mailer, adapter: Swoosh.Adapters.Local
 
-# Configures the endpoint
 config :revelo, ReveloWeb.Endpoint,
   url: [host: System.get_env("SYSTEM_IP") || "localhost"],
   adapter: Bandit.PhoenixAdapter,
@@ -51,7 +49,7 @@ config :revelo, ReveloWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Revelo.PubSub,
-  live_view: [signing_salt: "fEvquwTM"]
+  live_view: [signing_salt: "N3ETjlvB"]
 
 config :revelo, :ash_domains, [Revelo.Accounts, Revelo.Sessions, Revelo.Diagrams]
 
@@ -59,31 +57,28 @@ config :revelo,
   ecto_repos: [Revelo.Repo],
   generators: [timestamp_type: :utc_datetime]
 
-config :spark, :formatter,
-  remove_parens?: true,
-  "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]],
-  "Ash.Resource": [
-    section_order: [
-      :postgres,
-      :resource,
-      :code_interface,
-      :policies,
-      :pub_sub,
-      :preparations,
-      :changes,
-      :validations,
-      :multitenancy,
-      :calculations,
-      :aggregates,
-      :authentication,
-      :tokens,
-      # any section not in this list is left where it is
-      # but these sections will always appear in this order in a resource
-      :actions,
-      :attributes,
-      :relationships,
-      :identities
-    ]
+config :spark,
+  formatter: [
+    remove_parens?: true,
+    "Ash.Resource": [
+      section_order: [
+        :resource,
+        :code_interface,
+        :actions,
+        :policies,
+        :pub_sub,
+        :preparations,
+        :changes,
+        :validations,
+        :multitenancy,
+        :attributes,
+        :relationships,
+        :calculations,
+        :aggregates,
+        :identities
+      ]
+    ],
+    "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]]
   ]
 
 # Configure tailwind (the version is required)
