@@ -178,15 +178,15 @@ defmodule ReveloWeb.SessionLive.Phase do
       class="relative z-50 !hidden"
     >
       <div
-        id={"help-modal-bg"}
+        id="help-modal-bg"
         class="bg-background/70 fixed inset-0 transition-opacity"
         aria-hidden="true"
         phx-click={toggle_help_modal()}
       />
       <div
         class="fixed inset-0 overflow-y-auto"
-        aria-labelledby={"help-modal-title"}
-        aria-describedby={"help-modal-description"}
+        aria-labelledby="help-modal-title"
+        aria-describedby="help-modal-description"
         role="dialog"
         aria-modal="true"
         tabindex="0"
@@ -194,7 +194,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         <div class="flex min-h-full items-center justify-center">
           <div class="w-full max-w-3xl p-4 py-8">
             <.focus_wrap
-              id={"help-modal-container"}
+              id="help-modal-container"
               phx-window-keydown={toggle_help_modal()}
               phx-key="escape"
               phx-click-away={toggle_help_modal()}
@@ -210,14 +210,16 @@ defmodule ReveloWeb.SessionLive.Phase do
                   <.icon name="hero-x-mark-solid" class="h-5 w-5" />
                 </button>
               </div>
-              <div id={"help-modal-content"}>
+              <div id="help-modal-content">
                 <div :if={@live_action == :identify_work} class="space-y-4">
                   <h3 class="text-lg font-medium">Identifying Variables</h3>
                   <p>Choose which variables you think are important parts of this system:</p>
                   <ul class="list-disc ml-6 space-y-2">
                     <li>Tap a box to select that variable</li>
                     <li>Tap again to unselect</li>
-                    <li>Choose variables that directly affect the main outcome or tell the system's story</li>
+                    <li>
+                      Choose variables that directly affect the main outcome or tell the system's story
+                    </li>
                     <li>Click "Done" when you've selected all your choices</li>
                   </ul>
                   <div class="flex items-center justify-center">
@@ -230,7 +232,9 @@ defmodule ReveloWeb.SessionLive.Phase do
                   <p>For each pair of variables, select how they directly relate:</p>
                   <ul class="list-disc ml-6 space-y-2">
                     <li>Choose increase/decrease if there's a clear direct relationship</li>
-                    <li>Select "no direct effect" if you're unsure or the relationship is indirect</li>
+                    <li>
+                      Select "no direct effect" if you're unsure or the relationship is indirect
+                    </li>
                     <li>Use Previous/Next buttons to review your choices</li>
                     <li>Don't worry if you can't complete all pairs</li>
                   </ul>
@@ -412,10 +416,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info(
-        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}},
-        socket
-      ) do
+  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
     if socket.assigns.variable_count == 0 and not variable.is_voi? do
       Revelo.Diagrams.toggle_voi!(variable)
     end
@@ -491,8 +492,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   def toggle_help_modal(js \\ %JS{}) do
-    js
-    |> JS.toggle_class("!hidden", to: "#help-modal")
+    JS.toggle_class(js, "!hidden", to: "#help-modal")
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"
