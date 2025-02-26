@@ -143,6 +143,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       "flex flex-col gap-4 grow h-full",
       !@current_user.facilitator? && "p-5 pb-2"
     ]}>
+
       <%= if @current_user.facilitator? do %>
         <div
           id="plot-loops"
@@ -236,7 +237,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                 <div class="flex items-start">
                   <span class="w-6 shrink-0">{index + 1}.</span>
                   <span class="flex-1 mr-2">
-                    {loop.title}
+                  {loop.title} [{Enum.count(loop.influence_relationships)}]
                   </span>
                 </div>
                 <%!-- <div class="ml-6 mt-3">
