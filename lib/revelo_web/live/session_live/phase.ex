@@ -110,7 +110,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       <div :if={@current_user.facilitator?} class="flex justify-between mt-4">
         <div>
           <.link
-            :if={@live_action not in [:prepare]}
+            :if={@live_action not in [:prepare, :edit]}
             href={phase_to_path(previous_phase(@live_action), @session.id)}
           >
             <.button variant="outline">Previous Phase</.button>
@@ -398,6 +398,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       :relate_discuss -> ~p"/sessions/#{session_id}/relate/discuss"
       :prepare -> ~p"/sessions/#{session_id}/prepare"
       :analyse -> ~p"/sessions/#{session_id}/analyse"
+      :edit -> ~p"/sessions/#{session_id}/prepare/edit"
     end
   end
 
@@ -409,6 +410,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       :relate_work -> :relate_discuss
       :relate_discuss -> :analyse
       :analyse -> :analyse
+      :edit -> :identify_work
     end
   end
 
@@ -420,6 +422,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       :relate_work -> :identify_discuss
       :relate_discuss -> :relate_work
       :analyse -> :relate_discuss
+      :edit -> :prepare
     end
   end
 
