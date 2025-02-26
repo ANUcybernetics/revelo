@@ -139,7 +139,10 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 grow h-full p-5 pb-2 ">
+    <div class={[
+      "flex flex-col gap-4 grow h-full",
+      !@current_user.facilitator? && "p-5 pb-2"
+    ]}>
       <%= if @current_user.facilitator? do %>
         <div
           id="plot-loops"
