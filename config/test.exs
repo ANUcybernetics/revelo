@@ -2,6 +2,8 @@ import Config
 
 # config :ash, disable_async?: true
 
+config :ash, :disable_async?, true
+
 # Print only warnings and errors during test
 config :logger, level: :warning
 
