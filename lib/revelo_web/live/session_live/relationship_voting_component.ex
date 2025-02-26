@@ -57,7 +57,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             <br /> causes...
           </.card_title>
         </.card_header>
-        <.scroll_area class="overflow-y-auto h-72 grow shrink">
+        <.scroll_area class="overflow-y-auto h-72 grow shrink" id="relate-scroll-container" phx-hook="RelationshipScroll" phx-update="replace">
           <.card_content class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2">
             <%= for rel <- @relationships|> Enum.at(@current_page - 1, []) do %>
               <div class="w-full border-b-[1px] border-gray-300 pt-4 pb-6 flex justify-center">
