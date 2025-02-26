@@ -402,9 +402,13 @@ defmodule ReveloWeb.SessionLive.Phase do
 
       {:noreply, socket}
     else
-      if socket.assigns.live_action != current_phase do
-        send(self(), {:transition, current_phase})
-      end
+      socket =
+        if socket.assigns.live_action == current_phase do
+          socket
+        else
+          path = phase_to_path(current_phase, socket.assigns.session.id)
+          push_patch(socket, to: path)
+        end
 
       {:noreply, socket}
     end
