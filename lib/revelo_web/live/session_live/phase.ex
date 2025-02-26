@@ -70,21 +70,26 @@ defmodule ReveloWeb.SessionLive.Phase do
         >
           <ol class="list-decimal px-6 space-y-6">
             <li>
-              Look at each pair of variables and select which best describes the relationship:
+              For each relationship shown, select which best describes the effect:
               <ul class="list-disc ml-8">
-                <li>As A increases, B increases (direct relationship)</li>
-                <li>As A increases, B decreases (inverse relationship)</li>
-                <li>A does not directly relate to B</li>
+                <li>
+                  <b>"to increase"</b>
+                  - the first variable increasing causes the second variable to increase
+                </li>
+                <li>
+                  <b>"to decrease"</b>
+                  - the first variable increasing causes the second variable to decrease
+                </li>
+                <li>
+                  <b>"no direct effect"</b> - the first variable does not directly affect the second
+                </li>
               </ul>
             </li>
             <li>
-              Complete as many pairs as you can in 5 minutes.
-            </li>
-            <li>
-              Your answer will automatically advance to the next pair. Use the Previous and Next buttons to review or change your answers. Tips for choosing:
+              Use the arrow buttons at the bottom to navigate to the next page. Don't worry about completing every page - focus on getting through what you can. Tips for choosing:
               <ul class="list-disc ml-8">
-                <li>Think about direct cause and effect</li>
-                <li>Ignore indirect relationships through other variables</li>
+                <li>Think about the direct cause and effect</li>
+                <li>If you are unsure, choose 'no direct effect'</li>
               </ul>
             </li>
           </ol>
