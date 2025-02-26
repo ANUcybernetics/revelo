@@ -1,4 +1,7 @@
 import cytoscape from "cytoscape";
+import coseBilkent from "cytoscape-cose-bilkent";
+
+cytoscape.use(coseBilkent);
 
 const keySVG = encodeURIComponent(`
   <svg width="287" height="48" viewBox="0 0 287 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,6 +61,9 @@ function updateNodeStyles(selectedLoop, loops, cy, relationships) {
 
 export const PlotLoops = {
   mounted() {
+    const savedPositions = localStorage.getItem("nodePositions");
+    const positions = savedPositions ? JSON.parse(savedPositions) : null;
+
     this.cy = cytoscape({
       container: this.el,
       elements: JSON.parse(this.el.dataset.elements || "[]"),
@@ -136,16 +142,42 @@ export const PlotLoops = {
           },
         },
       ],
-      layout: {
-        name: "concentric",
-        concentric: function (node) {
-          return node.isKey;
-        },
-        levelWidth: function (nodes) {
-          return 1;
-        },
-        padding: 20,
-      },
+      layout: positions
+        ? {
+            name: "preset",
+            positions: positions,
+          }
+        : {
+            name: "cose-bilkent",
+            quality: "proof",
+            animate: false,
+            randomize: true,
+            nodeDimensionsIncludeLabels: true,
+            fit: true,
+            padding: 50,
+            nodeRepulsion: 8000,
+            idealEdgeLength: 200,
+            edgeElasticity: 0.45,
+            nestingFactor: 0.1,
+            gravity: 0.25,
+            numIter: 2500,
+            tile: false,
+            tilingPaddingVertical: 20,
+            tilingPaddingHorizontal: 20,
+            gravityRangeCompound: 1.5,
+            gravityCompound: 1.0,
+            gravityRange: 3.8,
+            initialEnergyOnIncremental: 0.5,
+          },
+    });
+
+    // Save positions when nodes are moved
+    this.cy.on("position", "node", () => {
+      const positions = {};
+      this.cy.nodes().forEach((node) => {
+        positions[node.id()] = node.position();
+      });
+      localStorage.setItem("nodePositions", JSON.stringify(positions));
     });
   },
 
