@@ -172,7 +172,7 @@ defmodule ReveloWeb.SessionLive.Phase do
     <div
       :if={@live_action in [:identify_work, :relate_work, :analyse]}
       id="help-modal"
-      phx-mounted={true && show_modal("help-modal")}
+      phx-mounted={show_modal("help-modal")}
       phx-remove={hide_modal("help-modal")}
       data-cancel={JS.exec(JS.add_class("!hidden", to: "#help-modal"), "phx-remove")}
       class="relative z-50 !hidden"
