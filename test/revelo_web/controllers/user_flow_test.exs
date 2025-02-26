@@ -33,8 +33,8 @@ defmodule ReveloWeb.UserFlowTest do
 
       conn
       |> log_in_user(Ash.CiString.value(user.email), password)
-      |> assert_has("h1", text: "Revelo")
-      |> click_link("Sessions")
+      |> assert_has("p", text: "Find loops. Then argue with your mates.")
+      |> click_link("Start Mapping Now")
       |> assert_path("/sessions/")
       |> click_link("New Session")
     end
@@ -139,8 +139,8 @@ defmodule ReveloWeb.UserFlowTest do
       facilitator_session =
         conn
         |> log_in_user(Ash.CiString.value(user.email), password)
-        |> assert_has("h1", text: "Revelo")
-        |> click_link("Sessions")
+        |> assert_has("p", text: "Find loops. Then argue with your mates.")
+        |> click_link("Start Mapping Now")
         |> assert_has("h3", text: "Your Sessions")
         |> click_link("New Session")
         |> assert_has("h1", text: "New Session")

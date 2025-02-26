@@ -29,9 +29,9 @@ defmodule Revelo.UIComponentsTest do
     assert html =~ "User"
   end
 
-  test "badge_key shows as variable of interest" do
+  test "badge_key shows with key" do
     html = render_component(&ReveloWeb.UIComponents.badge_key/1, %{})
-    assert html =~ "Variable of Interest"
+    assert html =~ "hero-key-mini"
   end
 
   test "badge_vote shows as important" do
