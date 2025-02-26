@@ -86,7 +86,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
                       class="!mt-0 rounded-none rounded-l-md"
                       phx-click="generate_variables"
                       phx-target={@myself}
-                      phx-value-count={0}
+                      phx-value-count={5}
                       id="generate_variables_button"
                     >
                       <.icon name="hero-sparkles" class="h-4 w-4 mr-2 transition-all" />
@@ -96,7 +96,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
                       id="input-basic-inputs-number"
                       name="variable_count"
                       type="number"
-                      placeholder="0"
+                      placeholder="5"
                       min="0"
                       max="20"
                       class="rounded-none rounded-r-md text-xs h-8 border-l-0 w-12 pr-[2px]"
