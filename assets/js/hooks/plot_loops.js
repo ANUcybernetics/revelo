@@ -126,14 +126,14 @@ export const PlotLoops = {
           },
         },
         {
-          selector: 'edge[relation = "direct"]',
+          selector: 'edge[relation = "inverse"]',
           style: {
             "line-color": "#0284C7",
             "target-arrow-color": "#0284C7",
           },
         },
         {
-          selector: 'edge[relation = "inverse"]',
+          selector: 'edge[relation = "direct"]',
           style: {
             "line-color": "#C2410C",
             "target-arrow-color": "#C2410C",
