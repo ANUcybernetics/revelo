@@ -38,3 +38,6 @@ we're building it out & exploring the problem space).
 
 - We sort the voted variables server side in the voting view when completed -
   might be better to do client side?
+
+- The help modal should be separated into its own component, or use the .modal -
+  I tried the latter, but there were server-side events triggering, so it's bit of a mess.

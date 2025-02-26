@@ -169,51 +169,97 @@ defmodule ReveloWeb.SessionLive.Phase do
       </.modal>
     </div>
 
-    <.modal :if={@show_help} id="help-modal" show on_cancel={JS.push("toggle_help")}>
-      <div :if={@live_action == :identify_work} class="space-y-4">
-        <h3 class="text-lg font-medium">Identifying Variables</h3>
-        <p>Choose which variables you think are important parts of this system:</p>
-        <ul class="list-disc ml-6 space-y-2">
-          <li>Tap a box to select that variable</li>
-          <li>Tap again to unselect</li>
-          <li>Choose variables that directly affect the main outcome or tell the system's story</li>
-          <li>Click "Done" when you've selected all your choices</li>
-        </ul>
-        <div class="flex items-center justify-center">
-          <img src="/images/variable.gif" />
+    <div
+      :if={@live_action in [:identify_work, :relate_work, :analyse]}
+      id="help-modal"
+      phx-mounted={true && show_modal("help-modal")}
+      phx-remove={hide_modal("help-modal")}
+      data-cancel={JS.exec(JS.add_class("!hidden", to: "#help-modal"), "phx-remove")}
+      class="relative z-50 !hidden"
+    >
+      <div
+        id={"help-modal-bg"}
+        class="bg-background/70 fixed inset-0 transition-opacity"
+        aria-hidden="true"
+        phx-click={toggle_help_modal()}
+      />
+      <div
+        class="fixed inset-0 overflow-y-auto"
+        aria-labelledby={"help-modal-title"}
+        aria-describedby={"help-modal-description"}
+        role="dialog"
+        aria-modal="true"
+        tabindex="0"
+      >
+        <div class="flex min-h-full items-center justify-center">
+          <div class="w-full max-w-3xl p-4 py-8">
+            <.focus_wrap
+              id={"help-modal-container"}
+              phx-window-keydown={toggle_help_modal()}
+              phx-key="escape"
+              phx-click-away={toggle_help_modal()}
+              class="shadow-primary/10 ring-primary/10 relative hidden rounded-2xl bg-background p-14 shadow-lg ring-1 transition"
+            >
+              <div class="absolute top-6 right-5">
+                <button
+                  phx-click={toggle_help_modal()}
+                  type="button"
+                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
+                  aria-label={gettext("close")}
+                >
+                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                </button>
+              </div>
+              <div id={"help-modal-content"}>
+                <div :if={@live_action == :identify_work} class="space-y-4">
+                  <h3 class="text-lg font-medium">Identifying Variables</h3>
+                  <p>Choose which variables you think are important parts of this system:</p>
+                  <ul class="list-disc ml-6 space-y-2">
+                    <li>Tap a box to select that variable</li>
+                    <li>Tap again to unselect</li>
+                    <li>Choose variables that directly affect the main outcome or tell the system's story</li>
+                    <li>Click "Done" when you've selected all your choices</li>
+                  </ul>
+                  <div class="flex items-center justify-center">
+                    <img src="/images/variable.gif" />
+                  </div>
+                </div>
+
+                <div :if={@live_action == :relate_work} class="space-y-4">
+                  <h3 class="text-lg font-medium">Identifying Relationships</h3>
+                  <p>For each pair of variables, select how they directly relate:</p>
+                  <ul class="list-disc ml-6 space-y-2">
+                    <li>Choose increase/decrease if there's a clear direct relationship</li>
+                    <li>Select "no direct effect" if you're unsure or the relationship is indirect</li>
+                    <li>Use Previous/Next buttons to review your choices</li>
+                    <li>Don't worry if you can't complete all pairs</li>
+                  </ul>
+                </div>
+
+                <div :if={@live_action == :analyse} class="space-y-4">
+                  <h3 class="text-lg font-medium">Analyzing Feedback Loops</h3>
+                  <p>This is where we see how everything connects!</p>
+                  <ul class="list-disc ml-6 space-y-2">
+                    <li>Each box shows a feedback loop found in your system</li>
+                    <li>
+                      Select a loop to read its story and discuss:
+                      <ul class="list-disc pl-8">
+                        <li>Does this match what happens in the real world?</li>
+                        <li>
+                          Is this a self-reinforcing cycle that keeps growing, or does it balance itself out?
+                        </li>
+                        <li>What factors might limit or prevent this loop from continuing?</li>
+                        <li>How could you measure or observe this loop in action?</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </.focus_wrap>
+          </div>
         </div>
       </div>
-
-      <div :if={@live_action == :relate_work} class="space-y-4">
-        <h3 class="text-lg font-medium">Identifying Relationships</h3>
-        <p>For each pair of variables, select how they directly relate:</p>
-        <ul class="list-disc ml-6 space-y-2">
-          <li>Choose increase/decrease if there's a clear direct relationship</li>
-          <li>Select "no direct effect" if you're unsure or the relationship is indirect</li>
-          <li>Use Previous/Next buttons to review your choices</li>
-          <li>Don't worry if you can't complete all pairs</li>
-        </ul>
-      </div>
-
-      <div :if={@live_action == :analyse} class="space-y-4">
-        <h3 class="text-lg font-medium">Analyzing Feedback Loops</h3>
-        <p>This is where we see how everything connects!</p>
-        <ul class="list-disc ml-6 space-y-2">
-          <li>Each box shows a feedback loop found in your system</li>
-          <li>
-            Select a loop to read its story and discuss:
-            <ul class="list-disc pl-8">
-              <li>Does this match what happens in the real world?</li>
-              <li>
-                Is this a self-reinforcing cycle that keeps growing, or does it balance itself out?
-              </li>
-              <li>What factors might limit or prevent this loop from continuing?</li>
-              <li>How could you measure or observe this loop in action?</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </.modal>
+    </div>
 
     <div
       :if={!@current_user.facilitator? and @live_action not in [:analyse]}
@@ -248,7 +294,15 @@ defmodule ReveloWeb.SessionLive.Phase do
         :if={!@current_user.facilitator? and @live_action in [:identify_work, :relate_work]}
         class="flex justify-end items-start w-full pr-4 mb-2"
       >
-        <button class="p-2" phx-click="toggle_help">
+        <button
+          class="p-2"
+          phx-click={
+            JS.toggle_class("!hidden",
+              to: "#help-modal",
+              time: 200
+            )
+          }
+        >
           <.icon name="hero-question-mark-circle-solid" class="w-8 h-8" />
         </button>
       </div>
@@ -271,9 +325,17 @@ defmodule ReveloWeb.SessionLive.Phase do
       />
       <div
         :if={!@current_user.facilitator? and @live_action in [:analyse]}
-        class="flex justify-end items-start w-full pr-8 mb-2"
+        class="flex justify-end items-start w-full pr-4 mb-2"
       >
-        <button class="p-2" phx-click="toggle_help">
+        <button
+          class="p-2"
+          phx-click={
+            JS.toggle_class("!hidden",
+              to: "#help-modal",
+              time: 200
+            )
+          }
+        >
           <.icon name="hero-question-mark-circle-solid" class="w-8 h-8" />
         </button>
       </div>
@@ -284,11 +346,6 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
-  end
-
-  @impl true
-  def handle_event("toggle_help", _, socket) do
-    {:noreply, assign(socket, :show_help, !socket.assigns.show_help)}
   end
 
   @impl true
@@ -330,7 +387,6 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign_new(:variable_count, fn -> 0 end)
       |> assign(:page_title, page_title(socket.assigns.live_action))
       |> assign(:timer, 0)
-      |> assign(:show_help, false)
 
     current_phase = Revelo.SessionServer.get_phase(session.id)
 
@@ -356,7 +412,10 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
+  def handle_info(
+        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}},
+        socket
+      ) do
     if socket.assigns.variable_count == 0 and not variable.is_voi? do
       Revelo.Diagrams.toggle_voi!(variable)
     end
@@ -429,6 +488,11 @@ defmodule ReveloWeb.SessionLive.Phase do
       :analyse -> :relate_discuss
       :edit -> :prepare
     end
+  end
+
+  def toggle_help_modal(js \\ %JS{}) do
+    js
+    |> JS.toggle_class("!hidden", to: "#help-modal")
   end
 
   defp page_title(phase), do: "#{phase |> Atom.to_string() |> String.capitalize()} phase"
