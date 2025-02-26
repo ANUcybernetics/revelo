@@ -20,7 +20,7 @@ if System.get_env("PHX_SERVER") do
   config :revelo, ReveloWeb.Endpoint, server: true
 end
 
-config :instructor_lite, :openai_api_key, System.fetch_env("OPENAI_API_KEY")
+config :instructor_lite, :openai_api_key, System.get_env("OPENAI_API_KEY")
 
 if config_env() == :prod do
   database_url =
