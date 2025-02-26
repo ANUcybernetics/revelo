@@ -1092,5 +1092,86 @@ defmodule Revelo.LoopTest do
 
       assert loop.type == :conflicting
     end
+
+    @tag skip: "takes ages"
+    @tag timeout: to_timeout(minute: 10)
+    test "rescan stress test with large graph" do
+      user = user()
+      session = session(user)
+
+      # on Ben's beefy MBP this takes (highly variable, because the connections are random)
+      # 10 vars: 100ms
+      # 12 vars: 2s
+      # 14 vars: 5s
+      # 15 vars: 1m - 5m
+      num_variables = 15
+      variables = Enum.map(1..num_variables, fn _ -> variable(session: session, user: user) end)
+
+      # Create random relationships with 20% connectivity
+      for_result =
+        for src <- variables, dst <- variables, src != dst do
+          if :rand.uniform() < 0.2 do
+            relationship_with_vote(
+              src: src,
+              dst: dst,
+              session: session,
+              user: user,
+              vote_type: :direct
+            )
+          end
+        end
+
+      relationships = Enum.reject(for_result, &is_nil/1)
+
+      # Make sure we have at least one cycle by adding a closing edge
+      # Find two nodes that have relationships but aren't directly connected
+      existing_edges =
+        MapSet.new(relationships, fn rel -> {rel.src.id, rel.dst.id} end)
+
+      # Pick a random node that has an outgoing edge
+      sources = MapSet.new(relationships, & &1.src.id)
+
+      # Pick a random node that has an incoming edge
+      destinations = MapSet.new(relationships, & &1.dst.id)
+
+      # Find a source and destination that would create a cycle
+      source =
+        Enum.find(variables, fn var ->
+          var.id in destinations
+        end)
+
+      destination =
+        Enum.find(variables, fn var ->
+          var.id in sources && {source.id, var.id} not in existing_edges
+        end)
+
+      # Add the closing relationship to create a cycle
+      relationships =
+        relationships ++
+          [
+            relationship_with_vote(
+              src: source,
+              dst: destination,
+              session: session,
+              user: user,
+              vote_type: :direct
+            )
+          ]
+
+      # Measure the time it takes to perform the rescan
+      {time_microseconds, loops} =
+        :timer.tc(fn ->
+          Revelo.Diagrams.rescan_loops!(session.id)
+        end)
+
+      # Convert to milliseconds for more readable output
+      time_ms = time_microseconds / 1000.0
+
+      # Log time and results
+      IO.puts("Rescan of #{length(relationships)} relationships took #{time_ms} ms and found #{length(loops)} loops")
+
+      # Verify that we found at least one loop
+      assert length(loops) > 0
+    end
   end
 end
