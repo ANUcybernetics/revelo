@@ -63,6 +63,7 @@ defmodule ReveloWeb.SessionLive.Phase do
           </ol>
         </.instructions>
 
+
         <.instructions
           :if={@live_action == :relate_work}
           title="Identify relationships"
@@ -98,16 +99,16 @@ defmodule ReveloWeb.SessionLive.Phase do
         <.qr_code_card
           :if={@live_action == :identify_work}
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify/work"}
-          completed={elem(@participant_count, 0)}
-          total={elem(@participant_count, 1)}
+          completed={elem(@progress, 0)}
+          total={elem(@progress, 1)}
           class="col-span-12 lg:col-span-4"
         />
 
         <.qr_code_card
           :if={@live_action == :relate_work}
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/relate/work"}
-          completed={elem(@participant_count, 0)}
-          total={elem(@participant_count, 1)}
+          completed={elem(@progress, 0)}
+          total={elem(@progress, 1)}
           class="col-span-12 lg:col-span-4"
         />
       </div>
@@ -292,7 +293,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         :if={@live_action not in [:identify_work, :relate_work, :analyse]}
         class="flex flex-col items-center gap-4"
       >
-        <.task_completed completed={elem(@participant_count, 1)} total={elem(@participant_count, 1)} />
+        <.task_completed completed={elem(@progress, 1)} total={elem(@progress, 1)} />
       </div>
       <div
         :if={!@current_user.facilitator? and @live_action in [:identify_work, :relate_work]}
@@ -386,8 +387,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       |> assign(:current_user, current_user)
       |> assign(:session, session)
       |> assign(:modal, modal)
-      # :participant_count is a {completed, total} tuple
-      |> assign(:participant_count, {0, 1})
+      |> assign(:progress, {0, 1})
       |> assign_new(:variable_count, fn -> 0 end)
       |> assign(:page_title, page_title(socket.assigns.live_action))
       |> assign(:timer, 0)
@@ -452,8 +452,8 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info({:participant_count, counts}, socket) do
-    {:noreply, assign(socket, :participant_count, counts)}
+  def handle_info({:progress, counts}, socket) do
+    {:noreply, assign(socket, :progress, counts)}
   end
 
   @impl true

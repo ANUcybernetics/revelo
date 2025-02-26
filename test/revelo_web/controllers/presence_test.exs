@@ -12,7 +12,8 @@ defmodule ReveloWeb.PresenceTest do
   end
 
   # helper function to deal with the CI string
-  def log_in_user(conn, %Ash.CiString{} = email, password), do: log_in_user(conn, Ash.CiString.value(email), password)
+  def log_in_user(conn, %Ash.CiString{} = email, password),
+    do: log_in_user(conn, Ash.CiString.value(email), password)
 
   def log_in_user(conn, email, password) do
     conn
@@ -144,7 +145,7 @@ defmodule ReveloWeb.PresenceTest do
       assert length(participants) == 2
     end
 
-    test "all users receive updated participant_count when a user joins", %{conn: conn} do
+    test "all users receive updated progress when a user joins", %{conn: conn} do
       user = user()
       session = session(user)
       Phoenix.PubSub.subscribe(Revelo.PubSub, "session:#{session.id}")
@@ -155,14 +156,14 @@ defmodule ReveloWeb.PresenceTest do
       |> visit("/qr/sessions/#{session.id}/identify/work")
       |> assert_path("/sessions/#{session.id}/identify/work")
 
-      assert_receive {:participant_count, {0, 1}}
+      assert_receive {:progress, {0, 1}}
 
       # Second user joins and clicks done
       build_conn()
       |> visit("/qr/sessions/#{session.id}/identify/work")
       |> click_button("Done")
 
-      assert_receive {:participant_count, {1, 2}}
+      assert_receive {:progress, {1, 2}}
 
       :ok = Phoenix.PubSub.unsubscribe(Revelo.PubSub, "session:#{session.id}")
     end

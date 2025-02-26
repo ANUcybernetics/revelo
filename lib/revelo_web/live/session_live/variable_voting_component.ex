@@ -140,7 +140,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
 
   @impl true
   def handle_event("done", _params, socket) do
-    ReveloWeb.Presence.update_status(
+    ReveloWeb.Presence.update_identify_status(
       socket.assigns.session.id,
       socket.assigns.current_user.id,
       true

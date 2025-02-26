@@ -30,9 +30,9 @@ defmodule Revelo.SessionServer do
     GenServer.call(via_tuple(session_id), :get_phase)
   end
 
-  def set_partipant_count(session_id, {complete, total}) do
+  def set_progress(session_id, {complete, total}) do
     get_session(session_id)
-    GenServer.call(via_tuple(session_id), {:participant_count, {complete, total}})
+    GenServer.call(via_tuple(session_id), {:progress, {complete, total}})
   end
 
   def transition_to(session_id, phase) do
@@ -83,7 +83,8 @@ defmodule Revelo.SessionServer do
   end
 
   @impl true
-  def handle_call({:transition_to, direction}, from, state) when direction in [:next, :previous] do
+  def handle_call({:transition_to, direction}, from, state)
+      when direction in [:next, :previous] do
     current_phase = state.phase
 
     new_phase =
@@ -137,8 +138,8 @@ defmodule Revelo.SessionServer do
   end
 
   @impl true
-  def handle_call({:participant_count, counts}, _from, state) do
-    broadcast_participant_count(state.session_id, counts)
+  def handle_call({:progress, counts}, _from, state) do
+    broadcast_progress(state.session_id, counts)
     # this function used to have the "auto advance phase when everyone's done logic in it
     # but I think that having the facilitator manually advance the phase is a better UX
     # so now this doesn't do much - just fans the broadcast out to all listening clients via pubsub
@@ -177,11 +178,11 @@ defmodule Revelo.SessionServer do
     )
   end
 
-  defp broadcast_participant_count(session_id, counts) do
+  defp broadcast_progress(session_id, counts) do
     Phoenix.PubSub.broadcast(
       Revelo.PubSub,
       "session:#{session_id}",
-      {:participant_count, counts}
+      {:progress, counts}
     )
   end
 

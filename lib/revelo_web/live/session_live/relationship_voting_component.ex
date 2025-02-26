@@ -13,8 +13,6 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
   @impl true
   def update(assigns, socket) do
-    _participants = ReveloWeb.Presence.list_online_participants(assigns.session.id)
-
     relationships =
       assigns.session.id
       |> Diagrams.list_potential_relationships!(actor: assigns.current_user)
@@ -29,12 +27,19 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         end
       end)
 
+    # Get the count of votes made by the current user
+    vote_count =
+      relationships
+      |> List.flatten()
+      |> Enum.count(&(&1.voted? != nil))
+
     socket =
       socket
       |> assign(assigns)
       |> assign_new(:relationships, fn -> relationships end)
       |> assign_new(:current_page, fn -> 1 end)
       |> assign(:total_pages, length(relationships))
+      |> assign(:vote_count, vote_count)
 
     {:ok, socket}
   end
@@ -154,7 +159,18 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             end
           end)
 
-        {:noreply, assign(socket, :relationships, relationships)}
+        vote_count =
+          relationships
+          |> List.flatten()
+          |> Enum.count(&(&1.voted? != nil))
+
+        ReveloWeb.Presence.update_relate_status(
+          socket.assigns.session.id,
+          socket.assigns.current_user.id,
+          vote_count
+        )
+
+        {:noreply, assign(socket, relationships: relationships, vote_count: vote_count)}
 
       {:error, _reason} ->
         {:noreply, socket}
