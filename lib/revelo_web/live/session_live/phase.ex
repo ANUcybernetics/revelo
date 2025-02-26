@@ -420,7 +420,10 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
+  def handle_info(
+        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}},
+        socket
+      ) do
     if socket.assigns.variable_count == 0 and not variable.is_voi? do
       Revelo.Diagrams.toggle_voi!(variable)
     end
@@ -440,8 +443,12 @@ defmodule ReveloWeb.SessionLive.Phase do
 
   @impl true
   def handle_info({:transition, phase}, socket) do
-    path = phase_to_path(phase, socket.assigns.session.id)
-    {:noreply, push_patch(socket, to: path)}
+    if not socket.assigns.current_user.facilitator? do
+      path = phase_to_path(phase, socket.assigns.session.id)
+      {:noreply, push_patch(socket, to: path)}
+    else
+      {:noreply, socket}
+    end
   end
 
   @impl true
