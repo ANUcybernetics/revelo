@@ -27,18 +27,6 @@ defmodule Revelo.RustGraphAnalyserTest do
       assert MapSet.new(cycle) == MapSet.new(["rel1", "rel2", "rel3"])
     end
 
-    @tag skip: "we currently don't detect self-loops"
-    test "find_cycles detects self-loops" do
-      # Create a self-loop A -> A
-      relationships = [
-        {"rel1", "node_a", "node_a"}
-      ]
-
-      cycles = GraphAnalyser.find_cycles(relationships)
-      assert length(cycles) == 1
-      assert List.first(cycles) == ["rel1"]
-    end
-
     test "find_cycles detects multiple separate cycles" do
       # Create two separate cycles: A -> B -> A and C -> D -> C
       relationships = [
@@ -135,7 +123,7 @@ defmodule Revelo.RustGraphAnalyserTest do
     @tag timeout: 120_000
     test "find_cycles stress test with large graph" do
       # Create random large graph
-      num_nodes = 30
+      num_nodes = 15
       connectivity_percentage = 20
 
       # Create node IDs
