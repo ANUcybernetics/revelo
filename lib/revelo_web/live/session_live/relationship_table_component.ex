@@ -64,6 +64,20 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
               <.card_description class="mt-1">Total Loops: {@loop_count}</.card_description>
               <:actions>
                 <div class="flex gap-2">
+
+                <div class="relative w-60 mr-2 h-8">
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <.icon name="hero-magnifying-glass" class="h-4 w-4 text-gray-500" />
+                  </div>
+                  <.input
+                    id="relationship-search"
+                    type="text"
+                    phx-keyup="search"
+                    phx-target={@myself}
+                    class="h-8 pl-10 pr-4 py-2 w-full text-xs bg-white rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Search relationships..."
+                  />
+                </div>
                   <.button
                     variant="outline"
                     size="sm"
@@ -254,7 +268,11 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
   end
 
   @impl true
-  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
+  def handle_event(
+        "toggle_override",
+        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type},
+        socket
+      ) do
     type = String.to_existing_atom(type)
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
@@ -306,6 +324,35 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
       end
 
     {:noreply, stream(socket, :relationships, relationships, reset: true)}
+  end
+
+  @impl true
+  def handle_event("search", %{"value" => search_term}, socket) do
+    search_term = search_term |> String.trim() |> String.downcase()
+
+    # Retrieve the full list based on current filter
+    all_relationships =
+      case socket.assigns.current_filter do
+        :all -> Diagrams.list_potential_relationships!(socket.assigns.session.id)
+        :conflicting -> Diagrams.list_conflicting_relationships!(socket.assigns.session.id)
+        :active -> Diagrams.list_actual_relationships!(socket.assigns.session.id)
+      end
+
+    # If search term is empty, show all relationships for the current filter
+    filtered_relationships =
+      if search_term == "" do
+        all_relationships
+      else
+        # Filter relationships by source or destination names containing the search term
+        Enum.filter(all_relationships, fn relationship ->
+          src_name = relationship.src.name |> String.downcase()
+          dst_name = relationship.dst.name |> String.downcase()
+
+          String.contains?(src_name, search_term) || String.contains?(dst_name, search_term)
+        end)
+      end
+
+    {:noreply, stream(socket, :relationships, filtered_relationships, reset: true)}
   end
 
   def get_phase(:identify_work), do: :identify
