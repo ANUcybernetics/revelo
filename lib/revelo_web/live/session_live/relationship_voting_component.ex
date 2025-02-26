@@ -57,7 +57,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             <br /> causes...
           </.card_title>
         </.card_header>
-        <.scroll_area class="overflow-y-auto h-72 grow shrink" id="relate-scroll-container" phx-hook="RelationshipScroll" phx-update="replace">
+        <.scroll_area class="overflow-y-auto h-72 grow shrink" id="relate-scroll-container">
           <.card_content class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2">
             <%= for rel <- @relationships|> Enum.at(@current_page - 1, []) do %>
               <div class="w-full border-b-[1px] border-gray-300 pt-4 pb-6 flex justify-center">
@@ -114,7 +114,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
           </.card_content>
         </.scroll_area>
       </.card>
-      <div class="mt-4 flex">
+      <div class="mt-4 flex" id="pagination-container" phx-hook="RelationshipScroll">
         <.pagination
           type="both_buttons"
           current_page={@current_page}
@@ -163,11 +163,13 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
   @impl true
   def handle_event("previous_page", _, socket) do
-    {:noreply, update(socket, :current_page, &max(&1 - 1, 1))}
+    socket = update(socket, :current_page, &max(&1 - 1, 1))
+    {:noreply, push_event(socket, "page_changed", %{})}
   end
 
   @impl true
   def handle_event("next_page", _, socket) do
-    {:noreply, update(socket, :current_page, &min(&1 + 1, socket.assigns.total_pages))}
+    socket = update(socket, :current_page, &min(&1 + 1, socket.assigns.total_pages))
+    {:noreply, push_event(socket, "page_changed", %{})}
   end
 end
