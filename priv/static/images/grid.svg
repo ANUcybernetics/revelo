@@ -1,0 +1,32 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1255_2499)">
+<g opacity="0.4">
+<line x1="33.5" x2="33.5" y2="200" stroke="white"/>
+<line x1="66.8333" x2="66.8333" y2="200" stroke="white"/>
+<line x1="100.167" x2="100.167" y2="200" stroke="white"/>
+<line x1="133.5" x2="133.5" y2="200" stroke="white"/>
+<line x1="166.833" x2="166.833" y2="200" stroke="white"/>
+</g>
+<g opacity="0.4">
+<line y1="166.5" x2="200" y2="166.5" stroke="white"/>
+<line y1="133.167" x2="200" y2="133.167" stroke="white"/>
+<line y1="99.8334" x2="200" y2="99.8334" stroke="white"/>
+<line y1="66.5001" x2="200" y2="66.5001" stroke="white"/>
+<line y1="33.1668" x2="200" y2="33.1668" stroke="white"/>
+</g>
+<rect width="2" height="6" fill="white"/>
+<rect y="2" width="2" height="6" transform="rotate(-90 0 2)" fill="white"/>
+<rect y="194" width="2" height="6" fill="white"/>
+<rect y="200" width="2" height="6" transform="rotate(-90 0 200)" fill="white"/>
+<rect x="198" y="194" width="2" height="6" fill="white"/>
+<rect x="194" y="200" width="2" height="6" transform="rotate(-90 194 200)" fill="white"/>
+<rect x="198" width="2" height="6" fill="white"/>
+<rect x="194" y="2" width="2" height="6" transform="rotate(-90 194 2)" fill="white"/>
+</g>
+<rect x="0.25" y="0.25" width="199.5" height="199.5" stroke="white" stroke-width="0.5"/>
+<defs>
+<clipPath id="clip0_1255_2499">
+<rect width="200" height="200" fill="white"/>
+</clipPath>
+</defs>
+</svg>
