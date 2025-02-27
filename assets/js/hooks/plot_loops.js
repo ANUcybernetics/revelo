@@ -177,14 +177,44 @@ export const PlotLoops = {
       });
       localStorage.setItem("nodePositions", JSON.stringify(positions));
     });
+
+    this.cy.on("tap", "edge", (event) => {
+      const edge = event.target;
+      const edgeId = edge.id();
+
+      // Send the clicked edge ID to the LiveView component
+      this.pushEventTo(
+        this.el.dataset.target || "#loop-table",
+        "edge_clicked",
+        {
+          id: edgeId,
+        },
+      );
+    });
   },
 
   updated() {
     const elements = JSON.parse(this.el.dataset.elements || "[]");
-    const layout = JSON.parse(this.el.dataset.layout || "{}");
     const selectedLoop = this.el.dataset.selectedLoop;
     const loops = JSON.parse(this.el.dataset.loops || "[]");
 
+    // Update the elements in the graph to match the data
+    this.cy.elements().remove();
+    this.cy.add(elements);
+
+    // Apply the saved positions if they exist
+    const savedPositions = localStorage.getItem("nodePositions");
+    const positions = savedPositions ? JSON.parse(savedPositions) : null;
+
+    if (positions) {
+      this.cy.nodes().forEach((node) => {
+        if (positions[node.id()]) {
+          node.position(positions[node.id()]);
+        }
+      });
+    }
+
+    // Update styles for selected loop
     updateNodeStyles(
       selectedLoop,
       loops,

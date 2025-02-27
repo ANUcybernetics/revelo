@@ -3,6 +3,8 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   use ReveloWeb, :live_component
   use Gettext, backend: ReveloWeb.Gettext
 
+  import ReveloWeb.Component.Tooltip
+
   alias Revelo.Diagrams
 
   @impl true
@@ -25,6 +27,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       |> assign(:relationships, relationships)
       |> assign(:loop_count, loop_count)
       |> assign_new(:selected_loop, fn -> nil end)
+      |> assign(:selected_edge, nil)
 
     {:ok, socket}
   end
@@ -49,6 +52,189 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       end)
 
     {:noreply, assign(socket, :loops, loops)}
+  end
+
+  @impl true
+  def handle_event("edge_clicked", %{"id" => id}, socket) do
+    # Find the relationship with the given ID
+    relationship = Enum.find(socket.assigns.relationships, &(&1.id == id))
+    {:noreply, assign(socket, :selected_edge, relationship)}
+  end
+
+  # Add a function to close the edge details
+  @impl true
+  def handle_event("close_edge_details", _params, socket) do
+    {:noreply, assign(socket, :selected_edge, nil)}
+  end
+
+  @impl true
+  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
+    type = String.to_existing_atom(type)
+
+    relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
+
+    new_override =
+      cond do
+        relationship.type_override == type -> nil
+        relationship.type == type -> nil
+        true -> type
+      end
+
+    updated_relationship = Diagrams.override_relationship_type!(relationship, new_override)
+
+    # Re-fetch relationships to get updated state
+    relationships = Diagrams.list_actual_relationships!(socket.assigns.session.id)
+
+    # Update the selected edge with the updated relationship
+    selected_edge = updated_relationship
+
+    # Rescan loops after relationship update
+    Revelo.Diagrams.rescan_loops!(socket.assigns.session.id)
+    loops = Diagrams.list_loops!(socket.assigns.session.id)
+    loop_count = Enum.count(loops)
+
+    {:noreply,
+     socket
+     |> assign(:loops, loops)
+     |> assign(:loop_count, loop_count)
+     |> assign(:relationships, relationships)
+     |> assign(:selected_edge, selected_edge)}
+  end
+
+  def edge_details(assigns) do
+    ~H"""
+    <.modal id="edge-details-modal" show on_cancel={JS.push("close_edge_details", target: @myself)}>
+      <div class="space-y-4">
+        <div>
+          <p class="text-sm text-gray-500">Relationship</p>
+          <div class="flex justify-center items-center gap-2 mt-1 w-full">
+            <span class="font-medium">{@relationship.src.name}</span>
+            <.icon name="hero-arrow-long-right" class="h-4 w-4" />
+            <span class="font-medium">{@relationship.dst.name}</span>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500 mb-2">Current Type</p>
+          <div class="flex items-center gap-3 justify-center">
+            <.tooltip>
+              <tooltip_trigger>
+                <button
+                  phx-click="toggle_override"
+                  phx-value-src_id={@relationship.src_id}
+                  phx-value-dst_id={@relationship.dst_id}
+                  phx-value-type="direct"
+                  phx-target={@myself}
+                  class={[
+                    "flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
+                    cond do
+                      @relationship.type_override == :direct ||
+                          (@relationship.type_override == nil &&
+                             @relationship.type == :direct) ->
+                        "bg-orange-300 text-orange-900"
+
+                      true ->
+                        "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    end
+                  ]}
+                >
+                  <div class="relative h-5 w-5 flex items-center justify-center">
+                    <div
+                      class="h-5 w-5 transition-all"
+                      style="mask: url('/images/direct.svg') no-repeat; -webkit-mask: url('/images/direct.svg') no-repeat; background-color: currentColor;"
+                    />
+                    <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-orange-200 text-orange-900 text-[0.7rem] flex items-center justify-center h-4 w-4">
+                      {@relationship.direct_votes}
+                    </div>
+                  </div>
+                  <span class="sr-only">
+                    Direct Votes
+                  </span>
+                </button>
+              </tooltip_trigger>
+              <.tooltip_content side="top">
+                Direct Relationship
+              </.tooltip_content>
+            </.tooltip>
+
+            <.tooltip>
+              <tooltip_trigger>
+                <button
+                  phx-click="toggle_override"
+                  phx-value-src_id={@relationship.src_id}
+                  phx-value-dst_id={@relationship.dst_id}
+                  phx-value-type="no_relationship"
+                  phx-target={@myself}
+                  class={[
+                    "flex h-11 w-11 items-center justify-center rounded-lg transition-colors ",
+                    cond do
+                      @relationship.type_override == :no_relationship ||
+                          (@relationship.type_override == nil &&
+                             @relationship.type == :no_relationship) ->
+                        "bg-gray-300 text-gray-700"
+
+                      true ->
+                        "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    end
+                  ]}
+                >
+                  <div class="relative h-5 w-5 flex items-center justify-center">
+                    <.icon name="hero-no-symbol" class="h-5 w-5" />
+                    <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-gray-300 text-gray-700 text-[0.7rem] flex items-center justify-center h-4 w-4">
+                      {@relationship.no_relationship_votes}
+                    </div>
+                  </div>
+                  <span class="sr-only">
+                    No Relationship Votes
+                  </span>
+                </button>
+              </tooltip_trigger>
+              <.tooltip_content side="top">
+                No Relationship
+              </.tooltip_content>
+            </.tooltip>
+
+            <.tooltip>
+              <tooltip_trigger>
+                <button
+                  phx-click="toggle_override"
+                  phx-value-src_id={@relationship.src_id}
+                  phx-value-dst_id={@relationship.dst_id}
+                  phx-value-type="inverse"
+                  phx-target={@myself}
+                  class={[
+                    "flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
+                    cond do
+                      @relationship.type_override == :inverse ||
+                          (@relationship.type_override == nil &&
+                             @relationship.type == :inverse) ->
+                        "bg-blue-300 text-blue-900"
+
+                      true ->
+                        "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    end
+                  ]}
+                >
+                  <div class="relative h-5 w-5 flex items-center justify-center">
+                    <.icon name="hero-arrows-up-down" class="h-5 w-5" />
+                    <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-200 text-blue-900 text-[0.7rem] flex items-center justify-center h-4 w-4">
+                      {@relationship.inverse_votes}
+                    </div>
+                  </div>
+                  <span class="sr-only">
+                    Inverse Votes
+                  </span>
+                </button>
+              </tooltip_trigger>
+              <.tooltip_content side="top">
+                Inverse Relationship
+              </.tooltip_content>
+            </.tooltip>
+          </div>
+        </div>
+      </div>
+    </.modal>
+    """
   end
 
   def loop_card(assigns) do
@@ -148,6 +334,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
           id="plot-loops"
           phx-hook="PlotLoops"
           phx-update="ignore"
+          data-target={@myself}
           class="h-full w-[calc(100%-350px)]"
           data-elements={
             Jason.encode!(
