@@ -338,7 +338,6 @@ defmodule Revelo.Diagrams.Loop do
     |> Enum.map(&"#{&1.id}:#{&1.type}")
     |> Enum.sort()
     |> Enum.join(">")
-    |> dbg()
     |> then(&:crypto.hash(:sha256, &1))
     |> Base.encode16(case: :lower)
   end
