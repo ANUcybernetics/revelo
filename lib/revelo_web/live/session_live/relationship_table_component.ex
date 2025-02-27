@@ -64,7 +64,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
               <.card_description class="mt-1">Total Loops: {@loop_count}</.card_description>
               <:actions>
                 <div class="flex gap-2">
-                  <div class="relative w-60 mr-2 h-8">
+                  <div class="relative w-60 h-8">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <.icon name="hero-magnifying-glass" class="h-4 w-4 text-gray-500" />
                     </div>
