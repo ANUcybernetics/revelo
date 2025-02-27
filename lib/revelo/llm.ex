@@ -107,7 +107,7 @@ defmodule Revelo.LLM do
             content: "Context: #{description}, loop: #{loop}, feedback type: #{feedback_type}"
           }
         ],
-        model: "gpt-4o-mini"
+        model: "gpt-4o"
       },
       response_model: Story,
       adapter_context: [
