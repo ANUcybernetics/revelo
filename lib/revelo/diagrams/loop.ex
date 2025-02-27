@@ -9,6 +9,7 @@ defmodule Revelo.Diagrams.Loop do
   alias Revelo.Diagrams.GraphAnalyser
   alias Revelo.Diagrams.LoopRelationships
   alias Revelo.Diagrams.Relationship
+  alias Revelo.Sessions.Session
 
   require Ash.Query
   require Ash.Sort
@@ -38,12 +39,20 @@ defmodule Revelo.Diagrams.Loop do
     end
 
     create :create do
-      accept [:story, :display_order, :title]
+      accept [:story, :display_order, :title, :relationship_hash]
 
       argument :relationships, {:array, :struct} do
         constraints items: [instance_of: Relationship]
         allow_nil? false
       end
+
+      argument :session, :struct do
+        constraints instance_of: Session
+        allow_nil? false
+      end
+
+      # Connect the provided session to the loop
+      change manage_relationship(:session, type: :append_and_remove)
 
       validate fn changeset, _context ->
         relationships = Enum.map(changeset.arguments.relationships, &Ash.load!(&1, :type))
@@ -85,41 +94,25 @@ defmodule Revelo.Diagrams.Loop do
         end
       end
 
-      # check if loop already exists for this session
-      # NOTE: if this ever gets too computationally expensive, we could put a hash of the relationships
-      # in the DB and then add a unique constraint on that (but not necessary for now)
-      validate fn changeset, _context ->
-        relationships = changeset.arguments.relationships
-        relationship_id_set = MapSet.new(relationships, & &1.id)
+      # Generate relationship hash and check duplicates
+      change fn changeset, _context ->
+        relationships = Ash.load!(changeset.arguments.relationships, :type)
+        relationship_hash = generate_relationship_hash(relationships)
 
-        session_id =
-          relationships
-          |> List.first()
-          |> Ash.load!(:src)
-          |> Map.get(:src)
-          |> Map.get(:session_id)
-
+        # Check for duplicate by hash
         duplicate_exists? =
           __MODULE__
-          |> Ash.read!(load: :influence_relationships)
-          |> Enum.map(fn loop ->
-            Map.get(loop, :influence_relationships)
-          end)
-          |> Enum.filter(fn relationships ->
-            first = relationships |> List.first() |> Ash.load!(:src)
-            first && first.src.session_id == session_id
-          end)
-          |> Enum.map(fn relationships ->
-            MapSet.new(relationships, & &1.id)
-          end)
-          |> Enum.any?(fn existing_ids ->
-            MapSet.equal?(relationship_id_set, existing_ids)
-          end)
+          |> Ash.Query.filter(relationship_hash == ^relationship_hash)
+          |> Ash.exists?()
 
         if duplicate_exists? do
-          {:error, "A loop with these exact relationships already exists"}
+          Ash.Changeset.add_error(
+            changeset,
+            :relationships,
+            "A loop with these exact relationships already exists"
+          )
         else
-          :ok
+          Ash.Changeset.force_change_attribute(changeset, :relationship_hash, relationship_hash)
         end
       end
 
@@ -150,52 +143,82 @@ defmodule Revelo.Diagrams.Loop do
       run fn changeset, _context ->
         session_id = changeset.arguments.session_id
 
-        # First get existing loops and actual relationships
-        existing_loops = Diagrams.list_loops!(session_id)
+        # Get the session once at the beginning
+        session = Ash.get!(Session, session_id)
+
+        # Get existing loop hashes
+        existing_loop_hashes =
+          session_id
+          |> Revelo.Diagrams.list_loops!()
+          |> Map.new(fn loop -> {loop.relationship_hash, loop.id} end)
+
+        # Get all actual relationships for this session
         relationships = Diagrams.list_actual_relationships!(session_id)
-        relationship_ids = MapSet.new(relationships, & &1.id)
 
-        # Filter loops with missing relationships
-        loops_to_delete =
-          Enum.filter(existing_loops, fn loop ->
-            # Check if any of the loop's relationships are no longer in the actual relationships list
-            Enum.any?(loop.influence_relationships, fn rel ->
-              not MapSet.member?(relationship_ids, rel.id)
-            end)
-          end)
-
-        # Delete join table rows and loops that need to be removed
-        if not Enum.empty?(loops_to_delete) do
-          # Delete loop relationship records for affected loops
-          LoopRelationships
-          |> Ash.Query.filter(loop_id in ^Enum.map(loops_to_delete, & &1.id))
-          |> Ash.read!()
-          |> Enum.each(&Ash.destroy!/1)
-
-          # Delete the affected loops
-          Enum.each(loops_to_delete, &Ash.destroy!/1)
-        end
-
-        # First calculate remaining_loops since we'll use it multiple times
-        remaining_loops =
-          Enum.reject(existing_loops, fn loop ->
-            loop_id = loop.id
-            Enum.any?(loops_to_delete, fn deleted -> deleted.id == loop_id end)
-          end)
-
-        # Find cycles and create new loops
-        new_loops =
+        # Find all possible loops and create hashes
+        new_loops_with_hashes =
           relationships
           |> GraphAnalyser.find_loops()
-          |> Enum.reject(fn new_loop ->
-            Enum.any?(remaining_loops, fn existing_loop ->
-              GraphAnalyser.loops_equal?(new_loop, existing_loop.influence_relationships)
-            end)
+          |> Map.new(fn loop_relationships ->
+            relationship_hash = generate_relationship_hash(loop_relationships)
+            {relationship_hash, loop_relationships}
           end)
-          |> Enum.map(&Diagrams.create_loop!/1)
 
-        # Return remaining existing loops plus new loops
-        {:ok, remaining_loops ++ new_loops}
+        # Find loops to delete (in existing but not in new)
+        loops_to_delete_ids =
+          existing_loop_hashes
+          |> Map.keys()
+          |> Enum.filter(fn hash -> !Map.has_key?(new_loops_with_hashes, hash) end)
+          |> Enum.map(fn hash -> existing_loop_hashes[hash] end)
+
+        # Find loops to create (in new but not in existing)
+        loops_to_create =
+          new_loops_with_hashes
+          |> Map.keys()
+          |> Enum.filter(fn hash -> !Map.has_key?(existing_loop_hashes, hash) end)
+          |> Enum.map(fn hash ->
+            %{
+              session: session,
+              relationships: new_loops_with_hashes[hash]
+            }
+          end)
+
+        # Delete loops that need to be removed
+        if !Enum.empty?(loops_to_delete_ids) do
+          __MODULE__
+          |> Ash.Query.filter(id in ^loops_to_delete_ids)
+          |> Ash.bulk_destroy!(:destroy, %{})
+        end
+
+        # Create new loops with proper error handling
+        created_loops =
+          if Enum.empty?(loops_to_create) do
+            []
+          else
+            bulk_result =
+              Ash.bulk_create(
+                loops_to_create,
+                __MODULE__,
+                :create,
+                return_records?: true,
+                return_errors?: true,
+                return_notifications?: true
+              )
+
+            case bulk_result do
+              %{status: :success, records: records} ->
+                records
+
+              %{status: :error, errors: errors} ->
+                # Explicitly raise an error with details
+                raise "Failed to create new loops: #{inspect(errors)}"
+            end
+          end
+
+        # Return all loops for this session
+        all_loops = Revelo.Diagrams.list_loops!(session_id)
+
+        {:ok, all_loops}
       end
     end
 
@@ -270,6 +293,7 @@ defmodule Revelo.Diagrams.Loop do
     attribute :title, :string
     attribute :story, :string
     attribute :display_order, :integer
+    attribute :relationship_hash, :string
     timestamps()
   end
 
@@ -279,6 +303,10 @@ defmodule Revelo.Diagrams.Loop do
       source_attribute_on_join_resource :loop_id
       destination_attribute_on_join_resource :relationship_id
       sort [Ash.Sort.expr_sort(source(influence_relationships_join_assoc.loop_index))]
+    end
+
+    belongs_to :session, Session do
+      allow_nil? false
     end
   end
 
@@ -298,17 +326,20 @@ defmodule Revelo.Diagrams.Loop do
                 end)
               end,
               load: [influence_relationships: [:type]]
+  end
 
-    calculate :session,
-              :uuid,
-              fn loops, _context ->
-                Enum.map(loops, fn loop ->
-                  loop.influence_relationships
-                  |> List.first()
-                  |> Map.get(:src)
-                  |> Map.get(:session)
-                end)
-              end,
-              load: [influence_relationships: [src: [:session]]]
+  identities do
+    identity :relationship_hash, [:relationship_hash]
+  end
+
+  # Generate a unique deterministic hash for a set of relationships
+  defp generate_relationship_hash(relationships) do
+    relationships
+    |> Enum.map(&"#{&1.id}:#{&1.type}")
+    |> Enum.sort()
+    |> Enum.join(">")
+    |> dbg()
+    |> then(&:crypto.hash(:sha256, &1))
+    |> Base.encode16(case: :lower)
   end
 end

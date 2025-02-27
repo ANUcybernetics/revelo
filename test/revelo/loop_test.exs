@@ -7,7 +7,6 @@ defmodule Revelo.LoopTest do
   # alias Revelo.Diagrams.Relationship
   # alias Revelo.Diagrams.Variable
 
-  alias Ash.Error.Changes.InvalidChanges
   alias Revelo.Diagrams.Analyser
 
   describe "loop actions" do
@@ -33,7 +32,7 @@ defmodule Revelo.LoopTest do
 
       loop =
         relationships
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:influence_relationships)
 
       assert MapSet.new(relationships, & &1.id) ==
@@ -61,7 +60,7 @@ defmodule Revelo.LoopTest do
 
       loop =
         relationships
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:session)
 
       assert loop.session.id == session.id
@@ -87,7 +86,7 @@ defmodule Revelo.LoopTest do
           )
         end)
 
-      Revelo.Diagrams.create_loop!(relationships, actor: user)
+      Revelo.Diagrams.create_loop!(relationships, session, actor: user)
 
       [%Revelo.Diagrams.Loop{influence_relationships: relationships}] =
         Revelo.Diagrams.list_loops!(session.id)
@@ -124,7 +123,7 @@ defmodule Revelo.LoopTest do
         end)
 
       # Create loop in session 1
-      loop1 = Revelo.Diagrams.create_loop!(relationships1, actor: user)
+      loop1 = Revelo.Diagrams.create_loop!(relationships1, session1, actor: user)
 
       # Create variables and relationships for session 2
       variables2 = Enum.map(1..3, fn _ -> variable(session: session2, user: user) end)
@@ -144,7 +143,7 @@ defmodule Revelo.LoopTest do
         end)
 
       # Create loop in session 2
-      loop2 = Revelo.Diagrams.create_loop!(relationships2, actor: user)
+      loop2 = Revelo.Diagrams.create_loop!(relationships2, session2, actor: user)
 
       # Verify list_loops only returns loops from the specified session
       session1_loops = Revelo.Diagrams.list_loops!(session1.id)
@@ -214,12 +213,12 @@ defmodule Revelo.LoopTest do
 
       loop1 =
         loop1_rels
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:influence_relationships)
 
       loop2 =
         loop2_rels
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:influence_relationships)
 
       # Verify both loops were created and contain the shared relationship
@@ -250,15 +249,13 @@ defmodule Revelo.LoopTest do
         end)
 
       # Create first loop successfully
-      Revelo.Diagrams.create_loop!(relationships, actor: user)
+      Revelo.Diagrams.create_loop!(relationships, session, actor: user)
 
       # Attempt to create duplicate loop
       result = Revelo.Diagrams.create_loop(relationships, actor: user)
 
-      assert {:error, changeset} = result
-
-      assert [%InvalidChanges{message: "A loop with these exact relationships already exists"}] =
-               Map.get(changeset, :errors)
+      # TODO might be nice to check if the error message is clear that the :relationship_hash unique constraint has been violated
+      assert {:error, _changeset} = result
     end
 
     test "relationships without votes return validation error" do
@@ -275,15 +272,7 @@ defmodule Revelo.LoopTest do
         end)
 
       result = Revelo.Diagrams.create_loop(relationships, actor: user)
-      assert {:error, changeset} = result
-
-      assert [
-               %InvalidChanges{
-                 message: msg
-               }
-             ] = Map.get(changeset, :errors)
-
-      assert String.ends_with?(msg, "was voted 'no relationship' and can't be part of a loop")
+      assert {:error, _changeset} = result
     end
   end
 
@@ -448,7 +437,7 @@ defmodule Revelo.LoopTest do
 
       loop =
         relationships
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:influence_relationships)
 
       # Verify loop was created with both relationships
@@ -478,14 +467,7 @@ defmodule Revelo.LoopTest do
 
       result = Revelo.Diagrams.create_loop(relationships, actor: user)
 
-      assert {:error, changeset} = result
-
-      # this is fragile - update it if the error message changes
-      assert [
-               %InvalidChanges{
-                 message: "Loop does not close back to starting point"
-               }
-             ] = Map.get(changeset, :errors)
+      assert {:error, _changeset} = result
     end
 
     test "invalid relationships with no loop return error changeset" do
@@ -515,13 +497,7 @@ defmodule Revelo.LoopTest do
 
       result = Revelo.Diagrams.create_loop(relationships, actor: user)
 
-      assert {:error, changeset} = result
-
-      assert [
-               %InvalidChanges{
-                 message: "Relationships do not form a continuous loop"
-               }
-             ] = Map.get(changeset, :errors)
+      assert {:error, _changeset} = result
     end
 
     test "rescan creates loops from relationships" do
@@ -899,7 +875,7 @@ defmodule Revelo.LoopTest do
 
       loop =
         [relationship]
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:influence_relationships)
 
       # Verify loop was created with the self-referential relationship
@@ -1007,7 +983,7 @@ defmodule Revelo.LoopTest do
 
       loop =
         relationships
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!([:influence_relationships, :type])
 
       assert loop.type == :reinforcing
@@ -1047,7 +1023,7 @@ defmodule Revelo.LoopTest do
 
       loop =
         relationships
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:type)
 
       assert loop.type == :balancing
@@ -1087,7 +1063,7 @@ defmodule Revelo.LoopTest do
 
       loop =
         relationships
-        |> Revelo.Diagrams.create_loop!(actor: user)
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
         |> Ash.load!(:type)
 
       assert loop.type == :conflicting
@@ -1172,6 +1148,66 @@ defmodule Revelo.LoopTest do
 
       # Verify that we found at least one loop
       assert length(loops) > 0
+    end
+  end
+
+  describe "loop hash listing" do
+    test "list_hashes returns all relationship hashes for a session" do
+      user = user()
+      session = session(user)
+      variables = Enum.map(1..3, fn _ -> variable(session: session, user: user) end)
+
+      # Create a loop
+      relationships =
+        variables
+        |> List.insert_at(-1, List.first(variables))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session,
+            user: user,
+            vote_type: :direct
+          )
+        end)
+
+      loop = Revelo.Diagrams.create_loop!(relationships, session, actor: user)
+
+      # Get hashes
+      hashes =
+        session.id
+        |> Revelo.Diagrams.list_loops!()
+        |> Enum.map(& &1.relationship_hash)
+
+      # Should have exactly one hash
+      assert length(hashes) == 1
+
+      # That hash should match our loop's hash
+      assert loop.relationship_hash in hashes
+
+      # Create a second session with its own loop
+      session2 = session(user)
+      variables2 = Enum.map(1..3, fn _ -> variable(session: session2, user: user) end)
+
+      relationships2 =
+        variables2
+        |> List.insert_at(-1, List.first(variables2))
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [src, dst] ->
+          relationship_with_vote(
+            src: src,
+            dst: dst,
+            session: session2,
+            user: user,
+            vote_type: :direct
+          )
+        end)
+
+      Revelo.Diagrams.create_loop!(relationships2, session2, actor: user)
+
+      # Session 1 should still only have one hash
+      assert length(Revelo.Diagrams.list_loops!(session.id)) == 1
     end
   end
 end

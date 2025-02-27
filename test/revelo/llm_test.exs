@@ -58,7 +58,7 @@ defmodule Revelo.LLMTest do
         )
       ]
 
-      loop = Revelo.Diagrams.create_loop!(relationships, actor: user)
+      loop = Revelo.Diagrams.create_loop!(relationships, session, actor: user)
 
       {:ok, %Story{story: story, title: title}} =
         Revelo.Diagrams.generate_loop_story!(loop, actor: user)
