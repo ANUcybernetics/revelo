@@ -62,3 +62,7 @@ we're building it out & exploring the problem space).
 
 - the :generate_story action is a bit messy - either the "construct template"
   stuff should be all in the action, or all in the LLM module, but not both
+
+- there were a couple of actions which had to be marked `require_atomic: false`
+  as part of the sqlite -> postgres move... I should go back and check if
+  they're still necessary (or if there's a proper fix)
