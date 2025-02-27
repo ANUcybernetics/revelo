@@ -39,9 +39,17 @@ defmodule ReveloWeb.PresenceTest do
 
     @tag skip: "needs to be updated to have a facilitator send a transition message"
     test "presence tracking is triggered when anon user joins via QR code", %{conn: conn} do
-      user = user()
-      session = session(user)
+      password = "657]545asdflh"
+      facilitator = user_with_password(password)
+      session = session(facilitator)
 
+      # log in facilitator
+      facilitator_session = log_in_user(conn, facilitator.email, password)
+
+      # visit with facilitator
+      visit(facilitator_session.conn, "/sessions/#{session.id}/identify/work")
+
+      # visit with anonymous user
       conn
       |> visit("/qr/sessions/#{session.id}/identify/work")
       |> assert_path("/sessions/#{session.id}/identify/work")
@@ -56,8 +64,17 @@ defmodule ReveloWeb.PresenceTest do
       user = user()
       session = session(user)
 
+      # Have the facilitator visit first
+      facilitator = user_with_password("testpassword123")
+      Revelo.Sessions.add_participant!(session, facilitator, true)
+      facilitator_session = log_in_user(conn, facilitator.email, "testpassword123")
+
+      # Visit with facilitator
+      visit(facilitator_session.conn, "/sessions/#{session.id}/identify/work")
+
+      # Then have a participant join
       %{conn: conn} =
-        conn
+        build_conn()
         |> visit("/qr/sessions/#{session.id}/identify/work")
         |> assert_path("/sessions/#{session.id}/identify/work")
 

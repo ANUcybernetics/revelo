@@ -107,8 +107,15 @@ defmodule ReveloWeb.UserFlowTest do
 
     @tag skip: "needs to be updated to have a facilitator send a transition message"
     test "does happen with no logged-in user", %{conn: conn} do
-      user = user()
-      session = session(user)
+      password = "657]545asdflh"
+      facilitator = user_with_password(password)
+      session = session(facilitator)
+
+      # log in facilitator
+      facilitator_session = log_in_user(conn, facilitator.email, password)
+
+      # visit with facilitator
+      visit(facilitator_session.conn, "/sessions/#{session.id}/identify/work")
 
       browsing_session =
         conn
