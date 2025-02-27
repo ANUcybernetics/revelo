@@ -392,7 +392,10 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
           }
         >
         </div>
-      <% end %>
+        <%= if @selected_edge do %>
+          <.edge_details relationship={@selected_edge} myself={@myself} />
+        <% end %>
+        <% end %>
       <.loop_wrapper
         facilitator?={@current_user.facilitator?}
         selected_loop={@selected_loop}
