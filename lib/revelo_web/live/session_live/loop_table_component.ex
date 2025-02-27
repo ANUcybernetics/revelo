@@ -68,11 +68,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   end
 
   @impl true
-  def handle_event(
-        "toggle_override",
-        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type},
-        socket
-      ) do
+  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
     type = String.to_existing_atom(type)
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
@@ -395,7 +391,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <%= if @selected_edge do %>
           <.edge_details relationship={@selected_edge} myself={@myself} />
         <% end %>
-        <% end %>
+      <% end %>
       <.loop_wrapper
         facilitator?={@current_user.facilitator?}
         selected_loop={@selected_loop}
@@ -432,7 +428,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                   <div class="flex mr-2 justify-between gap-2 w-full">
                     <div>{loop.title}</div>
                     <div class="mt-1">
-                    <.badge_length length={Enum.count(loop.influence_relationships)}/>
+                      <.badge_length length={Enum.count(loop.influence_relationships)} />
                     </div>
                   </div>
                 </div>
