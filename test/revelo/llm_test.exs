@@ -6,7 +6,7 @@ defmodule Revelo.LLMTest do
   alias Revelo.LLM.Story
 
   describe "test real OpenAI API calls" do
-    @describetag skip: "requires OpenAI API key and costs money"
+    # @describetag skip: "requires OpenAI API key and costs money"
 
     test "LLM.generate_variables returns sensible response" do
       {:ok, variable_list} =
@@ -21,12 +21,38 @@ defmodule Revelo.LLMTest do
     end
 
     test "LLM.generate_story returns sensible response" do
-      {:ok, %Story{story: story, title: title}} =
-        Revelo.LLM.generate_story(
-          "The hobbits in hobbiton are wondering what actions they should take.",
-          "[Level of Sauron's Power increases Size of Orc Armies increases Sauron's Military Control over territories increases Level of Sauron's Power]",
-          "Reinforcing"
-        )
+      # Create mock session struct with description
+      session = %{
+        description: "The hobbits in hobbiton are wondering what actions they should take."
+      }
+
+      # Create mock relationships
+      relationships = [
+        %{
+          src: %{name: "Level of Sauron's Power"},
+          dst: %{name: "Size of Orc Armies"},
+          type: :direct
+        },
+        %{
+          src: %{name: "Size of Orc Armies"},
+          dst: %{name: "Sauron's Military Control over territories"},
+          type: :direct
+        },
+        %{
+          src: %{name: "Sauron's Military Control over territories"},
+          dst: %{name: "Level of Sauron's Power"},
+          type: :direct
+        }
+      ]
+
+      # Create mock loop struct
+      loop = %{
+        type: :reinforcing,
+        session: session,
+        influence_relationships: relationships
+      }
+
+      {:ok, %Story{story: story, title: title}} = Revelo.LLM.generate_story(loop)
 
       assert story
       assert title
@@ -58,13 +84,13 @@ defmodule Revelo.LLMTest do
         )
       ]
 
-      loop = Revelo.Diagrams.create_loop!(relationships, session, actor: user)
+      loop =
+        relationships
+        |> Revelo.Diagrams.create_loop!(session, actor: user)
+        |> Revelo.Diagrams.generate_loop_story!()
 
-      {:ok, %Story{story: story, title: title}} =
-        Revelo.Diagrams.generate_loop_story!(loop, actor: user)
-
-      assert story
-      assert title
+      assert loop.story
+      assert loop.title
     end
   end
 end

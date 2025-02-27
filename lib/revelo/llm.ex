@@ -82,8 +82,13 @@ defmodule Revelo.LLM do
     end
   end
 
-  def generate_story(description, loop, feedback_type) do
+  def generate_story(loop) do
     ensure_api_key_present!()
+
+    # Process the loop data
+    relationship_string = process_relationship_string(loop.influence_relationships)
+    session_description = loop.session.description
+    loop_type = Atom.to_string(loop.type)
 
     InstructorLite.instruct(
       %{
@@ -105,7 +110,7 @@ defmodule Revelo.LLM do
           },
           %{
             role: "user",
-            content: "Context: #{description}, loop: #{loop}, feedback type: #{feedback_type}"
+            content: "Context: #{session_description}, loop: #{relationship_string}, feedback type: #{loop_type}"
           }
         ],
         model: "gpt-4o"
@@ -115,6 +120,47 @@ defmodule Revelo.LLM do
         api_key: Application.fetch_env!(:instructor_lite, :openai_api_key)
       ]
     )
+  end
+
+  # Helper function to process relationships into a string
+  defp process_relationship_string(relationships) do
+    relationships
+    |> Enum.reduce({"", []}, fn rel, {prev_connector, acc} ->
+      connector =
+        case {prev_connector, rel.type} do
+          {"", :inverse} -> :decrease
+          {"", :direct} -> :increase
+          {:decrease, :inverse} -> :increase
+          {:decrease, :direct} -> :decrease
+          {:increase, :inverse} -> :decrease
+          {:increase, :direct} -> :increase
+        end
+
+      cur_text =
+        case {prev_connector, connector} do
+          {"", :decrease} ->
+            "Increasing #{rel.src.name} directly causes #{rel.dst.name} to decrease"
+
+          {"", :increase} ->
+            "Increasing #{rel.src.name} directly causes #{rel.dst.name} to increase"
+
+          {:decrease, :increase} ->
+            "Decreasing #{rel.src.name} directly causes #{rel.dst.name} to increase"
+
+          {:decrease, :decrease} ->
+            "Decreasing #{rel.src.name} directly causes #{rel.dst.name} to decrease"
+
+          {:increase, :decrease} ->
+            "Increasing #{rel.src.name} directly causes #{rel.dst.name} to decrease"
+
+          {:increase, :increase} ->
+            "Increasing #{rel.src.name} directly causes #{rel.dst.name} to increase"
+        end
+
+      {connector, acc ++ [cur_text]}
+    end)
+    |> elem(1)
+    |> Enum.join("; ")
   end
 
   defp ensure_api_key_present! do

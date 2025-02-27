@@ -235,57 +235,11 @@ defmodule Revelo.Diagrams.Loop do
         loop =
           Ash.load!(changeset.data, [
             :type,
-            :session,
+            session: [:description],
             influence_relationships: [:src, :dst, :type]
           ])
 
-        relationship_string =
-          loop.influence_relationships
-          |> Enum.reduce({"", []}, fn rel, {prev_connector, acc} ->
-            connector =
-              case {prev_connector, rel.type} do
-                {"", :inverse} -> :decrease
-                {"", :direct} -> :increase
-                {:decrease, :inverse} -> :increase
-                {:decrease, :direct} -> :decrease
-                {:increase, :inverse} -> :decrease
-                {:increase, :direct} -> :increase
-              end
-
-            cur_text =
-              case {prev_connector, connector} do
-                {"", :decrease} ->
-                  "Increasing #{rel.src.name} directly causes #{rel.dst.name} to decrease"
-
-                {"", :increase} ->
-                  "Increasing #{rel.src.name} directly causes #{rel.dst.name} to increase"
-
-                {:decrease, :increase} ->
-                  "Decreasing #{rel.src.name} directly causes #{rel.dst.name} to increase"
-
-                {:decrease, :decrease} ->
-                  "Decreasing #{rel.src.name} directly causes #{rel.dst.name} to decrease"
-
-                {:increase, :decrease} ->
-                  "Increasing #{rel.src.name} directly causes #{rel.dst.name} to decrease"
-
-                {:increase, :increase} ->
-                  "Increasing #{rel.src.name} directly causes #{rel.dst.name} to increase"
-              end
-
-            {connector, acc ++ [cur_text]}
-          end)
-          |> elem(1)
-          |> Enum.join("; ")
-
-        session_description = Ash.load!(loop.session, :description).description
-
-        {:ok, %{story: story, title: title}} =
-          Revelo.LLM.generate_story(
-            session_description,
-            relationship_string,
-            Atom.to_string(loop.type)
-          )
+        {:ok, %{story: story, title: title}} = Revelo.LLM.generate_story(loop)
 
         changeset
         |> Ash.Changeset.force_change_attribute(:story, story)
