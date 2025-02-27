@@ -113,6 +113,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
                 <.table_header>
                   <.table_row>
                     <.table_head>Name</.table_head>
+                    <.table_head>Votes</.table_head>
                     <.table_head>Actions</.table_head>
                   </.table_row>
                 </.table_header>
@@ -123,6 +124,9 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
                     class={if variable.hidden?, do: "opacity-40"}
                   >
                     <.table_cell>{variable.name}</.table_cell>
+                    <.table_cell class={if variable.is_voi?, do: "pl-6", else: "pl-8"}>
+                      {if variable.is_voi?, do: "N/A", else: variable.vote_tally}
+                    </.table_cell>
                     <.table_cell>
                       <.variable_actions
                         variable={variable}
@@ -207,13 +211,17 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
           {if @variable.hidden?, do: "Show", else: "Hide"}
         </.tooltip_content>
       </.tooltip>
-      <.tooltip :if={@variable.vote_tally == 0}>
+      <.tooltip>
         <tooltip_trigger>
           <button
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
+            class={[
+              "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted",
+              @variable.vote_tally != 0 && "opacity-40"
+            ]}
             phx-click="delete_variable"
             phx-value-id={@variable.id}
             phx-target={@myself}
+            disabled={@variable.vote_tally != 0}
           >
             <.icon name="hero-trash" class="h-4 w-4 transition-all" />
             <span class="sr-only">
@@ -222,25 +230,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
           </button>
         </tooltip_trigger>
         <.tooltip_content side="top">
-          Delete
-        </.tooltip_content>
-      </.tooltip>
-      <.tooltip :if={@variable.vote_tally > 0}>
-        <tooltip_trigger>
-          <button class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">
-            <div class="relative h-4 w-4 flex items-center justify-center">
-              <.icon name="hero-chart-bar-solid" class="h-4 w-4 transition-all" />
-              <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-400 text-white text-[0.6rem] flex items-center justify-center h-3 w-3">
-                {@variable.vote_tally}
-              </div>
-            </div>
-            <span class="sr-only">
-              Vote Count
-            </span>
-          </button>
-        </tooltip_trigger>
-        <.tooltip_content side="top">
-          Vote Count
+          {if @variable.vote_tally == 0, do: "Delete", else: "Disabled - Has votes"}
         </.tooltip_content>
       </.tooltip>
     </div>

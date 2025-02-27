@@ -5,6 +5,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   import ReveloWeb.Component.Card
 
   alias Revelo.Diagrams
+  alias Revelo.Diagrams.Relationship
 
   @impl true
   def mount(socket) do
@@ -142,13 +143,13 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   def handle_event("vote", %{"type" => type, "src_id" => src_id, "dst_id" => dst_id}, socket) do
     voter = socket.assigns.current_user
 
-    case Ash.get(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id) do
+    case Ash.get(Relationship, src_id: src_id, dst_id: dst_id) do
       {:ok, relationship} ->
         type = String.to_existing_atom(type)
         Diagrams.relationship_vote!(relationship, type, actor: voter)
 
         relationship =
-          Ash.get!(Revelo.Diagrams.Relationship, [src_id: src_id, dst_id: dst_id],
+          Ash.get!(Relationship, [src_id: src_id, dst_id: dst_id],
             load: [:src, :dst, :voted?],
             actor: socket.assigns.current_user
           )

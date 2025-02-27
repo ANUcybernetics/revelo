@@ -189,7 +189,7 @@ defmodule ReveloWeb.UserFlowTest do
         |> visit("/sessions/#{session.id}/identify/work")
         |> click_link("Next Phase")
         |> assert_has("h3", text: "Variable Votes")
-        |> assert_has("div.bg-blue-400", text: "1")
+        |> assert_has("td", text: "1")
 
       anon_session =
         anon_session.conn
