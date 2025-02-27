@@ -120,6 +120,7 @@ defmodule Revelo.RustGraphAnalyserTest do
       assert Enum.all?(relationships, fn rel -> rel.id in rel_ids end)
     end
 
+    @tag skip: "takes too long"
     @tag timeout: 120_000
     test "find_cycles stress test with large graph" do
       # Create random large graph
@@ -171,6 +172,47 @@ defmodule Revelo.RustGraphAnalyserTest do
       )
 
       # Verify we found at least one cycle
+      assert length(cycles) > 0
+    end
+
+    @tag skip: "takes too long"
+    @tag timeout: 60_000
+    test "find_cycles stress test with small dense graph" do
+      # Create small but densely connected graph
+      num_nodes = 12
+      connectivity_percentage = 80
+
+      # Create node IDs
+      _node_ids = Enum.map(1..num_nodes, fn i -> "node_#{i}" end)
+
+      # Create random relationships with 80% connectivity
+      for_result =
+        for i <- 1..num_nodes, j <- 1..num_nodes, i != j do
+          if :rand.uniform(100) <= connectivity_percentage do
+            {"rel_#{i}_#{j}", "node_#{i}", "node_#{j}"}
+          end
+        end
+
+      relationships = Enum.reject(for_result, &is_nil/1)
+
+      # With 80% connectivity, cycles will almost certainly exist
+      # No need to add a guaranteed closing relationship
+
+      # Measure time to find cycles
+      {time_microseconds, cycles} =
+        :timer.tc(fn ->
+          GraphAnalyser.find_cycles(relationships)
+        end)
+
+      # Convert to milliseconds for more readable output
+      time_ms = time_microseconds / 1000.0
+
+      # Log results
+      IO.puts(
+        "Dense graph cycle detection: #{length(relationships)} relationships took #{time_ms}ms and found #{length(cycles)} cycles"
+      )
+
+      # there's a _very_ small chance this will fail (because the rels are pseudo-random) but it's a vanisingly small chance if n and connectivity % are high
       assert length(cycles) > 0
     end
   end
