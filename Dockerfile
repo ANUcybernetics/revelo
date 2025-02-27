@@ -26,10 +26,16 @@ RUN apt-get update -y && apt-get install -y \
     git \
     ca-certificates \
     curl \
+    pkg-config \
+    libssl-dev \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+# Install Rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # prepare build dir
 WORKDIR /app
@@ -53,9 +59,8 @@ COPY config/config.exs config/${MIX_ENV}.exs config/
 RUN mix deps.compile
 
 COPY priv priv
-
 COPY lib lib
-
+COPY native native
 COPY assets assets
 
 # install npm dependencies
