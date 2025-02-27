@@ -43,10 +43,10 @@ we're building it out & exploring the problem space).
   I tried the latter, but there were server-side events triggering, so it's bit
   of a mess.
 
-- The search on relationship votes could probably be client side, filtering through
-  the relationship list. Right now it retrieves the list of relationships every search.
-
 - The presence module {complete, total} calculation uses the current phases to swap
   between the participant being finished count, and the number of votes count - I feel
   there'd be a better way? Also, we start with the progress value unloaded, so it shows
   0% always until someone votes, even if many votes exist.
+
+- There's repetition between the relationship overwrites and the loop relationship modal
+  we could refactor
