@@ -6,7 +6,7 @@ defmodule Revelo.LLMTest do
   alias Revelo.LLM.Story
 
   describe "test real OpenAI API calls" do
-    # @describetag skip: "requires OpenAI API key and costs money"
+    @describetag skip: "requires OpenAI API key and costs money"
 
     test "LLM.generate_variables returns sensible response" do
       {:ok, variable_list} =
