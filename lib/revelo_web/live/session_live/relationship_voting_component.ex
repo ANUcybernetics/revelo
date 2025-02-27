@@ -26,6 +26,9 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
           n -> Enum.slice(relationships, n..-1//1) ++ Enum.slice(relationships, 0..(n - 1))
         end
       end)
+      |> Enum.map(fn group ->
+        Enum.sort_by(group, fn rel -> rel.voted? != nil end)
+      end)
 
     # Get the count of votes made by the current user
     vote_count =
@@ -144,24 +147,27 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         type = String.to_existing_atom(type)
         Diagrams.relationship_vote!(relationship, type, actor: voter)
 
-        # TODO this partitions the thing each time and could be done better with a stream
-        relationships =
-          socket.assigns.session.id
-          |> Diagrams.list_potential_relationships!(actor: socket.assigns.current_user)
-          |> Enum.group_by(& &1.src.name)
-          |> Map.values()
-          |> then(fn relationships ->
-            rotation = :erlang.phash2(socket.assigns.current_user.id, length(relationships))
+        relationship =
+          Ash.get!(Revelo.Diagrams.Relationship, [src_id: src_id, dst_id: dst_id],
+            load: [:src, :dst, :voted?],
+            actor: socket.assigns.current_user
+          )
 
-            case rotation do
-              0 -> relationships
-              n -> Enum.slice(relationships, n..-1) ++ Enum.slice(relationships, 0..(n - 1))
-            end
+        # TODO this could be done better with a stream
+        relationships =
+          Enum.map(socket.assigns.relationships, fn group ->
+            Enum.map(group, fn rel ->
+              if rel.src.id == src_id && rel.dst.id == dst_id do
+                relationship
+              else
+                rel
+              end
+            end)
           end)
 
         vote_count =
           relationships
-          |> List.flatten()
+          |> Enum.flat_map(& &1)
           |> Enum.count(&(&1.voted? != nil))
 
         ReveloWeb.Presence.update_relate_status(
