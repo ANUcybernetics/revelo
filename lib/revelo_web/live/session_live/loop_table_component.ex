@@ -46,10 +46,12 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
 
   @impl true
   def handle_event("generate_stories", _params, socket) do
-    loops =
+    tasks =
       Enum.map(socket.assigns.loops, fn loop ->
-        Diagrams.generate_loop_story!(loop)
+        Task.async(fn -> Diagrams.generate_loop_story!(loop) end)
       end)
+
+    loops = Task.await_many(tasks)
 
     {:noreply, assign(socket, :loops, loops)}
   end
