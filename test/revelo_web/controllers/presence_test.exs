@@ -12,8 +12,7 @@ defmodule ReveloWeb.PresenceTest do
   end
 
   # helper function to deal with the CI string
-  def log_in_user(conn, %Ash.CiString{} = email, password),
-    do: log_in_user(conn, Ash.CiString.value(email), password)
+  def log_in_user(conn, %Ash.CiString{} = email, password), do: log_in_user(conn, Ash.CiString.value(email), password)
 
   def log_in_user(conn, email, password) do
     conn

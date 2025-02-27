@@ -118,7 +118,7 @@ export const PlotLoops = {
         {
           selector: "edge",
           style: {
-            width: 3,
+            width: 8,
             "line-color": "data(relation)",
             "target-arrow-color": "data(relation)",
             "target-arrow-shape": "triangle",
@@ -128,15 +128,15 @@ export const PlotLoops = {
         {
           selector: 'edge[relation = "inverse"]',
           style: {
-            "line-color": "#0284C7",
-            "target-arrow-color": "#0284C7",
+            "line-color": "#3B82F6",
+            "target-arrow-color": "#3B82F6",
           },
         },
         {
           selector: 'edge[relation = "direct"]',
           style: {
-            "line-color": "#C2410C",
-            "target-arrow-color": "#C2410C",
+            "line-color": "#F97316",
+            "target-arrow-color": "#F97316",
           },
         },
       ],

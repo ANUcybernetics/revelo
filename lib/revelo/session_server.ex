@@ -83,8 +83,7 @@ defmodule Revelo.SessionServer do
   end
 
   @impl true
-  def handle_call({:transition_to, direction}, from, state)
-      when direction in [:next, :previous] do
+  def handle_call({:transition_to, direction}, from, state) when direction in [:next, :previous] do
     current_phase = state.phase
 
     new_phase =
