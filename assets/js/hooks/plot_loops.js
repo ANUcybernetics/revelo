@@ -109,7 +109,7 @@ export const PlotLoops = {
               return ele.data("isKey") ? 15 : 0;
             },
             "text-outline-opacity": 1,
-            "font-family": "Inter",
+            "font-family": "ui-sans-serif, system-ui, sans-serif",
             "font-weight": function (ele) {
               return ele.data("isKey") ? "600" : "400";
             },
