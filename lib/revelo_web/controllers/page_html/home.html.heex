@@ -1,6 +1,7 @@
 <.flash_group flash={@flash} />
 <div class="bg-gradient-to-bl from-white to-purple-600 relative overflow-hidden">
-  <div class="opacity-50 absolute inset-0 bg-[url('/images/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+  <div class="opacity-50 absolute inset-0 bg-[url('/images/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]">
+  </div>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <!-- Hero section -->
     <div class="relative pt-16 pb-12 sm:pt-24 lg:pt-32">
@@ -22,25 +23,32 @@
             </.button>
           </.link>
           <.link href="#learn-more">
-            <.button type="button" variant="outline" class="px-8 py-4 text-lg border-2 backdrop-blur-sm">
+            <.button
+              type="button"
+              variant="outline"
+              class="px-8 py-4 text-lg border-2 backdrop-blur-sm"
+            >
               Learn More
             </.button>
           </.link>
         </div>
       </div>
     </div>
-
-    <!-- Features Section -->
+    
+<!-- Features Section -->
     <div id="learn-more" class="py-16">
       <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-white sm:text-4xl">Unleash the power of systems thinking</h2>
+        <h2 class="text-3xl font-bold text-white sm:text-4xl">
+          Unleash the power of systems thinking
+        </h2>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-16 mb-20">
         <.card class="bg-black/40 backdrop-blur-sm border border-white/20 rounded-xl shadow-[0_10px_30px_rgba(59,130,246,0.2)]">
           <.header>
             <div class="p-6 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-t-lg relative overflow-hidden">
-              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]">
+              </div>
               <.icon name="hero-light-bulb" class="w-12 h-12 text-white relative z-10" />
             </div>
           </.header>
@@ -55,7 +63,8 @@
         <.card class="bg-black/40 backdrop-blur-sm border border-white/20 rounded-xl shadow-[0_10px_30px_rgba(59,130,246,0.2)]">
           <.header>
             <div class="p-6 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-t-lg relative overflow-hidden">
-              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]">
+              </div>
               <.icon name="hero-puzzle-piece" class="w-12 h-12 text-white relative z-10" />
             </div>
           </.header>
@@ -70,7 +79,8 @@
         <.card class="bg-black/40 backdrop-blur-sm border border-white/20 rounded-xl shadow-[0_10px_30px_rgba(59,130,246,0.2)]">
           <.header>
             <div class="p-6 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-t-lg relative overflow-hidden">
-              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]">
+              </div>
               <.icon name="hero-chart-bar" class="w-12 h-12 text-white relative z-10" />
             </div>
           </.header>
@@ -85,7 +95,8 @@
         <.card class="bg-black/40 backdrop-blur-sm border border-white/20 rounded-xl shadow-[0_10px_30px_rgba(59,130,246,0.2)]">
           <.header>
             <div class="p-6 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-t-lg relative overflow-hidden">
-              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]"></div>
+              <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-[length:10px_10px]">
+              </div>
               <.icon name="hero-user-group" class="w-12 h-12 text-white relative z-10" />
             </div>
           </.header>
@@ -97,8 +108,8 @@
           </div>
         </.card>
       </div>
-
-      <!-- CTA Section -->
+      
+<!-- CTA Section -->
       <div class="bg-gradient-to-r from-indigo-700 to-indigo-900 rounded-2xl overflow-hidden border border-white/30 backdrop-blur-sm shadow-[0_10px_40px_rgba(79,70,229,0.4)]">
         <div class="px-6 py-16 sm:px-12 sm:py-24 lg:flex lg:items-center lg:justify-between">
           <div>
@@ -112,7 +123,10 @@
           </div>
           <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
             <.link patch={~p"/sessions/"}>
-              <.button type="button" class="px-8 py-4 text-lg bg-white text-indigo-700 shadow-[0_0_20px_rgba(255,255,255,0.5)] hover:bg-indigo-50 backdrop-blur-sm">
+              <.button
+                type="button"
+                class="px-8 py-4 text-lg bg-white text-indigo-700 shadow-[0_0_20px_rgba(255,255,255,0.5)] hover:bg-indigo-50 backdrop-blur-sm"
+              >
                 Get Started for Free
               </.button>
             </.link>
