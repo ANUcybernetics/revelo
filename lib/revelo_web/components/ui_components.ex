@@ -182,6 +182,19 @@ defmodule ReveloWeb.UIComponents do
   end
 
   @doc """
+    Loop length badge
+
+  """
+
+  def badge_length(assigns) do
+    ~H"""
+    <.badge class="bg-indigo-200 text-indigo-900 hover:bg-indigo-300 w-fit border-none shrink-0 h-fit">
+      <.icon name="hero-arrow-path-rounded-square-mini" class="h-4 w-4 mr-1" /> {@length}
+    </.badge>
+    """
+  end
+
+  @doc """
     The vote badges
 
   """

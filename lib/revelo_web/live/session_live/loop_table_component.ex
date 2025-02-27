@@ -68,7 +68,11 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   end
 
   @impl true
-  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
+  def handle_event(
+        "toggle_override",
+        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type},
+        socket
+      ) do
     type = String.to_existing_atom(type)
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
@@ -306,7 +310,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   def loop_wrapper(assigns) do
     ~H"""
     <%= if @facilitator? do %>
-      <aside class="flex fixed inset-y-0 right-0 z-10 w-[350px] flex-col border-l bg-background h-full">
+      <aside class="flex fixed inset-y-0 right-0 z-10 w-[400px] flex-col border-l bg-background h-full">
         {render_slot(@inner_block)}
       </aside>
     <% else %>
@@ -335,7 +339,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
           phx-hook="PlotLoops"
           phx-update="ignore"
           data-target={@myself}
-          class="h-full w-[calc(100%-350px)]"
+          class="h-full w-[calc(100%-400px)]"
           data-elements={
             Jason.encode!(
               Enum.concat(
@@ -422,9 +426,12 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
               >
                 <div class="flex items-start">
                   <span class="w-6 shrink-0">{index + 1}.</span>
-                  <span class="flex-1 mr-2">
-                    {loop.title} [{Enum.count(loop.influence_relationships)}]
-                  </span>
+                  <div class="flex mr-2 justify-between gap-2 w-full">
+                    <div>{loop.title}</div>
+                    <div class="mt-1">
+                    <.badge_length length={Enum.count(loop.influence_relationships)}/>
+                    </div>
+                  </div>
                 </div>
                 <%!-- <div class="ml-6 mt-3">
                   <.badge_reinforcing :if={Atom.to_string(loop.type) == "reinforcing"} />
