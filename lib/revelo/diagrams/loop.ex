@@ -6,7 +6,7 @@ defmodule Revelo.Diagrams.Loop do
     data_layer: AshPostgres.DataLayer
 
   alias Revelo.Diagrams
-  alias Revelo.Diagrams.Analyser
+  alias Revelo.Diagrams.GraphAnalyser
   alias Revelo.Diagrams.LoopRelationships
   alias Revelo.Diagrams.Relationship
 
@@ -186,10 +186,10 @@ defmodule Revelo.Diagrams.Loop do
         # Find cycles and create new loops
         new_loops =
           relationships
-          |> Analyser.find_loops()
+          |> GraphAnalyser.find_loops()
           |> Enum.reject(fn new_loop ->
             Enum.any?(remaining_loops, fn existing_loop ->
-              Analyser.loops_equal?(new_loop, existing_loop.influence_relationships)
+              GraphAnalyser.loops_equal?(new_loop, existing_loop.influence_relationships)
             end)
           end)
           |> Enum.map(&Diagrams.create_loop!/1)

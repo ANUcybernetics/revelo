@@ -20,18 +20,27 @@ defmodule Revelo.Diagrams.GraphAnalyser do
   Finds all loops in a graph using the Relationship struct.
 
   Takes a list of Relationship structs and returns a list of cycles,
-  where each cycle is a list of relationship IDs.
+  where each cycle is a list of Relationship structs.
   """
-  @spec find_loops([Relationship.t()]) :: [[String.t()]]
+  @spec find_loops([Relationship.t()]) :: [[Relationship.t()]]
   def find_loops(relationships) do
+    # Create a map for quick relationship lookup
+    rel_map = Map.new(relationships, fn rel -> {rel.id, rel} end)
+
     # Convert Relationship structs to tuples
     relationship_tuples =
       Enum.map(relationships, fn rel ->
         {rel.id, rel.src_id, rel.dst_id}
       end)
 
-    # Call the NIF function
-    find_cycles(relationship_tuples)
+    # Call the NIF function and convert IDs back to Relationship structs
+    relationship_tuples
+    |> find_cycles()
+    |> Enum.map(fn cycle ->
+      Enum.map(cycle, fn rel_id ->
+        Map.get(rel_map, rel_id)
+      end)
+    end)
   end
 
   @doc """
@@ -52,5 +61,27 @@ defmodule Revelo.Diagrams.GraphAnalyser do
         Map.get(rel_map, rel_id)
       end)
     end)
+  end
+
+  @doc """
+  Compares two loops to determine if they contain the same relationships,
+  regardless of starting point.
+
+  This function checks if two loops have the same relationships, even if they
+  start at different points in the cycle.
+  """
+  @spec loops_equal?([Relationship.t()], [Relationship.t()]) :: boolean()
+  def loops_equal?(loop1, loop2) do
+    # If the loops have different lengths, they can't be equal
+    if length(loop1) == length(loop2) do
+      # Convert to sets of IDs for comparison
+      loop1_ids = MapSet.new(loop1, & &1.id)
+      loop2_ids = MapSet.new(loop2, & &1.id)
+
+      # If they have the same relationships, the sets will be equal
+      MapSet.equal?(loop1_ids, loop2_ids)
+    else
+      false
+    end
   end
 end
