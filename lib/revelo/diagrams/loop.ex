@@ -185,6 +185,12 @@ defmodule Revelo.Diagrams.Loop do
 
         # Delete loops that need to be removed
         if !Enum.empty?(loops_to_delete_ids) do
+          # First, delete the join records to avoid foreign key constraints
+          LoopRelationships
+          |> Ash.Query.filter(loop_id in ^loops_to_delete_ids)
+          |> Ash.bulk_destroy!(:destroy, %{})
+
+          # Then delete the loops
           __MODULE__
           |> Ash.Query.filter(id in ^loops_to_delete_ids)
           |> Ash.bulk_destroy!(:destroy, %{})
