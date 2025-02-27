@@ -10,6 +10,7 @@ how things are _supposed_ to work and how things _actually_ work.
 
 ## Potential Taglines
 
+- Surface the stories behind your systems
 - Systems thinking beyond charlatanry
 - Everyone agrees the system's cooked. Argue better about _why_.
 - Find loops. Argue with colleagues.
