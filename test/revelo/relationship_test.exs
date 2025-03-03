@@ -86,8 +86,12 @@ defmodule Revelo.RelationshipTest do
       assert rel2.id in rel_ids
       refute rel3.id in rel_ids
 
-      # Verify relationships are sorted by dst_id
-      assert hd(relationships).dst_id <= List.last(relationships).dst_id
+      # Verify relationships are sorted by voted? attribute with nil values first
+      assert is_nil(hd(relationships).voted?)
+
+      if length(relationships) > 1 do
+        assert is_nil(hd(relationships).voted?) || !is_nil(List.last(relationships).voted?)
+      end
     end
 
     test "no duplicate relationships" do

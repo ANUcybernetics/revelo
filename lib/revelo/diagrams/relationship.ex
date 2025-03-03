@@ -91,7 +91,7 @@ defmodule Revelo.Diagrams.Relationship do
       filter expr(src_id == ^arg(:src_id))
 
       prepare build(
-                sort: [:dst_id],
+                sort: [:voted?, :dst_id],
                 load: [
                   :src,
                   :dst,

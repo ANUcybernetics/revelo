@@ -44,10 +44,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     # Fetch relationships for the current cursor (src variable)
     socket =
       if variables_zipper.cursor do
-        relationships =
-          variables_zipper.cursor.id
-          |> Diagrams.list_relationships_from_src!(actor: assigns.current_user)
-          |> Enum.sort_by(fn rel -> rel.voted? != nil end)
+        relationships = Diagrams.list_relationships_from_src!(variables_zipper.cursor.id, actor: assigns.current_user)
 
         socket
         |> stream(:relationships, relationships, reset: true)
@@ -182,10 +179,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
     if updated_zipper.cursor do
       # Fetch relationships for the new current variable
-      relationships =
-        updated_zipper.cursor.id
-        |> Diagrams.list_relationships_from_src!(actor: socket.assigns.current_user)
-        |> Enum.sort_by(fn rel -> rel.voted? != nil end)
+      relationships = Diagrams.list_relationships_from_src!(updated_zipper.cursor.id, actor: socket.assigns.current_user)
 
       socket =
         socket
@@ -204,10 +198,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
     if updated_zipper.cursor do
       # Fetch relationships for the new current variable
-      relationships =
-        updated_zipper.cursor.id
-        |> Diagrams.list_relationships_from_src!(actor: socket.assigns.current_user)
-        |> Enum.sort_by(fn rel -> rel.voted? != nil end)
+      relationships = Diagrams.list_relationships_from_src!(updated_zipper.cursor.id, actor: socket.assigns.current_user)
 
       socket =
         socket
