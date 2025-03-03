@@ -460,12 +460,19 @@ defmodule ReveloWeb.UIComponents do
           </ReveloWeb.Component.Button.button>
         <% end %>
         <div class="p-6 flex grow justify-center items-center space-x-4 flex-col gap-2">
-          <span class="text-2xl">
-            <b>
-              Page {@current_page} of {@total_pages}
-            </b>
-          </span>
-          <.progress class="w-full h-2 !m-0" value={round(@current_page / @total_pages * 100)} />
+          <%= if @completed? do %>
+            <span class="text-2xl">
+              <b>Completed!</b>
+            </span>
+            <.progress class="w-full h-2 !m-0" value={round(@current_page / @total_pages * 100)} />
+          <% else %>
+            <span class="text-2xl">
+              <b>
+                Page {@current_page} of {@total_pages}
+              </b>
+            </span>
+            <.progress class="w-full h-2 !m-0" value={round(@current_page / @total_pages * 100)} />
+          <% end %>
         </div>
         <%= if @type == "both_buttons" do %>
           <ReveloWeb.Component.Button.button

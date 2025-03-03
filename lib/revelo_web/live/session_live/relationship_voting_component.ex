@@ -33,6 +33,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         socket
         |> stream(:relationships, relationships, reset: true)
         |> assign(:variables, variables_zipper)
+        |> assign(:completed?, false)
       else
         assign(socket, :variables, variables_zipper)
       end
@@ -45,75 +46,86 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     ~H"""
     <div class="max-w-5xl w-md min-w-[80svw] h-full p-5 pb-2 flex flex-col">
       <.card class="overflow-hidden grow flex flex-col">
-        <.card_header class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
-          <.card_title class="font-normal leading-2 text-xl">
-            Increasing the <br />
-            <b>
-              {if @variables.cursor, do: @variables.cursor.name, else: ""}
-            </b>
-            <br /> causes...
-          </.card_title>
-        </.card_header>
-        <.scroll_area class="overflow-y-auto h-72 grow shrink" id="relate-scroll-container">
-          <.card_content
-            id="relationship-voting-stream"
-            class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2"
-            phx-update="stream"
-          >
-            <%= for {id, rel} <- @streams.relationships do %>
-              <div class="w-full border-b-[1px] border-gray-300 pt-4 pb-6 flex justify-center" id={id}>
-                <div class="flex items-center flex-col gap-2 mx-4 max-w-md grow">
-                  <p class="font-bold">{rel.dst.name}</p>
-                  <div class="flex gap-2 w-full">
+        <%= if !@completed? do %>
+          <.card_header class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
+            <.card_title class="font-normal leading-2 text-xl">
+              Increasing the <br />
+              <b>
+                {if @variables.cursor, do: @variables.cursor.name, else: ""}
+              </b>
+              <br /> causes...
+            </.card_title>
+          </.card_header>
+          <.scroll_area class="overflow-y-auto h-72 grow shrink" id="relate-scroll-container">
+            <.card_content
+              id="relationship-voting-stream"
+              class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2"
+              phx-update="stream"
+            >
+              <%= for {id, rel} <- @streams.relationships do %>
+                <div
+                  class="w-full border-b-[1px] border-gray-300 pt-4 pb-6 flex justify-center"
+                  id={id}
+                >
+                  <div class="flex items-center flex-col gap-2 mx-4 max-w-md grow">
+                    <p class="font-bold">{rel.dst.name}</p>
+                    <div class="flex gap-2 w-full">
+                      <.button
+                        variant="outline"
+                        class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? == "direct", do: "bg-orange-200 text-direct-foreground border-0", else: ""}"}
+                        value="direct"
+                        id={"direct-" <> rel.id}
+                        phx-click="vote"
+                        phx-value-type="direct"
+                        phx-value-src_id={rel.src.id}
+                        phx-value-dst_id={rel.dst.id}
+                        phx-target={@myself}
+                      >
+                        to increase
+                        <div
+                          class="h-4 w-4 transition-all ml-2"
+                          style="mask: url('/images/direct.svg') no-repeat; -webkit-mask: url('/images/direct.svg') no-repeat; background-color: currentColor;"
+                        />
+                      </.button>
+                      <.button
+                        variant="outline"
+                        class={"hover:bg-inverse-light font-normal w-full #{if rel.voted? == "inverse", do: "bg-inverse text-inverse-foreground border-0", else: ""}"}
+                        value="inverse"
+                        id={"inverse-" <> rel.id}
+                        phx-click="vote"
+                        phx-value-type="inverse"
+                        phx-value-src_id={rel.src.id}
+                        phx-value-dst_id={rel.dst.id}
+                        phx-target={@myself}
+                      >
+                        to decrease <.icon name="hero-arrows-up-down" class="h-4 w-4 ml-2" />
+                      </.button>
+                    </div>
                     <.button
                       variant="outline"
-                      class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? == "direct", do: "bg-orange-200 text-direct-foreground border-0", else: ""}"}
-                      value="direct"
-                      id={"direct-" <> rel.id}
+                      class={"hover:bg-gray-100 font-normal w-full #{if rel.voted? == "no_relationship", do: "bg-gray-300 text-gray-700 border-0", else: ""}"}
+                      value="no_relationship"
+                      id={"no_relationship-" <> rel.id}
                       phx-click="vote"
-                      phx-value-type="direct"
+                      phx-value-type="no_relationship"
                       phx-value-src_id={rel.src.id}
                       phx-value-dst_id={rel.dst.id}
                       phx-target={@myself}
                     >
-                      to increase
-                      <div
-                        class="h-4 w-4 transition-all ml-2"
-                        style="mask: url('/images/direct.svg') no-repeat; -webkit-mask: url('/images/direct.svg') no-repeat; background-color: currentColor;"
-                      />
-                    </.button>
-                    <.button
-                      variant="outline"
-                      class={"hover:bg-inverse-light font-normal w-full #{if rel.voted? == "inverse", do: "bg-inverse text-inverse-foreground border-0", else: ""}"}
-                      value="inverse"
-                      id={"inverse-" <> rel.id}
-                      phx-click="vote"
-                      phx-value-type="inverse"
-                      phx-value-src_id={rel.src.id}
-                      phx-value-dst_id={rel.dst.id}
-                      phx-target={@myself}
-                    >
-                      to decrease <.icon name="hero-arrows-up-down" class="h-4 w-4 ml-2" />
+                      no direct effect <.icon name="hero-no-symbol-solid" class="h-4 w-4 ml-2" />
                     </.button>
                   </div>
-                  <.button
-                    variant="outline"
-                    class={"hover:bg-gray-100 font-normal w-full #{if rel.voted? == "no_relationship", do: "bg-gray-300 text-gray-700 border-0", else: ""}"}
-                    value="no_relationship"
-                    id={"no_relationship-" <> rel.id}
-                    phx-click="vote"
-                    phx-value-type="no_relationship"
-                    phx-value-src_id={rel.src.id}
-                    phx-value-dst_id={rel.dst.id}
-                    phx-target={@myself}
-                  >
-                    no direct effect <.icon name="hero-no-symbol-solid" class="h-4 w-4 ml-2" />
-                  </.button>
                 </div>
-              </div>
-            <% end %>
-          </.card_content>
-        </.scroll_area>
+              <% end %>
+            </.card_content>
+          </.scroll_area>
+        <% else %>
+          <.card_header class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
+            <.card_title class="font-normal leading-2 text-xl">
+              TODO: DESIGN COMPLETED SCREEN
+            </.card_title>
+          </.card_header>
+        <% end %>
       </.card>
       <div class="mt-4 flex" id="pagination-container" phx-hook="RelationshipScroll">
         <.pagination
@@ -126,7 +138,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
           on_left_click="previous_page"
           on_right_click="next_page"
           left_disabled={Enum.empty?(@variables.left)}
-          right_disabled={Enum.empty?(@variables.right)}
+          right_disabled={@completed?}
+          completed?={@completed?}
         />
       </div>
     </div>
@@ -159,23 +172,38 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
   @impl true
   def handle_event("previous_page", _, socket) do
-    updated_zipper = ZipperList.left(socket.assigns.variables)
-
-    if updated_zipper.cursor do
-      # Fetch relationships for the new current variable
+    if socket.assigns.completed? do
+      # Reload the relationships for the current cursor without changing the zipper
       relationships =
-        Diagrams.list_relationships_from_src!(updated_zipper.cursor.id,
+        Diagrams.list_relationships_from_src!(socket.assigns.variables.cursor.id,
           actor: socket.assigns.current_user
         )
 
       socket =
         socket
         |> stream(:relationships, relationships, reset: true)
-        |> assign(:variables, updated_zipper)
+        |> assign(:completed?, false)
 
       {:noreply, push_event(socket, "page_changed", %{})}
     else
-      {:noreply, socket}
+      updated_zipper = ZipperList.left(socket.assigns.variables)
+
+      if updated_zipper.cursor do
+        # Fetch relationships for the new current variable
+        relationships =
+          Diagrams.list_relationships_from_src!(updated_zipper.cursor.id,
+            actor: socket.assigns.current_user
+          )
+
+        socket =
+          socket
+          |> stream(:relationships, relationships, reset: true)
+          |> assign(:variables, updated_zipper)
+
+        {:noreply, push_event(socket, "page_changed", %{})}
+      else
+        {:noreply, socket}
+      end
     end
   end
 
@@ -197,7 +225,9 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
       {:noreply, push_event(socket, "page_changed", %{})}
     else
-      {:noreply, socket}
+      # If there's no cursor, we've reached the end, mark as completed
+      socket = assign(socket, :completed?, true)
+      {:noreply, push_event(socket, "page_changed", %{})}
     end
   end
 
@@ -217,7 +247,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
               {head, tail}
 
             n ->
-              {List.last(Enum.take(variables, n)), Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
+              {List.last(Enum.take(variables, n)),
+               Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
           end
 
         %ZipperList{
