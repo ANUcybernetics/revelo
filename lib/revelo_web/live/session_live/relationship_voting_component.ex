@@ -75,7 +75,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                   <div class="flex gap-2 w-full">
                     <.button
                       variant="outline"
-                      class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? == "direct", do: "bg-orange-200 text-orange-900 border-0", else: ""}"}
+                      class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? == "direct", do: "bg-orange-200 text-direct-foreground border-0", else: ""}"}
                       value="direct"
                       id={"direct-" <> rel.id}
                       phx-click="vote"
@@ -92,7 +92,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                     </.button>
                     <.button
                       variant="outline"
-                      class={"hover:bg-blue-100 font-normal w-full #{if rel.voted? == "inverse", do: "bg-blue-200 text-blue-900 border-0", else: ""}"}
+                      class={"hover:bg-inverse-light font-normal w-full #{if rel.voted? == "inverse", do: "bg-inverse text-inverse-foreground border-0", else: ""}"}
                       value="inverse"
                       id={"inverse-" <> rel.id}
                       phx-click="vote"

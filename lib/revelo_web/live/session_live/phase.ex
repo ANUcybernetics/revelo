@@ -198,7 +198,7 @@ defmodule ReveloWeb.SessionLive.Phase do
               phx-window-keydown={toggle_help_modal()}
               phx-key="escape"
               phx-click-away={toggle_help_modal()}
-              class="shadow-primary/10 ring-primary/10 relative hidden rounded-2xl bg-background p-14 shadow-lg ring-1 transition"
+              class="shadow-primary/10 relative hidden rounded-2xl bg-background p-14 shadow-lg border-[length:var(--border-thickness)] transition"
             >
               <div class="absolute top-6 right-5">
                 <button

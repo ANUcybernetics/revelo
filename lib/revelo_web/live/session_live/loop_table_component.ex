@@ -133,7 +133,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       @relationship.type_override == :direct ||
                           (@relationship.type_override == nil &&
                              @relationship.type == :direct) ->
-                        "bg-orange-300 text-orange-900"
+                        "bg-direct text-direct-foreground"
 
                       true ->
                         "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -145,7 +145,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       class="h-5 w-5 transition-all"
                       style="mask: url('/images/direct.svg') no-repeat; -webkit-mask: url('/images/direct.svg') no-repeat; background-color: currentColor;"
                     />
-                    <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-orange-200 text-orange-900 text-[0.7rem] flex items-center justify-center h-4 w-4">
+                    <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-direct-light text-direct-foreground text-[0.7rem] flex items-center justify-center h-4 w-4">
                       {@relationship.direct_votes}
                     </div>
                   </div>
@@ -210,7 +210,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       @relationship.type_override == :inverse ||
                           (@relationship.type_override == nil &&
                              @relationship.type == :inverse) ->
-                        "bg-blue-300 text-blue-900"
+                        "bg-inverse text-inverse-foreground"
 
                       true ->
                         "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -219,7 +219,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                 >
                   <div class="relative h-5 w-5 flex items-center justify-center">
                     <.icon name="hero-arrows-up-down" class="h-5 w-5" />
-                    <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-200 text-blue-900 text-[0.7rem] flex items-center justify-center h-4 w-4">
+                    <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-inverse-light text-inverse-foreground text-[0.7rem] flex items-center justify-center h-4 w-4">
                       {@relationship.inverse_votes}
                     </div>
                   </div>
@@ -261,7 +261,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <div :if={@participant_view?}>
           <div class="flex -ml-8 gap-1 mt-4">
             <div class={
-            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-orange-500 !border-orange-500", else: "text-blue-500 !border-blue-500"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
+            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-direct- !border-direct", else: "text-inverse !border-inverse"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
           }>
               <.icon
                 name="hero-arrow-long-right-solid"
@@ -290,7 +290,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
 
                   <%= if index < length(matching_loop.influence_relationships) - 1 do %>
                     <div class={
-                      "#{if relationship.type == :direct, do: "text-orange-500", else: "text-blue-500"} w-full flex justify-center"
+                      "#{if relationship.type == :direct, do: "text-direct", else: "text-inverse"} w-full flex justify-center"
                     }>
                       <.icon name="hero-arrow-long-down-solid" class="h-8 w-8" />
                     </div>
@@ -308,7 +308,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   def loop_wrapper(assigns) do
     ~H"""
     <%= if @facilitator? do %>
-      <aside class="flex fixed inset-y-0 right-0 z-10 w-[400px] flex-col border-l bg-background h-full">
+      <aside class="flex fixed inset-y-0 right-0 z-10 w-[400px] flex-col border-l-[length:var(--border-thickness)]  bg-background h-full">
         {render_slot(@inner_block)}
       </aside>
     <% else %>
@@ -423,7 +423,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                 phx-click="toggle_loop"
                 phx-target={@myself}
                 phx-value-id={loop.id}
-                class="w-full px-6 py-4 text-left border-t hover:bg-muted transition-colors"
+                class="w-full px-6 py-4 text-left border-t-[length:var(--border-thickness)]  hover:bg-muted transition-colors"
               >
                 <div class="flex items-start">
                   <span class="w-6 shrink-0">{index + 1}.</span>

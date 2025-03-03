@@ -62,7 +62,7 @@ defmodule ReveloWeb.Component.Table do
 
   def table_header(assigns) do
     ~H"""
-    <thead class={classes(["[&_tr]:border-b", @class])} {@rest}>
+    <thead class={classes(["[&_tr]:border-b-[length:var(--border-thickness)]", @class])} {@rest}>
       {render_slot(@inner_block)}
     </thead>
     """
@@ -77,7 +77,7 @@ defmodule ReveloWeb.Component.Table do
     <tr
       class={
         classes([
-          "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+          "border-b-[length:var(--border-thickness)] transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
           @class
         ])
       }

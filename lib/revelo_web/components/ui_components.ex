@@ -26,7 +26,7 @@ defmodule ReveloWeb.UIComponents do
 
   def sidebar(assigns) do
     ~H"""
-    <aside class="fixed inset-y-0 left-0 z-10 w-14 flex-col border-r bg-background flex">
+    <aside class="fixed inset-y-0 left-0 z-10 w-14 flex-col border-r-[length:var(--border-thickness)]  bg-background flex">
       <nav class="flex flex-col items-center gap-4 px-2 py-5">
         <.dropdown_menu>
           <.dropdown_menu_trigger class={
@@ -80,7 +80,7 @@ defmodule ReveloWeb.UIComponents do
                     [
                       "flex h-9 w-9 items-center justify-center rounded-lg transition-colors  hover:text-foreground ",
                       if(@current_page == page,
-                        do: "bg-accent text-foreground",
+                        do: "bg-accent text-foreground border-[length:var(--border-thickness)]",
                         else: "text-muted-foreground"
                       )
                     ],
@@ -127,7 +127,7 @@ defmodule ReveloWeb.UIComponents do
         <.tooltip>
           <.tooltip_trigger>
             <button
-              phx-click={JS.dispatch("toggle-darkmode")}
+              phx-click={JS.dispatch("toggle-high-contrast")}
               class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground"
             >
               <div id="theme-icon-container">
@@ -582,7 +582,7 @@ defmodule ReveloWeb.UIComponents do
   """
   def loop_nav(assigns) do
     ~H"""
-    <aside class="fixed inset-y-0 right-0 z-10 max-w-5xl min-w-xs w-[80svw] flex-col border-l bg-white">
+    <aside class="fixed inset-y-0 right-0 z-10 max-w-5xl min-w-xs w-[80svw] flex-col border-l-[length:var(--border-thickness)]  bg-white">
       <h3 class="text-2xl font-semibold leading-none tracking-tight flex p-6">Loops</h3>
       <%= if @selected_loop do %>
         <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
@@ -616,7 +616,7 @@ defmodule ReveloWeb.UIComponents do
               class={
                 Enum.join(
                   [
-                    "w-full px-6 py-4 text-left border-b hover:bg-gray-50 transition-colors",
+                    "w-full px-6 py-4 text-left border-b-[length:var(--border-thickness)]  hover:bg-gray-50 transition-colors",
                     if(loop.id == @selected_loop, do: "bg-gray-100")
                   ],
                   " "
@@ -691,7 +691,7 @@ defmodule ReveloWeb.UIComponents do
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
               phx-key="escape"
               phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-primary/10 ring-primary/10 relative hidden rounded-2xl bg-background p-14 shadow-lg ring-1 transition"
+              class="shadow-primary/10 relative hidden rounded-2xl bg-background p-14 shadow-lg border-[length:var(--border-thickness)] transition"
             >
               <div class="absolute top-6 right-5">
                 <button
@@ -860,7 +860,7 @@ defmodule ReveloWeb.UIComponents do
         </.header>
       </.card_header>
       <.card_content>
-        <div class="flex justify-center items-center flex-col border aspect-square rounded-xl w-full p-4">
+        <div class="flex justify-center items-center flex-col border-[length:var(--border-thickness)]  aspect-square rounded-xl w-full p-4">
           <.qr_code text={@url} />
         </div>
       </.card_content>

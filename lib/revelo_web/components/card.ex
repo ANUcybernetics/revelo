@@ -29,7 +29,15 @@ defmodule ReveloWeb.Component.Card do
 
   def card(assigns) do
     ~H"""
-    <div class={classes(["rounded-xl border bg-card text-card-foreground shadow", @class])} {@rest}>
+    <div
+      class={
+        classes([
+          "rounded-xl border border-[length:var(--border-thickness)] bg-card text-card-foreground shadow",
+          @class
+        ])
+      }
+      {@rest}
+    >
       {render_slot(@inner_block)}
     </div>
     """

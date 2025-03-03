@@ -36,45 +36,53 @@ body {
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --asdf: 195, 100%, 50%;
+        --border-thickness: 1px;
+        --direct: 30.7 97.2% 72.4%;
+        --direct-light: 34.3 100% 91.8%;
+        --direct-foreground: 15.3 74.6% 27.8%;
+        --inverse: 211.7 96.4% 78.4%;
+        --inverse-foreground: 224.4 64.3% 32.9%;
+        --inverse-light: 214.3 94.6% 92.7%;
     }
 
     [type="checkbox"] {
         color: hsl(var(--foreground));
     }
 
-    .dark {
-        --background: 224 71.4% 4.1%;
-        --foreground: 210 20% 98%;
-        --card: 224 71.4% 4.1%;
-        --card-foreground: 210 20% 98%;
-        --popover: 224 71.4% 4.1%;
-        --popover-foreground: 210 20% 98%;
-        --primary: 210 20% 98%;
-        --primary-foreground: 220.9 39.3% 11%;
-        --secondary: 215 27.9% 16.9%;
-        --secondary-foreground: 210 20% 98%;
-        --muted: 215 27.9% 16.9%;
-        --muted-foreground: 217.9 10.6% 64.9%;
-        --accent: 215 27.9% 16.9%;
-        --accent-foreground: 210 20% 98%;
-        --destructive: 0 62.8% 30.6%;
+    .high_contrast {
+        --background: 0 0% 100%;
+        --foreground: 224 80% 3%;
+        --card: 0 0% 100%;
+        --card-foreground: 224 80% 3%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 224 80% 3%;
+        --primary: 220.9 45% 10%;
+        --primary-foreground: 210 20% 98%;
+        --secondary: 220 14.3% 95.9%;
+        --secondary-foreground: 220.9 45% 10%;
+        --muted: 220 14.3% 95.9%;
+        --muted-foreground: 220 8.9% 36%;
+        --accent: 220 14.3% 95.9%;
+        --accent-foreground: 220.9 45% 10%;
+        --destructive: 0 90% 55%;
         --destructive-foreground: 210 20% 98%;
-        --border: 215 27.9% 16.9%;
-        --input: 215 27.9% 16.9%;
-        --ring: 216 12.2% 83.9%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
-
-    .dark .qr_code {
-        filter: invert(1);
-    }
-
-    .dark {
-        scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
+        --border: 220 20% 65%;
+        --input: 220 20% 65%;
+        --ring: 224 80% 3%;
+        --radius: 1rem;
+        --chart-1: 12 80% 58%;
+        --chart-2: 173 65% 36%;
+        --chart-3: 197 45% 22%;
+        --chart-4: 43 80% 63%;
+        --chart-5: 27 90% 64%;
+        --asdf: 195, 100%, 50%;
+        --border-thickness: 2px;
+        --direct: 27 96% 61%;
+        --direct-light: 32.1 97.7% 83.1%;
+        --direct-foreground: 13 81.1% 14.5%;
+        --inverse: 213.1 93.9% 67.8%;
+        --inverse-foreground: 226.2 57% 21%;
+        --inverse-light: 211.7 96.4% 78.4%;
     }
 
     #theme-icon-container span.hero-moon {
@@ -85,11 +93,11 @@ body {
         display: none;
     }
 
-    .dark #theme-icon-container span.hero-moon {
+    .high_contrast #theme-icon-container span.hero-moon {
         display: none;
     }
 
-    .dark #theme-icon-container span.hero-sun {
+    .high_contrast #theme-icon-container span.hero-sun {
         display: block;
     }
 
@@ -111,11 +119,11 @@ body {
     );
 }
 
-.dark .bg-dots {
+.high_contrast .bg-dots {
     background-size: 20px 20px;
     background-image: radial-gradient(
         circle,
-        #555555 1px,
+        #999999 1px,
         rgba(0, 0, 0, 0) 1px
     );
 }

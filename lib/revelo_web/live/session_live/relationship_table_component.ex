@@ -73,7 +73,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                       type="text"
                       phx-keyup="search"
                       phx-target={@myself}
-                      class="h-8 pl-10 pr-4 py-2 w-full text-xs bg-white rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      class="h-8 pl-10 pr-4 py-2 w-full text-xs bg-white rounded-md border-[length:var(--border-thickness)]  border-gray-300"
                       placeholder="Search relationships..."
                     />
                   </div>
@@ -153,7 +153,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                     relationship.type_override == :direct ||
                                         (relationship.type_override == nil &&
                                            relationship.type == :direct) ->
-                                      "bg-orange-300 text-orange-900"
+                                      "bg-direct text-direct-foreground border-[length:var(--border-thickness)] !border-direct-foreground/50"
 
                                     true ->
                                       "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -165,7 +165,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                     class="h-4 w-4 transition-all"
                                     style="mask: url('/images/direct.svg') no-repeat; -webkit-mask: url('/images/direct.svg') no-repeat; background-color: currentColor;"
                                   />
-                                  <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-orange-200 text-orange-900 text-[0.6rem] flex items-center justify-center h-3 w-3">
+                                  <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-direct-light text-direct-foreground text-[0.6rem] flex items-center justify-center h-3 w-3">
                                     {relationship.direct_votes}
                                   </div>
                                 </div>
@@ -192,7 +192,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                     relationship.type_override == :no_relationship ||
                                         (relationship.type_override == nil &&
                                            relationship.type == :no_relationship) ->
-                                      "bg-gray-300 text-gray-700"
+                                      "bg-gray-300 text-gray-700 border-[length:var(--border-thickness)] !border-gray-700/50"
 
                                     true ->
                                       "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -228,7 +228,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                                     relationship.type_override == :inverse ||
                                         (relationship.type_override == nil &&
                                            relationship.type == :inverse) ->
-                                      "bg-blue-300 text-blue-900"
+                                      "bg-inverse text-inverse-foreground border-[length:var(--border-thickness)] !border-inverse-foreground/50"
 
                                     true ->
                                       "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -237,7 +237,7 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
                               >
                                 <div class="relative h-4 w-4 flex items-center justify-center">
                                   <.icon name="hero-arrows-up-down" class="h-4 w-4" />
-                                  <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-blue-200 text-blue-900 text-[0.6rem] flex items-center justify-center h-3 w-3">
+                                  <div class="absolute -top-[0.4rem] -right-[0.4rem] rounded-full bg-inverse-light text-inverse-foreground text-[0.6rem] flex items-center justify-center h-3 w-3">
                                     {relationship.inverse_votes}
                                   </div>
                                 </div>

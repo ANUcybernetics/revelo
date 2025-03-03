@@ -42,7 +42,7 @@ defmodule ReveloWeb.Component.Menu do
     ~H"""
     <div
       class={[
-        "min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
+        "min-w-[8rem] overflow-hidden rounded-md border border-[length:var(--border-thickness)]  bg-popover p-1 text-popover-foreground shadow-md",
         @class
       ]}
       {@rest}

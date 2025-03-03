@@ -60,20 +60,21 @@ window.addEventListener("phx:js-exec", ({ detail }) => {
   });
 });
 
-function darkExpected() {
-  return localStorage.theme === "dark";
+function highContrastExpected() {
+  return localStorage.theme === "high_contrast";
 }
 
-function initDarkMode() {
+function initHighContrast() {
   // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-  if (darkExpected()) document.documentElement.classList.add("dark");
-  else document.documentElement.classList.remove("dark");
+  if (highContrastExpected())
+    document.documentElement.classList.add("high_contrast");
+  else document.documentElement.classList.remove("high_contrast");
 }
 
-window.addEventListener("toggle-darkmode", (e) => {
-  if (darkExpected()) localStorage.theme = "light";
-  else localStorage.theme = "dark";
-  initDarkMode();
+window.addEventListener("toggle-high-contrast", (e) => {
+  if (highContrastExpected()) localStorage.theme = "light";
+  else localStorage.theme = "high_contrast";
+  initHighContrast();
 });
 
-initDarkMode();
+initHighContrast();

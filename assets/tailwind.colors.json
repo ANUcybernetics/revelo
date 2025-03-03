@@ -31,5 +31,15 @@
   "secondary": {
     "DEFAULT": "hsl(var(--secondary))",
     "foreground": "hsl(var(--secondary-foreground))"
+  },
+  "direct": {
+    "DEFAULT": "hsl(var(--direct))",
+    "foreground": "hsl(var(--direct-foreground))",
+    "light": "hsl(var(--direct-light))"
+  },
+  "inverse": {
+    "DEFAULT": "hsl(var(--inverse))",
+    "foreground": "hsl(var(--inverse-foreground))",
+    "light": "hsl(var(--inverse-light))"
   }
 }

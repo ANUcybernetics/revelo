@@ -89,8 +89,16 @@ export const PlotLoops = {
             },
             "background-fit": "none",
             "background-clip": "none",
-            "border-width": "1px",
-            "border-color": "#e2e8f0",
+            "border-width": function (ele) {
+              const highContrast =
+                document.documentElement.classList.contains("high_contrast");
+              return highContrast ? "2px" : "1px";
+            },
+            "border-color": function (ele) {
+              const highContrast =
+                document.documentElement.classList.contains("high_contrast");
+              return highContrast ? "hsl(220, 20%, 65%)" : "hsl(220, 13%, 91%)";
+            },
             "border-style": "solid",
             label: "data(label)",
             "text-wrap": "wrap",
@@ -109,7 +117,7 @@ export const PlotLoops = {
               return ele.data("isKey") ? 15 : 0;
             },
             "text-outline-opacity": 1,
-            "font-family": "ui-sans-serif, system-ui, sans-serif",
+            "font-family": "Inter",
             "font-weight": function (ele) {
               return ele.data("isKey") ? "600" : "400";
             },
@@ -128,15 +136,39 @@ export const PlotLoops = {
         {
           selector: 'edge[relation = "inverse"]',
           style: {
-            "line-color": "#3B82F6",
-            "target-arrow-color": "#3B82F6",
+            "line-color": function (ele) {
+              const highContrast =
+                document.documentElement.classList.contains("high_contrast");
+              return highContrast
+                ? "hsl(213.1, 93.9%, 67.8%)"
+                : "hsl(211.7, 96.4%, 78.4%)";
+            },
+            "target-arrow-color": function (ele) {
+              const highContrast =
+                document.documentElement.classList.contains("high_contrast");
+              return highContrast
+                ? "hsl(213.1, 93.9%, 67.8%)"
+                : "hsl(211.7, 96.4%, 78.4%)";
+            },
           },
         },
         {
           selector: 'edge[relation = "direct"]',
           style: {
-            "line-color": "#F97316",
-            "target-arrow-color": "#F97316",
+            "line-color": function (ele) {
+              const highContrast =
+                document.documentElement.classList.contains("high_contrast");
+              return highContrast
+                ? "hsl(27, 96%, 61%)"
+                : "hsl(30.7, 97.2%, 72.4%)";
+            },
+            "target-arrow-color": function (ele) {
+              const highContrast =
+                document.documentElement.classList.contains("high_contrast");
+              return highContrast
+                ? "hsl(27, 96%, 61%)"
+                : "hsl(30.7, 97.2%, 72.4%)";
+            },
           },
         },
       ],
