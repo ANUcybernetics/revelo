@@ -33,7 +33,7 @@ defmodule Revelo.Diagrams.Relationship do
                   :inverse_votes,
                   :no_relationship_votes,
                   :type,
-                  :voted?
+                  :user_vote
                 ]
               )
     end
@@ -57,7 +57,7 @@ defmodule Revelo.Diagrams.Relationship do
                   :inverse_votes,
                   :no_relationship_votes,
                   :type,
-                  :voted?
+                  :user_vote
                 ]
               )
     end
@@ -77,7 +77,7 @@ defmodule Revelo.Diagrams.Relationship do
                   :inverse_votes,
                   :no_relationship_votes,
                   :type,
-                  :voted?
+                  :user_vote
                 ]
               )
 
@@ -113,7 +113,7 @@ defmodule Revelo.Diagrams.Relationship do
       filter expr(src_id == ^arg(:src_id))
 
       prepare build(
-                sort: [:voted?, :dst_id],
+                sort: [:user_vote, :dst_id],
                 load: [
                   :src,
                   :dst,
@@ -121,7 +121,7 @@ defmodule Revelo.Diagrams.Relationship do
                   :inverse_votes,
                   :no_relationship_votes,
                   :type,
-                  :voted?
+                  :user_vote
                 ]
               )
     end
@@ -289,7 +289,7 @@ defmodule Revelo.Diagrams.Relationship do
               ),
               load: [:direct_votes, :inverse_votes]
 
-    calculate :voted?,
+    calculate :user_vote,
               :string,
               expr(
                 fragment(

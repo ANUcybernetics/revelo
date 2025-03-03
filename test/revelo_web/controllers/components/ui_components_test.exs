@@ -59,8 +59,8 @@ defmodule Revelo.UIComponentsTest do
   test "variable_voting shows voting interface" do
     assigns = %{
       variables: [
-        %{id: "1", name: "Test Var", voted?: false},
-        %{id: "2", name: "Other Var", voted?: true}
+        %{id: "1", name: "Test Var", user_vote: false},
+        %{id: "2", name: "Other Var", user_vote: true}
       ],
       voi: "0"
     }
@@ -72,7 +72,7 @@ defmodule Revelo.UIComponentsTest do
 
   test "variable_confirmation shows voting results" do
     assigns = %{
-      variables: [%{id: "1", name: "Test Var", voted?: true}],
+      variables: [%{id: "1", name: "Test Var", user_vote: true}],
       votes: [%{id: "1", voter_id: 1}],
       user_id: "1"
     }

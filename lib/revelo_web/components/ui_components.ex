@@ -272,7 +272,7 @@ defmodule ReveloWeb.UIComponents do
                   <.checkbox
                     id={"var" <> variable.id}
                     name={"var" <> variable.id}
-                    value={variable.voted?}
+                    value={variable.user_vote}
                   />
                   {variable.name}
                 </div>
@@ -301,7 +301,7 @@ defmodule ReveloWeb.UIComponents do
           <%= for variable <-
             @variables
               |> Enum.sort_by(fn variable ->
-                if variable.voted? do
+                if variable.user_vote do
                   0 # Voted items go to the top
                 else
                   1 # Non-voted items go to the bottom
@@ -309,7 +309,7 @@ defmodule ReveloWeb.UIComponents do
               end) do %>
             <div class="flex items-center justify-between py-4 px-6 gap-2 text-sm font-semibold">
               <span>{variable.name}</span>
-              <%= if variable.voted? do %>
+              <%= if variable.user_vote do %>
                 <.badge_vote />
               <% else %>
                 <.badge_no_vote />

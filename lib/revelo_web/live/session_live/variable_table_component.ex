@@ -28,7 +28,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   @impl true
   def update(%{new_variable: variable}, socket) do
     # Insert the new variable into the stream
-    variable = Ash.load!(variable, [:vote_tally, :voted?])
+    variable = Ash.load!(variable, [:vote_tally, :user_vote])
     {:ok, stream_insert(socket, :variables, variable)}
   end
 
@@ -219,7 +219,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   # def handle_event("vote", %{"id" => var_id}, socket) do
   #   variable = Enum.find(socket.assigns.variables, &(&1.id == var_id))
 
-  #   if variable.voted? do
+  #   if variable.user_vote do
   #     vote =
   #       Enum.find(
   #         Diagrams.list_variable_votes!(socket.assigns.session.id),

@@ -46,10 +46,10 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
         <.scroll_area class="overflow-y-auto h-72 grow shrink">
           <%= if @completed? do %>
             <.card_content id={"summary-#{@id}"} class="p-0">
-              <%= for variable <- Enum.sort_by(@variables, & &1.voted?, :desc) do %>
+              <%= for variable <- Enum.sort_by(@variables, & &1.user_vote, :desc) do %>
                 <div class="flex items-center justify-between py-8 px-6 gap-2 text-sm font-semibold">
                   <span>{variable.name}</span>
-                  <%= if variable.voted? do %>
+                  <%= if variable.user_vote do %>
                     <.badge_vote />
                   <% else %>
                     <.badge_no_vote />
@@ -64,7 +64,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
                   <div class="flex items-center py-8 px-6 gap-2 has-[input:checked]:bg-muted">
                     <.checkbox
                       id={"#{variable.id}-checkbox"}
-                      value={variable.voted?}
+                      value={variable.user_vote}
                       phx-click="vote"
                       phx-value-id={variable.id}
                       phx-target={@myself}
@@ -95,9 +95,9 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
   @impl true
   def handle_event("vote", %{"id" => variable_id}, socket) do
     voter = socket.assigns.current_user
-    variable = Ash.get!(Diagrams.Variable, variable_id, load: :voted?, actor: voter)
+    variable = Ash.get!(Diagrams.Variable, variable_id, load: :user_vote, actor: voter)
 
-    if variable.voted? do
+    if variable.user_vote do
       Diagrams.VariableVote
       |> Ash.get!(
         variable_id: variable_id,
@@ -108,7 +108,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
       Diagrams.variable_vote!(variable, actor: voter)
     end
 
-    updated_variable = Ash.load!(variable, :voted?, actor: voter)
+    updated_variable = Ash.load!(variable, :user_vote, actor: voter)
 
     variables =
       Enum.map(socket.assigns.variables, fn var ->

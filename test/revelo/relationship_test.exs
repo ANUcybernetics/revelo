@@ -86,11 +86,11 @@ defmodule Revelo.RelationshipTest do
       assert rel2.id in rel_ids
       refute rel3.id in rel_ids
 
-      # Verify relationships are sorted by voted? attribute with nil values first
-      assert is_nil(hd(relationships).voted?)
+      # Verify relationships are sorted by user_vote attribute with nil values first
+      assert is_nil(hd(relationships).user_vote)
 
       if length(relationships) > 1 do
-        assert is_nil(hd(relationships).voted?) || !is_nil(List.last(relationships).voted?)
+        assert is_nil(hd(relationships).user_vote) || !is_nil(List.last(relationships).user_vote)
       end
     end
 
@@ -114,8 +114,8 @@ defmodule Revelo.RelationshipTest do
       var2 = variable(user: user, session: session)
       relationship = relationship(user: user, session: session, src: var1, dst: var2)
 
-      relationship = Ash.load!(relationship, :voted?, actor: user)
-      refute relationship.voted?
+      relationship = Ash.load!(relationship, :user_vote, actor: user)
+      refute relationship.user_vote
 
       vote =
         RelationshipVote
@@ -132,8 +132,8 @@ defmodule Revelo.RelationshipTest do
       assert vote.voter_id == user.id
       assert vote.relationship_id == relationship.id
 
-      relationship = Ash.load!(relationship, :voted?, actor: user)
-      assert relationship.voted?
+      relationship = Ash.load!(relationship, :user_vote, actor: user)
+      assert relationship.user_vote
     end
 
     test "relationship_with_vote generator sets type attribute" do

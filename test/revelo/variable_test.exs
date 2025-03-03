@@ -231,21 +231,21 @@ defmodule Revelo.VariableTest do
       assert variable2.vote_tally == 1
     end
 
-    test "voted? calculation works" do
+    test "user_vote calculation works" do
       user = user()
       variable = variable(user: user)
 
-      variable = Ash.load!(variable, [:voted?], actor: user)
-      refute variable.voted?
+      variable = Ash.load!(variable, [:user_vote], actor: user)
+      refute variable.user_vote
 
       Revelo.Diagrams.variable_vote!(variable, actor: user)
 
-      variable = Ash.load!(variable, [:voted?], actor: user)
-      assert variable.voted?
+      variable = Ash.load!(variable, [:user_vote], actor: user)
+      assert variable.user_vote
 
       other_user = user()
-      variable = Ash.load!(variable, [:voted?], actor: other_user)
-      refute variable.voted?
+      variable = Ash.load!(variable, [:user_vote], actor: other_user)
+      refute variable.user_vote
     end
   end
 end

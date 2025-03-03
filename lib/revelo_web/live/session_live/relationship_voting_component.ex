@@ -72,7 +72,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                     <div class="flex gap-2 w-full">
                       <.button
                         variant="outline"
-                        class={"font-normal hover:bg-orange-100 w-full #{if rel.voted? == "direct", do: "bg-orange-200 text-direct-foreground border-0", else: ""}"}
+                        class={"font-normal hover:bg-orange-100 w-full #{if rel.user_vote == "direct", do: "bg-orange-200 text-direct-foreground border-0", else: ""}"}
                         value="direct"
                         id={"direct-" <> rel.id}
                         phx-click="vote"
@@ -89,7 +89,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                       </.button>
                       <.button
                         variant="outline"
-                        class={"hover:bg-inverse-light font-normal w-full #{if rel.voted? == "inverse", do: "bg-inverse text-inverse-foreground border-0", else: ""}"}
+                        class={"hover:bg-inverse-light font-normal w-full #{if rel.user_vote == "inverse", do: "bg-inverse text-inverse-foreground border-0", else: ""}"}
                         value="inverse"
                         id={"inverse-" <> rel.id}
                         phx-click="vote"
@@ -103,7 +103,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
                     </div>
                     <.button
                       variant="outline"
-                      class={"hover:bg-gray-100 font-normal w-full #{if rel.voted? == "no_relationship", do: "bg-gray-300 text-gray-700 border-0", else: ""}"}
+                      class={"hover:bg-gray-100 font-normal w-full #{if rel.user_vote == "no_relationship", do: "bg-gray-300 text-gray-700 border-0", else: ""}"}
                       value="no_relationship"
                       id={"no_relationship-" <> rel.id}
                       phx-click="vote"
@@ -157,7 +157,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
         relationship =
           Ash.get!(Relationship, [src_id: src_id, dst_id: dst_id],
-            load: [:src, :dst, :voted?],
+            load: [:src, :dst, :user_vote],
             actor: socket.assigns.current_user
           )
 
@@ -247,8 +247,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
               {head, tail}
 
             n ->
-              {List.last(Enum.take(variables, n)),
-               Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
+              {List.last(Enum.take(variables, n)), Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
           end
 
         %ZipperList{

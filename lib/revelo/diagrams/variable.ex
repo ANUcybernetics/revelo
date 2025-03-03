@@ -29,7 +29,7 @@ defmodule Revelo.Diagrams.Variable do
 
       prepare build(
                 sort: [is_voi?: :desc, hidden?: :asc, vote_tally: :desc, name: :asc],
-                load: [:voted?, :vote_tally]
+                load: [:user_vote, :vote_tally]
               )
     end
 
@@ -157,7 +157,7 @@ defmodule Revelo.Diagrams.Variable do
                 )
               )
 
-    calculate :voted?, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
+    calculate :user_vote, :boolean, expr(exists(votes, voter_id == ^actor(:id)))
   end
 
   identities do
