@@ -70,7 +70,11 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   end
 
   @impl true
-  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
+  def handle_event(
+        "toggle_override",
+        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type},
+        socket
+      ) do
     type = String.to_existing_atom(type)
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
@@ -133,7 +137,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       @relationship.type_override == :direct ||
                           (@relationship.type_override == nil &&
                              @relationship.type == :direct) ->
-                        "bg-direct text-direct-foreground"
+                        "bg-direct text-direct-foreground  border-[length:var(--border-thickness)] !border-inverse-foreground/50"
 
                       true ->
                         "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -173,7 +177,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       @relationship.type_override == :no_relationship ||
                           (@relationship.type_override == nil &&
                              @relationship.type == :no_relationship) ->
-                        "bg-gray-300 text-gray-700"
+                        "bg-gray-300 text-gray-700 border-[length:var(--border-thickness)] !border-gray-700/50"
 
                       true ->
                         "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -210,7 +214,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       @relationship.type_override == :inverse ||
                           (@relationship.type_override == nil &&
                              @relationship.type == :inverse) ->
-                        "bg-inverse text-inverse-foreground"
+                        "bg-inverse text-inverse-foreground  border-[length:var(--border-thickness)] !border-inverse-foreground/50"
 
                       true ->
                         "text-muted-foreground hover:bg-muted hover:text-foreground"
