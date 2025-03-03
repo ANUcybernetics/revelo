@@ -19,32 +19,16 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
     # Get all non-hidden variables for the session
     variables = Diagrams.list_variables!(assigns.session.id, false, actor: assigns.current_user)
 
-    # Rotate the variables list by a pseudo-random amount based on user ID
-    rotated_variables =
-      case length(variables) do
-        0 ->
-          []
-
-        len ->
-          rotation = :erlang.phash2(assigns.current_user.id, len)
-
-          case rotation do
-            0 -> variables
-            n -> Enum.slice(variables, n..-1//1) ++ Enum.slice(variables, 0..(n - 1))
-          end
-      end
-
-    # Create a ZipperList with the cursor at the first element
-    variables_zipper = %ZipperList{
-      left: [],
-      cursor: List.first(rotated_variables),
-      right: Enum.slice(rotated_variables, 1..-1//1)
-    }
+    # Create a rotated ZipperList with the cursor at the first element based on user ID
+    variables_zipper = create_zipper_by_user_id(variables, assigns.current_user.id)
 
     # Fetch relationships for the current cursor (src variable)
     socket =
       if variables_zipper.cursor do
-        relationships = Diagrams.list_relationships_from_src!(variables_zipper.cursor.id, actor: assigns.current_user)
+        relationships =
+          Diagrams.list_relationships_from_src!(variables_zipper.cursor.id,
+            actor: assigns.current_user
+          )
 
         socket
         |> stream(:relationships, relationships, reset: true)
@@ -179,7 +163,10 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
     if updated_zipper.cursor do
       # Fetch relationships for the new current variable
-      relationships = Diagrams.list_relationships_from_src!(updated_zipper.cursor.id, actor: socket.assigns.current_user)
+      relationships =
+        Diagrams.list_relationships_from_src!(updated_zipper.cursor.id,
+          actor: socket.assigns.current_user
+        )
 
       socket =
         socket
@@ -198,7 +185,10 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
     if updated_zipper.cursor do
       # Fetch relationships for the new current variable
-      relationships = Diagrams.list_relationships_from_src!(updated_zipper.cursor.id, actor: socket.assigns.current_user)
+      relationships =
+        Diagrams.list_relationships_from_src!(updated_zipper.cursor.id,
+          actor: socket.assigns.current_user
+        )
 
       socket =
         socket
@@ -208,6 +198,33 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
       {:noreply, push_event(socket, "page_changed", %{})}
     else
       {:noreply, socket}
+    end
+  end
+
+  # Private helper to create a ZipperList rotated by user ID
+  defp create_zipper_by_user_id(variables, user_id) do
+    case length(variables) do
+      0 ->
+        %ZipperList{left: [], cursor: nil, right: []}
+
+      len ->
+        rotation = :erlang.phash2(user_id, len)
+
+        {cursor, right} =
+          case rotation do
+            0 ->
+              [head | tail] = variables
+              {head, tail}
+
+            n ->
+              {List.last(Enum.take(variables, n)), Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
+          end
+
+        %ZipperList{
+          left: [],
+          cursor: cursor,
+          right: right
+        }
     end
   end
 end
