@@ -132,6 +132,22 @@ body {
     font-size: 20px;
 }
 
+.sidebar-resizing {
+  cursor: ew-resize;
+  user-select: none;
+}
+
+.resize-handle {
+  transition: background-color 0.2s;
+}
+
+#plot-loops {
+  transition: width 0.05s ease;
+}
+
+#resizable-sidebar {
+
+
 @media (max-width: 1024px) {
     :root {
         font-size: 18px;

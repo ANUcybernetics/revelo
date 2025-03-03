@@ -3,12 +3,9 @@ defmodule Storybook.Examples.VariableList do
   use PhoenixStorybook.Story, :example
 
   import ReveloWeb.Component.Button
-  import ReveloWeb.Component.Checkbox
   import ReveloWeb.Component.Form
   import ReveloWeb.Component.Input
-  import ReveloWeb.Component.Label
   import ReveloWeb.Component.Table
-  import ReveloWeb.UIComponents
 
   # import ReveloWeb.CoreComponents
   alias Phoenix.LiveView.JS
@@ -46,8 +43,7 @@ defmodule Storybook.Examples.VariableList do
         <%= for variable <- @variables do %>
           <.table_row class={if variable.hidden?, do: "opacity-40"}>
             <.table_cell>{variable.name}</.table_cell>
-            <.table_cell>
-            </.table_cell>
+            <.table_cell></.table_cell>
             <.table_cell>
               TODO variable_actions used to be here.
             </.table_cell>

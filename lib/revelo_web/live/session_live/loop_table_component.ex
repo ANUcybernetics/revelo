@@ -26,22 +26,9 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       |> assign(:variables, variables)
       |> assign(:relationships, relationships)
       |> assign(:loop_count, loop_count)
-      |> assign_new(:selected_loop, fn -> nil end)
       |> assign(:selected_edge, nil)
 
     {:ok, socket}
-  end
-
-  @impl true
-  def handle_event("toggle_loop", %{"id" => id}, socket) do
-    selected_loop = if socket.assigns.selected_loop == id, do: nil, else: id
-    socket = assign(socket, :selected_loop, selected_loop)
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("unselect_loop", _params, socket) do
-    {:noreply, assign(socket, :selected_loop, nil)}
   end
 
   @impl true
@@ -245,17 +232,13 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
 
   def loop_card(assigns) do
     ~H"""
-    <% matching_loop = Enum.find(@loops, &(&1.id == @selected_loop)) %>
-    <% loop_index = Enum.find_index(@loops, &(&1.id == @selected_loop)) + 1 %>
+    <% matching_loop = Enum.find(@loops, &(&1.id == @loop_id)) %>
+    <% loop_index = Enum.find_index(@loops, &(&1.id == @loop_id)) + 1 %>
     <.card_header :if={@participant_view?} class="py-2">
       <.card_title class="flex py-6">
         <div class="shrink-0 flex justify-end w-6 mr-1">{loop_index}.</div>
         {matching_loop.title}
       </.card_title>
-      <%!-- <div class="mx-6">
-        <.badge_reinforcing :if={Atom.to_string(matching_loop.type) == "reinforcing"} />
-        <.badge_balancing :if={Atom.to_string(matching_loop.type) == "balancing"} />
-      </div> --%>
     </.card_header>
     <.card_content class="mx-6">
       <div class="flex justify-between flex-col gap-2">
@@ -265,7 +248,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <div :if={@participant_view?}>
           <div class="flex -ml-8 gap-1 mt-4">
             <div class={
-            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-direct- !border-direct", else: "text-inverse !border-inverse"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
+            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-direct !border-direct", else: "text-inverse !border-inverse"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
           }>
               <.icon
                 name="hero-arrow-long-right-solid"
@@ -301,17 +284,28 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   def loop_wrapper(assigns) do
     ~H"""
     <%= if @facilitator? do %>
-      <aside class="flex fixed inset-y-0 right-0 z-10 w-[400px] flex-col border-l-[length:var(--border-thickness)]  bg-background h-full">
+      <aside
+        id="resizable-sidebar"
+        phx-hook="ResizableSidebar"
+        phx-update="ignore"
+        class="flex fixed inset-y-0 right-0 z-10 w-[400px] flex-col border-l-[length:var(--border-thickness)] bg-background h-full"
+      >
+        <div class="resize-handle absolute inset-y-0 left-0 w-2 cursor-ew-resize hover:bg-primary/10 active:bg-primary/20 z-20">
+        </div>
         {render_slot(@inner_block)}
       </aside>
     <% else %>
       <.card class="max-w-5xl w-md min-w-[80svw] h-20 grow flex flex-col overflow-y-auto">
-        <%= if @selected_loop do %>
-          <.loop_card selected_loop={@selected_loop} loops={@loops} participant_view?={true}>
-          </.loop_card>
-        <% else %>
+        <div id="loop-content" class="flex flex-col overflow-y-auto">
+          <%= for loop <- @loops do %>
+            <div id={"loop-detail-#{loop.id}"} class="hidden">
+              <.loop_card loop_id={loop.id} loops={@loops} participant_view?={true} />
+            </div>
+          <% end %>
+        </div>
+        <div id="loop-list" class="flex flex-col overflow-y-auto grow">
           {render_slot(@inner_block)}
-        <% end %>
+        </div>
       </.card>
     <% end %>
     """
@@ -320,17 +314,22 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class={[
-      "flex flex-col gap-4 grow h-full",
-      !@current_user.facilitator? && "p-5 pb-2"
-    ]}>
+    <div
+      id="loop-table-component"
+      phx-hook="LoopToggler"
+      class={[
+        "flex flex-col gap-4 grow h-full",
+        !@current_user.facilitator? && "p-5 pb-2"
+      ]}
+    >
       <%= if @current_user.facilitator? do %>
         <div
           id="plot-loops"
           phx-hook="PlotLoops"
           phx-update="ignore"
           data-target={@myself}
-          class="h-full w-[calc(100%-400px)]"
+          class="h-full"
+          style="width: calc(100% - 400px);"
           data-elements={
             Jason.encode!(
               Enum.concat(
@@ -351,7 +350,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
               )
             )
           }
-          data-selected-loop={@selected_loop}
           data-loops={
             Jason.encode!(
               Enum.map(@loops, fn loop ->
@@ -366,11 +364,11 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                         id: rel.id,
                         src: %{
                           id: rel.src_id,
-                          name: rel.src.name,
+                          name: rel.src.name
                         },
                         dst: %{
                           id: rel.dst_id,
-                          name: rel.dst.name,
+                          name: rel.dst.name
                         },
                         type: rel.type
                       }
@@ -385,12 +383,8 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
           <.edge_details relationship={@selected_edge} myself={@myself} />
         <% end %>
       <% end %>
-      <.loop_wrapper
-        facilitator?={@current_user.facilitator?}
-        selected_loop={@selected_loop}
-        loops={@loops}
-      >
-        <div class="flex justify-between items-center p-6">
+      <.loop_wrapper facilitator?={@current_user.facilitator?} loops={@loops}>
+        <div class="flex justify-between items-center p-6 gap-2">
           <h3 class="text-2xl font-semibold leading-none tracking-tight flex">
             Loops ({@loop_count})
           </h3>
@@ -411,10 +405,9 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
           <div class="h-full overflow-y-auto">
             <%= for {loop, index} <- Enum.with_index(@loops) do %>
               <button
-                phx-click="toggle_loop"
-                phx-target={@myself}
-                phx-value-id={loop.id}
-                class="w-full px-6 py-4 text-left border-t-[length:var(--border-thickness)]  hover:bg-muted transition-colors"
+                phx-click={JS.dispatch("toggle-loop", detail: %{loop_id: loop.id})}
+                class="w-full px-6 py-4 text-left border-t-[length:var(--border-thickness)] hover:bg-muted transition-colors"
+                data-loop-id={loop.id}
               >
                 <div class="flex items-start">
                   <span class="w-6 shrink-0">{index + 1}.</span>
@@ -430,9 +423,9 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                   <.badge_balancing :if={Atom.to_string(loop.type) == "balancing"} />
                 </div> --%>
               </button>
-              <%= if loop.id == @selected_loop do %>
-                <.loop_card selected_loop={@selected_loop} loops={@loops} participant_view?={false} />
-              <% end %>
+              <div id={"loop-detail-facilitator-#{loop.id}"} class="hidden">
+                <.loop_card loop_id={loop.id} loops={@loops} participant_view?={false} />
+              </div>
             <% end %>
           </div>
         </nav>
@@ -441,9 +434,9 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         <.button
           type="button"
           variant="outline"
-          phx-click="unselect_loop"
-          phx-target={@myself}
-          disabled={is_nil(@selected_loop)}
+          phx-click={JS.dispatch("unselect-loop")}
+          id="back-button"
+          class="hidden"
         >
           Back
         </.button>

@@ -240,6 +240,21 @@ export const PlotLoops = {
         },
       );
     });
+
+    this.el.addEventListener("loop-selected", (event) => {
+      const loopId = event.detail.loopId;
+      this.el.dataset.selectedLoop = loopId || "";
+
+      const loops = JSON.parse(this.el.dataset.loops || "[]");
+      const elements = JSON.parse(this.el.dataset.elements || "[]");
+
+      updateNodeStyles(
+        loopId,
+        loops,
+        this.cy,
+        elements.filter((ele) => ele.group === "edges"),
+      );
+    });
   },
 
   updated() {

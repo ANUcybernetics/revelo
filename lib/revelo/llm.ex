@@ -68,8 +68,7 @@ defmodule Revelo.LLM do
             },
             %{
               role: "user",
-              content:
-                "System Description: #{description}, N: #{count}, Existing variables: #{variables}"
+              content: "System Description: #{description}, N: #{count}, Existing variables: #{variables}"
             }
           ],
           model: "gpt-4o-mini"
@@ -108,8 +107,7 @@ defmodule Revelo.LLM do
           },
           %{
             role: "user",
-            content:
-              "Context: #{session_description}, loop: #{relationship_string}, feedback type: #{loop_type}"
+            content: "Context: #{session_description}, loop: #{relationship_string}, feedback type: #{loop_type}"
           }
         ],
         model: "gpt-4o"

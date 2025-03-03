@@ -284,8 +284,7 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
         included_count = socket.assigns.included_count + length(new_variables)
         send(self(), {:increment_variable_count, length(new_variables)})
 
-        {:noreply,
-         socket |> stream(:variables, variables) |> assign(:included_count, included_count)}
+        {:noreply, socket |> stream(:variables, variables) |> assign(:included_count, included_count)}
 
       {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Failed to generate variables")}

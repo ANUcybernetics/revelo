@@ -418,10 +418,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   end
 
   @impl true
-  def handle_info(
-        {ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}},
-        socket
-      ) do
+  def handle_info({ReveloWeb.SessionLive.VariableFormComponent, {:saved_variable, variable}}, socket) do
     send_update(ReveloWeb.SessionLive.VariableTableComponent,
       id: "variable-table",
       new_variable: Ash.reload!(variable)

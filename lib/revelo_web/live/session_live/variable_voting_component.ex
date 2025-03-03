@@ -47,31 +47,31 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
           <%= if @completed? do %>
             <.card_content id={"summary-#{@id}"} class="p-0">
               <%= for variable <- Enum.sort_by(@variables, & &1.voted?, :desc) do %>
-                  <div class="flex items-center justify-between py-8 px-6 gap-2 text-sm font-semibold">
-                    <span>{variable.name}</span>
-                    <%= if variable.voted? do %>
-                      <.badge_vote />
-                    <% else %>
-                      <.badge_no_vote />
-                    <% end %>
-                  </div>
+                <div class="flex items-center justify-between py-8 px-6 gap-2 text-sm font-semibold">
+                  <span>{variable.name}</span>
+                  <%= if variable.voted? do %>
+                    <.badge_vote />
+                  <% else %>
+                    <.badge_no_vote />
+                  <% end %>
+                </div>
               <% end %>
             </.card_content>
           <% else %>
             <.card_content id={"voting-#{@id}"} class="p-0">
               <%= for variable <- @variables do %>
-                  <.label id={variable.id} for={"#{variable.id}-checkbox"}>
-                    <div class="flex items-center py-8 px-6 gap-2 has-[input:checked]:bg-muted">
-                      <.checkbox
-                        id={"#{variable.id}-checkbox"}
-                        value={variable.voted?}
-                        phx-click="vote"
-                        phx-value-id={variable.id}
-                        phx-target={@myself}
-                      />
-                      {variable.name}
-                    </div>
-                  </.label>
+                <.label id={variable.id} for={"#{variable.id}-checkbox"}>
+                  <div class="flex items-center py-8 px-6 gap-2 has-[input:checked]:bg-muted">
+                    <.checkbox
+                      id={"#{variable.id}-checkbox"}
+                      value={variable.voted?}
+                      phx-click="vote"
+                      phx-value-id={variable.id}
+                      phx-target={@myself}
+                    />
+                    {variable.name}
+                  </div>
+                </.label>
               <% end %>
             </.card_content>
           <% end %>

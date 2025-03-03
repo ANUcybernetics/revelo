@@ -12,7 +12,6 @@ defmodule Revelo.LLMTest do
       {:ok, variable_list} =
         Revelo.LLM.generate_variables(
           "The hobbits in hobbiton are wondering what actions they should take.",
-          "Level of Sauron's power",
           5,
           ["Number of orcs"]
         )
