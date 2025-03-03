@@ -69,7 +69,7 @@ we're building it out & exploring the problem space).
 
 - finalise removing the voi from the database (and anywhere else...)
 
-- opening the edge modal glitches the selected loop in analyse
+- opening/editing the edge modal becomes out of sync with the the selected loop and loop list in analyse
 
 - individual generate buttons on new ones, or a generate new in the loops viewer?
 
