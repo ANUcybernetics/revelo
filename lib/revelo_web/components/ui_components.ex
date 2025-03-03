@@ -134,11 +134,11 @@ defmodule ReveloWeb.UIComponents do
                 <.icon name="hero-moon" class="h-4 w-4 transition-all" />
                 <.icon name="hero-sun" class="h-4 w-4 transition-all" />
               </div>
-              <span class="sr-only">Toggle Theme</span>
+              <span class="sr-only">Toggle Contrast</span>
             </button>
           </.tooltip_trigger>
           <.tooltip_content side="right">
-            Toggle Theme
+            Toggle Contrast
           </.tooltip_content>
         </.tooltip>
         <.dropdown_menu>
