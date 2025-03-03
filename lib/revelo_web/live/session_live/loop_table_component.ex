@@ -57,11 +57,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   end
 
   @impl true
-  def handle_event(
-        "toggle_override",
-        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type},
-        socket
-      ) do
+  def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
     type = String.to_existing_atom(type)
 
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
