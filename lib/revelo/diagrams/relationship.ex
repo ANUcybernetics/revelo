@@ -70,6 +70,7 @@ defmodule Revelo.Diagrams.Relationship do
       filter expr(session.id == ^arg(:session_id) and direct_votes > 0 and inverse_votes > 0)
 
       prepare build(
+                sort: [:src_id, :dst_id],
                 load: [
                   :src,
                   :dst,
@@ -80,29 +81,6 @@ defmodule Revelo.Diagrams.Relationship do
                   :voted?
                 ]
               )
-
-      # sort by most controversial first
-      after_action(fn _query, results, _context ->
-        sorted_results =
-          Enum.sort_by(results, fn record ->
-            # Calculate the similarity between direct and inverse votes
-            direct = record.direct_votes
-            inverse = record.inverse_votes
-            max_val = max(abs(direct), abs(inverse))
-
-            similarity =
-              if max_val == 0 do
-                1.0
-              else
-                1.0 - abs(direct - inverse) / max_val
-              end
-
-            # Sort by most similar first (descending order of similarity)
-            -similarity
-          end)
-
-        {:ok, sorted_results}
-      end)
     end
 
     create :create do

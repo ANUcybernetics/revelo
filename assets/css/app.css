@@ -133,17 +133,20 @@ body {
 }
 
 .sidebar-resizing {
-    cursor: ew-resize;
-    user-select: none;
+  cursor: ew-resize;
+  user-select: none;
 }
 
 .resize-handle {
-    transition: background-color 0.2s;
+  transition: background-color 0.2s;
 }
 
 #plot-loops {
-    transition: width 0.05s ease;
+  transition: width 0.05s ease;
 }
+
+#resizable-sidebar {
+
 
 @media (max-width: 1024px) {
     :root {
