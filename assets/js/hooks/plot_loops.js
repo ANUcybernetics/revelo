@@ -57,6 +57,44 @@ function updateNodeStyles(selectedLoop, loops, cy, relationships) {
   });
 }
 
+function updateGraphStyles(cy) {
+  if (!cy) return;
+
+  const highContrast =
+    document.documentElement.classList.contains("high_contrast");
+
+  cy.style()
+    .selector("node")
+    .style({
+      "border-width": highContrast ? "2px" : "1px",
+      "border-color": highContrast
+        ? "hsl(220, 20%, 65%)"
+        : "hsl(220, 13%, 91%)",
+      "font-weight": function (ele) {
+        return ele.data("isKey") ? "600" : "400";
+      },
+    })
+    .selector('edge[relation = "inverse"]')
+    .style({
+      "line-color": highContrast
+        ? "hsl(213.1, 93.9%, 67.8%)"
+        : "hsl(211.7, 96.4%, 78.4%)",
+      "target-arrow-color": highContrast
+        ? "hsl(213.1, 93.9%, 67.8%)"
+        : "hsl(211.7, 96.4%, 78.4%)",
+    })
+    .selector('edge[relation = "direct"]')
+    .style({
+      "line-color": highContrast
+        ? "hsl(27, 96%, 61%)"
+        : "hsl(30.7, 97.2%, 72.4%)",
+      "target-arrow-color": highContrast
+        ? "hsl(27, 96%, 61%)"
+        : "hsl(30.7, 97.2%, 72.4%)",
+    })
+    .update();
+}
+
 export const PlotLoops = {
   mounted() {
     const savedPositions = localStorage.getItem("nodePositions");
@@ -201,6 +239,10 @@ export const PlotLoops = {
           },
     });
 
+    window.addEventListener("toggle-high-contrast", () => {
+      setTimeout(() => updateGraphStyles(this.cy), 0);
+    });
+
     // Save positions when nodes are moved
     this.cy.on("position", "node", () => {
       const positions = {};
@@ -246,6 +288,8 @@ export const PlotLoops = {
       });
     }
 
+    updateGraphStyles(this.cy);
+
     // Update styles for selected loop
     updateNodeStyles(
       selectedLoop,
@@ -256,6 +300,10 @@ export const PlotLoops = {
   },
 
   destroyed() {
+    window.removeEventListener("toggle-high-contrast", () => {
+      updateGraphStyles(this.cy);
+    });
+
     if (this.cy) {
       this.cy.destroy();
     }
