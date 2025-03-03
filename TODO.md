@@ -66,3 +66,11 @@ we're building it out & exploring the problem space).
 - there were a couple of actions which had to be marked `require_atomic: false`
   as part of the sqlite -> postgres move... I should go back and check if
   they're still necessary (or if there's a proper fix)
+
+- finalise removing the voi from the database (and anywhere else...)
+
+- opening the edge modal glitches the selected loop in analyse
+
+- individual generate buttons on new ones, or a generate new in the loops viewer?
+
+- use inter as the font
