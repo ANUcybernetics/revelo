@@ -276,18 +276,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
               <%= for {relationship, index} <- Enum.with_index(matching_loop.influence_relationships) do %>
                 <div>
                   <.card class="w-full shadow-none relative">
-                    <.card_content class={
-                      Enum.join(
-                        [
-                          "flex justify-center items-center font-bold",
-                          if(relationship.src.is_voi?, do: "pt-7 pb-5", else: "py-6")
-                        ],
-                        " "
-                      )
-                    }>
-                      <div class="absolute top-1 left-1">
-                        <.badge_key :if={relationship.src.is_voi?} />
-                      </div>
+                    <.card_content class="flex justify-center items-center font-bold py-6">
                       <span class="text-center">{relationship.src.name}</span>
                     </.card_content>
                   </.card>
@@ -346,7 +335,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
             Jason.encode!(
               Enum.concat(
                 Enum.map(@variables, fn var ->
-                  %{group: "nodes", data: %{id: var.id, label: var.name, isKey: var.is_voi?}}
+                  %{group: "nodes", data: %{id: var.id, label: var.name}}
                 end),
                 Enum.map(@relationships, fn rel ->
                   %{
@@ -378,12 +367,10 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                         src: %{
                           id: rel.src_id,
                           name: rel.src.name,
-                          is_voi?: rel.src.is_voi?
                         },
                         dst: %{
                           id: rel.dst_id,
                           name: rel.dst.name,
-                          is_voi?: rel.dst.is_voi?
                         },
                         type: rel.type
                       }

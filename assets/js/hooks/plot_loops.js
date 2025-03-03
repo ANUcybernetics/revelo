@@ -70,9 +70,7 @@ function updateGraphStyles(cy) {
       "border-color": highContrast
         ? "hsl(220, 20%, 65%)"
         : "hsl(220, 13%, 91%)",
-      "font-weight": function (ele) {
-        return ele.data("isKey") ? "600" : "400";
-      },
+      "font-weight": "400",
     })
     .selector('edge[relation = "inverse"]')
     .style({
@@ -108,25 +106,6 @@ export const PlotLoops = {
           selector: "node",
           style: {
             "background-color": "#ffffff",
-            "background-image": function (ele) {
-              return ele.data("isKey")
-                ? `data:image/svg+xml;utf8,${keySVG}`
-                : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-            },
-            "background-width": function (ele) {
-              return ele.data("isKey") ? "50px" : "0";
-            },
-            "background-height": function (ele) {
-              return ele.data("isKey") ? "37px" : "0";
-            },
-            "background-position-x": function (ele) {
-              return ele.data("isKey") ? "4px" : "0";
-            },
-            "background-position-y": function (ele) {
-              return ele.data("isKey") ? "4px" : "0";
-            },
-            "background-fit": "none",
-            "background-clip": "none",
             "border-width": function (ele) {
               const highContrast =
                 document.documentElement.classList.contains("high_contrast");
@@ -151,14 +130,10 @@ export const PlotLoops = {
             height: function (ele) {
               return ele.data("label").length * 0.5 + 30;
             },
-            "text-margin-y": function (ele) {
-              return ele.data("isKey") ? 15 : 0;
-            },
+            "text-margin-y": 0,
             "text-outline-opacity": 1,
             "font-family": "Inter",
-            "font-weight": function (ele) {
-              return ele.data("isKey") ? "600" : "400";
-            },
+            "font-weight": "400",
           },
         },
         {

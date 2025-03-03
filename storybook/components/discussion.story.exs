@@ -1,6 +1,6 @@
 defmodule Variable do
   @moduledoc false
-  defstruct [:id, :name, :is_voi?]
+  defstruct [:id, :name]
 end
 
 defmodule Relationship do
@@ -26,12 +26,12 @@ defmodule Storybook.Examples.Discussion do
        loop_id: 1,
        type: "reinforcing",
        variables: [
-         %Variable{id: 1, name: "The One Ring", is_voi?: true},
-         %Variable{id: 2, name: "Frodo Baggins", is_voi?: false},
-         %Variable{id: 3, name: "Gandalf the Grey", is_voi?: false},
-         %Variable{id: 4, name: "Aragorn", is_voi?: false},
-         %Variable{id: 5, name: "Legolas", is_voi?: false},
-         %Variable{id: 6, name: "Gimli", is_voi?: false}
+         %Variable{id: 1, name: "The One Ring"},
+         %Variable{id: 2, name: "Frodo Baggins"},
+         %Variable{id: 3, name: "Gandalf the Grey"},
+         %Variable{id: 4, name: "Aragorn"},
+         %Variable{id: 5, name: "Legolas"},
+         %Variable{id: 6, name: "Gimli"}
        ],
        loop: [
          %Relationship{src: 1, dst: 2},

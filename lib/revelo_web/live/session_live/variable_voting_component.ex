@@ -20,16 +20,9 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
     variables =
       Diagrams.list_variables!(assigns.session.id, false, actor: assigns.current_user)
 
-    voi =
-      case Diagrams.get_voi(assigns.session.id) do
-        {:ok, key} -> key
-        {:error, _} -> nil
-      end
-
     socket =
       socket
       |> assign(assigns)
-      |> assign(:voi, voi)
       |> assign(:variables, variables)
 
     {:ok, socket}
@@ -50,20 +43,10 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
           </.card_title>
         </.card_header>
 
-        <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
-          <div class="flex justify-between w-full items-center">
-            <span :if={@voi}>
-              {@voi.name}
-            </span>
-            <.badge_key />
-          </div>
-        </.card_content>
-
         <.scroll_area class="overflow-y-auto h-72 grow shrink">
           <%= if @completed? do %>
             <.card_content id={"summary-#{@id}"} class="p-0">
               <%= for variable <- Enum.sort_by(@variables, & &1.voted?, :desc) do %>
-                <%= if !variable.is_voi? do %>
                   <div class="flex items-center justify-between py-8 px-6 gap-2 text-sm font-semibold">
                     <span>{variable.name}</span>
                     <%= if variable.voted? do %>
@@ -72,13 +55,11 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
                       <.badge_no_vote />
                     <% end %>
                   </div>
-                <% end %>
               <% end %>
             </.card_content>
           <% else %>
             <.card_content id={"voting-#{@id}"} class="p-0">
               <%= for variable <- @variables do %>
-                <%= if !variable.is_voi? do %>
                   <.label id={variable.id} for={"#{variable.id}-checkbox"}>
                     <div class="flex items-center py-8 px-6 gap-2 has-[input:checked]:bg-muted">
                       <.checkbox
@@ -91,7 +72,6 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
                       {variable.name}
                     </div>
                   </.label>
-                <% end %>
               <% end %>
             </.card_content>
           <% end %>

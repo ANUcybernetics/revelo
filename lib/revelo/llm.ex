@@ -38,7 +38,7 @@ defmodule Revelo.LLM do
   alias Revelo.LLM.Story
   alias Revelo.LLM.VariableList
 
-  def generate_variables(description, voi, count, variables) do
+  def generate_variables(description, count, variables) do
     ensure_api_key_present!()
 
     if count == "0" do
@@ -61,8 +61,6 @@ defmodule Revelo.LLM do
 
               You will be a description of the system that should decide most of your variables.
 
-              A variable of interest will also be provided, which we are interested to track the influence of.
-
               You will also be provided with a number N, and you will generate N different variable names that follow all the rules above.
 
               Finally, you will be provided with a list of existing variables. Try to generate variables that are unlike the exisiting ones.
@@ -71,7 +69,7 @@ defmodule Revelo.LLM do
             %{
               role: "user",
               content:
-                "System Description: #{description}, variable of interest: #{voi}, N: #{count}, Existing variables: #{variables}"
+                "System Description: #{description}, N: #{count}, Existing variables: #{variables}"
             }
           ],
           model: "gpt-4o-mini"
@@ -110,7 +108,8 @@ defmodule Revelo.LLM do
           },
           %{
             role: "user",
-            content: "Context: #{session_description}, loop: #{relationship_string}, feedback type: #{loop_type}"
+            content:
+              "Context: #{session_description}, loop: #{relationship_string}, feedback type: #{loop_type}"
           }
         ],
         model: "gpt-4o"

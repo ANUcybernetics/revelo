@@ -169,19 +169,6 @@ defmodule ReveloWeb.UIComponents do
   def sidebar_icon(:analyse), do: "hero-arrow-path-rounded-square-mini"
 
   @doc """
-    The variable of interest badge
-
-  """
-
-  def badge_key(assigns) do
-    ~H"""
-    <.badge class="bg-sky-200 text-sky-950 hover:bg-sky-300 w-fit border-none shrink-0 h-fit">
-      <.icon name="hero-key-mini" class="h-4 w-4" />
-    </.badge>
-    """
-  end
-
-  @doc """
     Loop length badge
 
   """
@@ -276,19 +263,10 @@ defmodule ReveloWeb.UIComponents do
         <.card_title>Which of these are important parts of your system?</.card_title>
       </.card_header>
 
-      <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
-        <div class="flex justify-between w-full items-center">
-          <span :if={length(@variables) >= 1 && Enum.find(@variables, & &1.is_voi?)}>
-            {Enum.find(@variables, & &1.is_voi?).name}
-          </span>
-          <.badge_key />
-        </div>
-      </.card_content>
-
       <.scroll_area class="h-72">
         <.card_content class="p-0">
           <form phx-submit="vote" id="variable-voting-form">
-            <%= for variable <- Enum.reject(@variables, & &1.is_voi?) do %>
+            <%= for variable <- @variables do %>
               <.label for={"var" <> variable.id}>
                 <div class="flex items-center py-4 px-6 gap-2 has-[input:checked]:bg-muted">
                   <.checkbox
@@ -318,19 +296,10 @@ defmodule ReveloWeb.UIComponents do
         <.card_title>Your Variable Votes</.card_title>
       </.card_header>
 
-      <.card_content class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
-        <div class="flex justify-between w-full items-center">
-          <span :if={length(@variables) >= 1 && Enum.find(@variables, & &1.is_voi?)}>
-            {Enum.find(@variables, & &1.is_voi?).name}
-          </span>
-          <.badge_key />
-        </div>
-      </.card_content>
-
       <.scroll_area class="h-72">
         <.card_content class="p-0">
           <%= for variable <-
-              Enum.reject(@variables, fn variable -> variable.is_voi? end)
+            @variables
               |> Enum.sort_by(fn variable ->
                 if variable.voted? do
                   0 # Voted items go to the top
@@ -544,18 +513,7 @@ defmodule ReveloWeb.UIComponents do
               <% variable = Enum.find(@variables, fn v -> v.id == relationship.src end) %>
               <div>
                 <.card class="w-full shadow-none relative">
-                  <.card_content class={
-                    Enum.join(
-                      [
-                        "flex justify-center items-center font-bold",
-                        if(variable.is_voi?, do: "pt-7 pb-5", else: "py-6")
-                      ],
-                      " "
-                    )
-                  }>
-                    <div class="absolute top-1 left-1">
-                      <.badge_key :if={variable.is_voi?} />
-                    </div>
+                  <.card_content class="flex justify-center items-center font-bold py-6">
                     <span class="text-center">{variable.name}</span>
                   </.card_content>
                 </.card>
