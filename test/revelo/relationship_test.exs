@@ -506,4 +506,97 @@ defmodule Revelo.RelationshipTest do
       assert conflicting.type == :conflicting
     end
   end
+
+  describe "conflictedness calculation" do
+    test "returns 0 for relationship with no votes" do
+      rel = relationship()
+      rel = Ash.load!(rel, [:conflictedness])
+      assert rel.conflictedness == 0.0
+    end
+
+    test "returns 0 for relationship with one vote" do
+      rel = relationship_with_vote(vote_type: :direct)
+      rel = Ash.load!(rel, [:conflictedness])
+      assert rel.conflictedness == 0.0
+    end
+
+    test "returns 0 for relationship where all votes are the same" do
+      user1 = user()
+      user2 = user()
+      user3 = user()
+      session = session(user1)
+      src = variable(user: user1, session: session)
+      dst = variable(user: user1, session: session)
+      rel = relationship(user: user1, session: session, src: src, dst: dst)
+
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user1)
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user2)
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user3)
+
+      rel = Ash.load!(rel, [:conflictedness])
+      assert rel.conflictedness == 0.0
+    end
+
+    test "returns high score for evenly split vote types" do
+      user1 = user()
+      user2 = user()
+      user3 = user()
+      session = session(user1)
+      src = variable(user: user1, session: session)
+      dst = variable(user: user1, session: session)
+      rel = relationship(user: user1, session: session, src: src, dst: dst)
+
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user1)
+      Revelo.Diagrams.relationship_vote!(rel, :inverse, actor: user2)
+      Revelo.Diagrams.relationship_vote!(rel, :no_relationship, actor: user3)
+
+      rel = Ash.load!(rel, [:conflictedness])
+      # Equal 1/3 probabilities give maximum entropy
+      assert_in_delta rel.conflictedness, 1.0, 0.01
+    end
+
+    test "returns intermediate score for partially split votes" do
+      user1 = user()
+      user2 = user()
+      user3 = user()
+      user4 = user()
+      session = session(user1)
+      src = variable(user: user1, session: session)
+      dst = variable(user: user1, session: session)
+      rel = relationship(user: user1, session: session, src: src, dst: dst)
+
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user1)
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user2)
+      Revelo.Diagrams.relationship_vote!(rel, :inverse, actor: user3)
+      Revelo.Diagrams.relationship_vote!(rel, :no_relationship, actor: user4)
+
+      rel = Ash.load!(rel, [:conflictedness])
+      # 2 direct, 1 inverse, 1 no_relationship
+      assert rel.conflictedness > 0.0
+      assert rel.conflictedness < 1.0
+    end
+
+    test "returns lower score for uneven vote distribution" do
+      user1 = user()
+      user2 = user()
+      user3 = user()
+      user4 = user()
+      user5 = user()
+      session = session(user1)
+      src = variable(user: user1, session: session)
+      dst = variable(user: user1, session: session)
+      rel = relationship(user: user1, session: session, src: src, dst: dst)
+
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user1)
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user2)
+      Revelo.Diagrams.relationship_vote!(rel, :direct, actor: user3)
+      Revelo.Diagrams.relationship_vote!(rel, :inverse, actor: user4)
+      Revelo.Diagrams.relationship_vote!(rel, :no_relationship, actor: user5)
+
+      rel = Ash.load!(rel, [:conflictedness])
+      # 3 direct, 1 inverse, 1 no_relationship should be less conflicted
+      assert rel.conflictedness > 0.0
+      assert rel.conflictedness < 0.9
+    end
+  end
 end

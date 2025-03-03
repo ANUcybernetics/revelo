@@ -289,6 +289,48 @@ defmodule Revelo.Diagrams.Relationship do
               ),
               load: [:direct_votes, :inverse_votes]
 
+    calculate :conflictedness,
+              :float,
+              expr(
+                fragment(
+                  """
+                  CASE
+                    WHEN (? + ? + ?) = 0 THEN 0.0
+                    ELSE (
+                      WITH total_votes AS (
+                        SELECT ? + ? + ? AS total
+                      ),
+                      probabilities AS (
+                        SELECT
+                          (? * 1.0 / total) AS p_direct,
+                          (? * 1.0 / total) AS p_inverse,
+                          (? * 1.0 / total) AS p_none
+                        FROM total_votes
+                      ),
+                      entropy_terms AS (
+                        SELECT
+                          CASE WHEN p_direct > 0 THEN -p_direct * LOG(p_direct) / LOG(2) ELSE 0 END +
+                          CASE WHEN p_inverse > 0 THEN -p_inverse * LOG(p_inverse) / LOG(2) ELSE 0 END +
+                          CASE WHEN p_none > 0 THEN -p_none * LOG(p_none) / LOG(2) ELSE 0 END AS entropy
+                        FROM probabilities
+                      )
+                      SELECT entropy / 1.585 FROM entropy_terms
+                    )
+                  END
+                  """,
+                  direct_votes,
+                  inverse_votes,
+                  no_relationship_votes,
+                  direct_votes,
+                  inverse_votes,
+                  no_relationship_votes,
+                  direct_votes,
+                  inverse_votes,
+                  no_relationship_votes
+                )
+              ),
+              load: [:direct_votes, :inverse_votes, :no_relationship_votes]
+
     calculate :user_vote,
               :string,
               expr(
