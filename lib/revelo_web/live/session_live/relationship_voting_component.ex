@@ -9,41 +9,52 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
   @impl true
   def mount(socket) do
-    {:ok, socket}
+    {:ok, stream(socket, :relationships, [])}
   end
 
   @impl true
   def update(assigns, socket) do
-    relationships =
-      assigns.session.id
-      |> Diagrams.list_potential_relationships!(actor: assigns.current_user)
-      |> Enum.group_by(& &1.src.name)
-      |> Map.values()
-      |> then(fn relationships ->
-        rotation = :erlang.phash2(assigns.current_user.id, length(relationships))
+    socket = assign(socket, assigns)
 
-        case rotation do
-          0 -> relationships
-          n -> Enum.slice(relationships, n..-1//1) ++ Enum.slice(relationships, 0..(n - 1))
-        end
-      end)
-      |> Enum.map(fn group ->
-        Enum.sort_by(group, fn rel -> rel.voted? != nil end)
-      end)
+    # Get all non-hidden variables for the session
+    variables = Diagrams.list_variables!(assigns.session.id, false, actor: assigns.current_user)
 
-    # Get the count of votes made by the current user
-    vote_count =
-      relationships
-      |> List.flatten()
-      |> Enum.count(&(&1.voted? != nil))
+    # Rotate the variables list by a pseudo-random amount based on user ID
+    rotated_variables =
+      case length(variables) do
+        0 ->
+          []
 
+        len ->
+          rotation = :erlang.phash2(assigns.current_user.id, len)
+
+          case rotation do
+            0 -> variables
+            n -> Enum.slice(variables, n..-1//1) ++ Enum.slice(variables, 0..(n - 1))
+          end
+      end
+
+    # Create a ZipperList with the cursor at the first element
+    variables_zipper = %ZipperList{
+      left: [],
+      cursor: List.first(rotated_variables),
+      right: Enum.slice(rotated_variables, 1..-1//1)
+    }
+
+    # Fetch relationships for the current cursor (src variable)
     socket =
-      socket
-      |> assign(assigns)
-      |> assign_new(:relationships, fn -> relationships end)
-      |> assign_new(:current_page, fn -> 1 end)
-      |> assign(:total_pages, length(relationships))
-      |> assign(:vote_count, vote_count)
+      if variables_zipper.cursor do
+        relationships =
+          variables_zipper.cursor.id
+          |> Diagrams.list_relationships_from_src!(actor: assigns.current_user)
+          |> Enum.sort_by(fn rel -> rel.voted? != nil end)
+
+        socket
+        |> stream(:relationships, relationships, reset: true)
+        |> assign(:variables, variables_zipper)
+      else
+        assign(socket, :variables, variables_zipper)
+      end
 
     {:ok, socket}
   end
@@ -57,19 +68,19 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
           <.card_title class="font-normal leading-2 text-xl">
             Increasing the <br />
             <b>
-              {@relationships
-              |> Enum.at(@current_page - 1, [])
-              |> List.first()
-              |> Map.get(:src)
-              |> Map.get(:name)}
+              {if @variables.cursor, do: @variables.cursor.name, else: ""}
             </b>
             <br /> causes...
           </.card_title>
         </.card_header>
         <.scroll_area class="overflow-y-auto h-72 grow shrink" id="relate-scroll-container">
-          <.card_content class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2">
-            <%= for rel <- @relationships|> Enum.at(@current_page - 1, []) do %>
-              <div class="w-full border-b-[1px] border-gray-300 pt-4 pb-6 flex justify-center">
+          <.card_content
+            id="relationship-voting-stream"
+            class="flex items-center justify-between py-4 gap-2 text-sm flex-col p-2"
+            phx-update="stream"
+          >
+            <%= for {id, rel} <- @streams.relationships do %>
+              <div class="w-full border-b-[1px] border-gray-300 pt-4 pb-6 flex justify-center" id={id}>
                 <div class="flex items-center flex-col gap-2 mx-4 max-w-md grow">
                   <p class="font-bold">{rel.dst.name}</p>
                   <div class="flex gap-2 w-full">
@@ -126,13 +137,15 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
       <div class="mt-4 flex" id="pagination-container" phx-hook="RelationshipScroll">
         <.pagination
           type="both_buttons"
-          current_page={@current_page}
-          total_pages={@total_pages}
+          current_page={if @variables.cursor, do: length(@variables.left) + 1, else: 1}
+          total_pages={
+            length(@variables.left) + if(@variables.cursor, do: 1, else: 0) + length(@variables.right)
+          }
           target={@myself}
           on_left_click="previous_page"
           on_right_click="next_page"
-          left_disabled={@current_page == 1}
-          right_disabled={@current_page == @total_pages}
+          left_disabled={Enum.empty?(@variables.left)}
+          right_disabled={Enum.empty?(@variables.right)}
         />
       </div>
     </div>
@@ -154,30 +167,9 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
             actor: socket.assigns.current_user
           )
 
-        # TODO this could be done better with a stream
-        relationships =
-          Enum.map(socket.assigns.relationships, fn group ->
-            Enum.map(group, fn rel ->
-              if rel.src.id == src_id && rel.dst.id == dst_id do
-                relationship
-              else
-                rel
-              end
-            end)
-          end)
+        socket = stream_insert(socket, :relationships, relationship)
 
-        vote_count =
-          relationships
-          |> Enum.flat_map(& &1)
-          |> Enum.count(&(&1.voted? != nil))
-
-        ReveloWeb.Presence.update_relate_status(
-          socket.assigns.session.id,
-          socket.assigns.current_user.id,
-          vote_count
-        )
-
-        {:noreply, assign(socket, relationships: relationships, vote_count: vote_count)}
+        {:noreply, socket}
 
       {:error, _reason} ->
         {:noreply, socket}
@@ -186,13 +178,45 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
 
   @impl true
   def handle_event("previous_page", _, socket) do
-    socket = update(socket, :current_page, &max(&1 - 1, 1))
-    {:noreply, push_event(socket, "page_changed", %{})}
+    updated_zipper = ZipperList.left(socket.assigns.variables)
+
+    if updated_zipper.cursor do
+      # Fetch relationships for the new current variable
+      relationships =
+        updated_zipper.cursor.id
+        |> Diagrams.list_relationships_from_src!(actor: socket.assigns.current_user)
+        |> Enum.sort_by(fn rel -> rel.voted? != nil end)
+
+      socket =
+        socket
+        |> stream(:relationships, relationships, reset: true)
+        |> assign(:variables, updated_zipper)
+
+      {:noreply, push_event(socket, "page_changed", %{})}
+    else
+      {:noreply, socket}
+    end
   end
 
   @impl true
   def handle_event("next_page", _, socket) do
-    socket = update(socket, :current_page, &min(&1 + 1, socket.assigns.total_pages))
-    {:noreply, push_event(socket, "page_changed", %{})}
+    updated_zipper = ZipperList.right(socket.assigns.variables)
+
+    if updated_zipper.cursor do
+      # Fetch relationships for the new current variable
+      relationships =
+        updated_zipper.cursor.id
+        |> Diagrams.list_relationships_from_src!(actor: socket.assigns.current_user)
+        |> Enum.sort_by(fn rel -> rel.voted? != nil end)
+
+      socket =
+        socket
+        |> stream(:relationships, relationships, reset: true)
+        |> assign(:variables, updated_zipper)
+
+      {:noreply, push_event(socket, "page_changed", %{})}
+    else
+      {:noreply, socket}
+    end
   end
 end
