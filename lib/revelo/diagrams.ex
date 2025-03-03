@@ -22,6 +22,7 @@ defmodule Revelo.Diagrams do
       define :list_potential_relationships, args: [:session_id], action: :list_potential
       define :list_actual_relationships, args: [:session_id], action: :list_actual
       define :list_conflicting_relationships, args: [:session_id], action: :list_conflicting
+      define :list_relationships_from_src, args: [:src_id], action: :list_from_src
 
       define :enumerate_relationships, args: [:session], action: :enumerate
     end

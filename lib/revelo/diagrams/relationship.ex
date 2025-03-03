@@ -83,6 +83,27 @@ defmodule Revelo.Diagrams.Relationship do
               )
     end
 
+    read :list_from_src do
+      argument :src_id, :uuid do
+        allow_nil? false
+      end
+
+      filter expr(src_id == ^arg(:src_id))
+
+      prepare build(
+                sort: [:dst_id],
+                load: [
+                  :src,
+                  :dst,
+                  :direct_votes,
+                  :inverse_votes,
+                  :no_relationship_votes,
+                  :type,
+                  :voted?
+                ]
+              )
+    end
+
     create :create do
       accept [:description]
 

@@ -62,6 +62,34 @@ defmodule Revelo.RelationshipTest do
       assert rel2.id in Enum.map(relationships, & &1.id)
     end
 
+    test "list_relationships_from_src! returns all relationships from a source variable" do
+      user = user()
+      session = session(user)
+      src = variable(user: user, session: session)
+      dst1 = variable(user: user, session: session)
+      dst2 = variable(user: user, session: session)
+
+      # Create relationships from the source to multiple destinations
+      rel1 = relationship(user: user, session: session, src: src, dst: dst1)
+      rel2 = relationship(user: user, session: session, src: src, dst: dst2)
+
+      # Create a relationship in the opposite direction
+      rel3 = relationship(user: user, session: session, src: dst1, dst: src)
+
+      # List relationships from the source
+      relationships = Revelo.Diagrams.list_relationships_from_src!(src.id)
+
+      # Should return relationships where src is the source
+      assert length(relationships) == 2
+      rel_ids = Enum.map(relationships, & &1.id)
+      assert rel1.id in rel_ids
+      assert rel2.id in rel_ids
+      refute rel3.id in rel_ids
+
+      # Verify relationships are sorted by dst_id
+      assert hd(relationships).dst_id <= List.last(relationships).dst_id
+    end
+
     test "no duplicate relationships" do
       user = user()
       session = session(user)
