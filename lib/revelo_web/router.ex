@@ -54,6 +54,8 @@ defmodule ReveloWeb.Router do
 
       live "/:session_id/prepare/variables/:variable_id", SessionLive.Phase, :prepare
       live "/:session_id/identify/variables/:variable_id", SessionLive.Phase, :identify_discuss
+
+      live "/:session_id/report", SessionLive.Report, :report
     end
   end
 

@@ -74,7 +74,7 @@ we're building it out & exploring the problem space).
 
 - Work on the report
 
-- Refactor the loop table component to be less messy
+- Refactor the loop table component to be less messy - should we just have two different components that call similar sub components? Will be nicer...
 
 - Add more UI tests
 

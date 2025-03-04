@@ -124,6 +124,30 @@ defmodule ReveloWeb.UIComponents do
         <% end %>
       </nav>
       <nav class="mt-auto flex flex-col items-center gap-4 px-2 cursor-pointer mb-4">
+      <.tooltip>
+        <.tooltip_trigger>
+          <.link
+            href={"/sessions/#{@session_id}/report"}
+            class={
+              Enum.join(
+                [
+                  "flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground",
+                  if(@current_page == :report,
+                    do: "bg-accent text-foreground border-[length:var(--border-thickness)]",
+                    else: "text-muted-foreground")
+                ],
+                " "
+              )
+            }
+          >
+            <.icon name="hero-book-open" class="h-4 w-4 transition-all" />
+            <span class="sr-only">Report</span>
+          </.link>
+        </.tooltip_trigger>
+        <.tooltip_content side="right">
+          View Report
+        </.tooltip_content>
+      </.tooltip>
         <.tooltip>
           <.tooltip_trigger>
             <button
