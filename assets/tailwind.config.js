@@ -18,6 +18,9 @@ module.exports = {
   theme: {
     extend: {
       colors: require("./tailwind.colors.json"),
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
     },
   },
   plugins: [

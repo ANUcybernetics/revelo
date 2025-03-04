@@ -125,7 +125,7 @@ export const PlotLoops = {
             },
             "text-margin-y": 0,
             "text-outline-opacity": 1,
-            "font-family": "Inter",
+            "font-family": "Red Hat Display",
             "font-weight": "400",
           },
         },
