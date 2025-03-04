@@ -465,14 +465,17 @@ defmodule ReveloWeb.UIComponents do
             <span class="text-2xl">
               <b>Completed!</b>
             </span>
-            <.progress class="w-full h-2 !m-0" value={round(@current_page / @total_pages * 100)} />
+            <.progress class="w-full h-2 !m-0" value={100} />
           <% else %>
             <span class="text-2xl">
               <b>
                 Page {@current_page} of {@total_pages}
               </b>
             </span>
-            <.progress class="w-full h-2 !m-0" value={round(@current_page / @total_pages * 100)} />
+            <.progress
+              class="w-full h-2 !m-0"
+              value={round((@current_page - 1) / @total_pages * 100)}
+            />
           <% end %>
         </div>
         <%= if @type == "both_buttons" do %>
