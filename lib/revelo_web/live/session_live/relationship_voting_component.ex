@@ -247,8 +247,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
               {head, tail}
 
             n ->
-              {List.last(Enum.take(variables, n)),
-               Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
+              {List.last(Enum.take(variables, n)), Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
           end
 
         %ZipperList{
