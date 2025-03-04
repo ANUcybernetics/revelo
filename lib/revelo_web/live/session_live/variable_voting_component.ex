@@ -47,33 +47,42 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
         </.card_header>
 
         <.scroll_area class="overflow-y-auto h-72 grow shrink w-full">
-        <.card_content id={"variables-#{@id}"} class="p-0" phx-update="stream" phx-hook-stream="variables">
-          <.label :for={{id, variable} <- @streams.variables} id={id} for={!@completed? && "#{variable.id}-checkbox"}>
-            <div class={[
-              "flex items-center py-8 px-6 gap-2",
-              !@completed? && "has-[input:checked]:bg-muted",
-              @completed? && "justify-between text-sm font-semibold"
-            ]}>
-              <%= if !@completed? do %>
-                <.checkbox
-                  id={"#{variable.id}-checkbox"}
-                  value={variable.user_vote}
-                  phx-click="vote"
-                  phx-value-id={variable.id}
-                  phx-target={@myself}
-                />
-              <% end %>
-              <span>{variable.name}</span>
-              <%= if @completed? do %>
-                <%= if variable.user_vote do %>
-                  <.badge_vote />
-                <% else %>
-                  <.badge_no_vote />
+          <.card_content
+            id={"variables-#{@id}"}
+            class="p-0"
+            phx-update="stream"
+            phx-hook-stream="variables"
+          >
+            <.label
+              :for={{id, variable} <- @streams.variables}
+              id={id}
+              for={!@completed? && "#{variable.id}-checkbox"}
+            >
+              <div class={[
+                "flex items-center py-8 px-6 gap-2",
+                !@completed? && "has-[input:checked]:bg-muted",
+                @completed? && "justify-between text-sm font-semibold"
+              ]}>
+                <%= if !@completed? do %>
+                  <.checkbox
+                    id={"#{variable.id}-checkbox"}
+                    value={variable.user_vote}
+                    phx-click="vote"
+                    phx-value-id={variable.id}
+                    phx-target={@myself}
+                  />
                 <% end %>
-              <% end %>
-            </div>
-          </.label>
-        </.card_content>
+                <span>{variable.name}</span>
+                <%= if @completed? do %>
+                  <%= if variable.user_vote do %>
+                    <.badge_vote />
+                  <% else %>
+                    <.badge_no_vote />
+                  <% end %>
+                <% end %>
+              </div>
+            </.label>
+          </.card_content>
         </.scroll_area>
       </.card>
       <div class="mt-4 flex justify-center w-full">
@@ -122,7 +131,8 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
 
     # Get variables and reset the stream with sorted variables
     variables =
-      Diagrams.list_variables!(socket.assigns.session.id, false,
+      socket.assigns.session.id
+      |> Diagrams.list_variables!(false,
         actor: socket.assigns.current_user
       )
       |> Enum.sort_by(& &1.user_vote, :desc)
@@ -137,9 +147,7 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
   def handle_event("back", _params, socket) do
     # Get variables without sorting
     variables =
-      Diagrams.list_variables!(socket.assigns.session.id, false,
-        actor: socket.assigns.current_user
-      )
+      Diagrams.list_variables!(socket.assigns.session.id, false, actor: socket.assigns.current_user)
 
     {:noreply,
      socket
