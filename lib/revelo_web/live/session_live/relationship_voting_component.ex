@@ -139,7 +139,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
           on_right_click="next_page"
           left_disabled={Enum.empty?(@variables.left)}
           right_disabled={@completed?}
-          completed?={@completed?}
+          completed={@completed?}
         />
       </div>
     </div>
@@ -247,7 +247,8 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
               {head, tail}
 
             n ->
-              {List.last(Enum.take(variables, n)), Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
+              {List.last(Enum.take(variables, n)),
+               Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
           end
 
         %ZipperList{

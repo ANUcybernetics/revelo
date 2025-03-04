@@ -443,6 +443,7 @@ defmodule ReveloWeb.UIComponents do
   attr :on_right_click, :any, default: nil, doc: "the phx-click event for the right button"
   attr :left_disabled, :boolean, default: false, doc: "whether the left button is disabled"
   attr :right_disabled, :boolean, default: false, doc: "whether the right button is disabled"
+  attr :completed, :integer, required: true, doc: "whether the user has completed"
 
   def pagination(assigns) do
     ~H"""
@@ -460,7 +461,7 @@ defmodule ReveloWeb.UIComponents do
           </ReveloWeb.Component.Button.button>
         <% end %>
         <div class="p-6 flex grow justify-center items-center space-x-4 flex-col gap-2">
-          <%= if @completed? do %>
+          <%= if @completed do %>
             <span class="text-2xl">
               <b>Completed!</b>
             </span>
