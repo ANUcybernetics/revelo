@@ -7,8 +7,10 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def render(assigns) do
     ~H"""
-    <div :if={@current_user.facilitator?} class="p-6 h-full flex flex-col h-svh overflow-y-auto">
-      <div class="grid grid-cols-12 w-full grow gap-6">
+    <div :if={@current_user.facilitator?} class="h-full flex flex-col h-svh overflow-y-auto">
+    <div class={
+      "grid grid-cols-12 w-full grow gap-6 #{if @live_action != :analyse, do: "p-6 pb-3", else: ""}"
+    }>
         <.live_component
           :if={@live_action in [:prepare, :identify_discuss, :edit]}
           module={ReveloWeb.SessionLive.VariableTableComponent}
@@ -119,7 +121,7 @@ defmodule ReveloWeb.SessionLive.Phase do
 
       <div
         :if={@current_user.facilitator? and @live_action != :analyse}
-        class="flex justify-between mt-4"
+        class="flex justify-between mt-4 p-6 pt-0"
       >
         <div>
           <.link
