@@ -90,6 +90,69 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
      |> assign(:selected_edge, selected_edge)}
   end
 
+  @impl true
+  def handle_event("regenerate_loop_diagram", _params, socket) do
+    # Rebuild the JSON data for loops and elements
+    loops_json = create_loops_json(socket.assigns.loops)
+    elements_json = create_elements_json(socket.assigns.variables, socket.assigns.relationships)
+
+    # Send the updated data to the client
+    {:noreply,
+     push_event(socket, "update_loop_diagram", %{
+       loops: loops_json,
+       elements: elements_json
+     })}
+  end
+
+  defp create_loops_json(loops) do
+    Jason.encode!(
+      Enum.map(loops, fn loop ->
+        %{
+          id: loop.id,
+          title: loop.title,
+          story: loop.story,
+          type: loop.type,
+          influence_relationships:
+            Enum.map(loop.influence_relationships, fn rel ->
+              %{
+                id: rel.id,
+                src: %{
+                  id: rel.src_id,
+                  name: rel.src.name
+                },
+                dst: %{
+                  id: rel.dst_id,
+                  name: rel.dst.name
+                },
+                type: rel.type
+              }
+            end)
+        }
+      end)
+    )
+  end
+
+  defp create_elements_json(variables, relationships) do
+    Jason.encode!(
+      Enum.concat(
+        Enum.map(variables, fn var ->
+          %{group: "nodes", data: %{id: var.id, label: var.name}}
+        end),
+        Enum.map(relationships, fn rel ->
+          %{
+            group: "edges",
+            data: %{
+              source: rel.src_id,
+              target: rel.dst_id,
+              relation: Atom.to_string(rel.type),
+              id: rel.id
+            }
+          }
+        end)
+      )
+    )
+  end
+
   def edge_details(assigns) do
     ~H"""
     <.modal id="edge-details-modal" show on_cancel={JS.push("close_edge_details", target: @myself)}>
@@ -226,60 +289,30 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     """
   end
 
-  def loop_card(assigns) do
+  @impl true
+  def render(assigns) do
     ~H"""
-    <% matching_loop = Enum.find(@loops, &(&1.id == @loop_id)) %>
-    <% loop_index = Enum.find_index(@loops, &(&1.id == @loop_id)) + 1 %>
-    <.card_header :if={@participant_view?} class="py-2">
-      <.card_title class="flex py-6">
-        <div class="shrink-0 flex justify-end w-6 mr-1">{loop_index}.</div>
-        {matching_loop.title}
-      </.card_title>
-    </.card_header>
-    <.card_content class="mx-6">
-      <div class="flex justify-between flex-col gap-2">
-        <.card_description>
-          {matching_loop.story}
-        </.card_description>
-        <div :if={@participant_view?}>
-          <div class="flex -ml-8 gap-1 mt-4">
-            <div class={
-            "#{if matching_loop.influence_relationships |> List.last() |> Map.get(:type) == :direct, do: "text-direct !border-direct", else: "text-inverse !border-inverse"} border-[0.17rem] border-r-0 rounded-l-lg w-8 my-10 relative"
-          }>
-              <.icon
-                name="hero-arrow-long-right-solid"
-                class="h-8 w-8 absolute -top-[1.07rem] -right-[0.4rem]"
-              />
-            </div>
-            <div class="flex flex-col mb-2 grow">
-              <%= for {relationship, index} <- Enum.with_index(matching_loop.influence_relationships) do %>
-                <div>
-                  <.card class="w-full shadow-none relative">
-                    <.card_content class="flex justify-center items-center font-bold py-6">
-                      <span class="text-center">{relationship.src.name}</span>
-                    </.card_content>
-                  </.card>
-
-                  <%= if index < length(matching_loop.influence_relationships) - 1 do %>
-                    <div class={
-                      "#{if relationship.type == :direct, do: "text-direct", else: "text-inverse"} w-full flex justify-center"
-                    }>
-                      <.icon name="hero-arrow-long-down-solid" class="h-8 w-8" />
-                    </div>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
+    <div
+      id="loop-table-component"
+      phx-hook="LoopToggler"
+      class="flex flex-col gap-4 grow h-full col-span-12"
+    >
+      <div
+        id="plot-loops"
+        phx-hook="PlotLoops"
+        phx-update="ignore"
+        data-target={@myself}
+        class="h-full"
+        style="width: calc(100% - 400px);"
+        data-elements={create_elements_json(@variables, @relationships)}
+        data-loops={create_loops_json(@loops)}
+      >
       </div>
-    </.card_content>
-    """
-  end
 
-  def loop_wrapper(assigns) do
-    ~H"""
-    <%= if @facilitator? do %>
+      <%= if @selected_edge do %>
+        <.edge_details relationship={@selected_edge} myself={@myself} />
+      <% end %>
+
       <aside
         id="resizable-sidebar"
         phx-hook="ResizableSidebar"
@@ -288,104 +321,11 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       >
         <div class="resize-handle absolute inset-y-0 left-0 w-2 cursor-ew-resize hover:bg-primary/10 active:bg-primary/20 z-20">
         </div>
-        {render_slot(@inner_block)}
-      </aside>
-    <% else %>
-      <.card class="max-w-5xl w-md min-w-[80svw] h-20 grow flex flex-col overflow-y-auto">
-        <div id="loop-content" class="flex flex-col overflow-y-auto">
-          <%= for loop <- @loops do %>
-            <div id={"loop-detail-#{loop.id}"} class="hidden">
-              <.loop_card loop_id={loop.id} loops={@loops} participant_view?={true} />
-            </div>
-          <% end %>
-        </div>
-        <div id="loop-list" class="flex flex-col overflow-y-auto grow">
-          {render_slot(@inner_block)}
-        </div>
-      </.card>
-    <% end %>
-    """
-  end
-
-  @impl true
-  def render(assigns) do
-    ~H"""
-    <div
-      id="loop-table-component"
-      phx-hook="LoopToggler"
-      class={[
-        "flex flex-col gap-4 grow h-full",
-        !@current_user.facilitator? && "p-5 pb-2"
-      ]}
-    >
-      <%= if @current_user.facilitator? do %>
-        <div
-          id="plot-loops"
-          phx-hook="PlotLoops"
-          phx-update="ignore"
-          data-target={@myself}
-          class="h-full"
-          style="width: calc(100% - 400px);"
-          data-elements={
-            Jason.encode!(
-              Enum.concat(
-                Enum.map(@variables, fn var ->
-                  %{group: "nodes", data: %{id: var.id, label: var.name}}
-                end),
-                Enum.map(@relationships, fn rel ->
-                  %{
-                    group: "edges",
-                    data: %{
-                      source: rel.src_id,
-                      target: rel.dst_id,
-                      relation: Atom.to_string(rel.type),
-                      id: rel.id
-                    }
-                  }
-                end)
-              )
-            )
-          }
-          data-loops={
-            Jason.encode!(
-              Enum.map(@loops, fn loop ->
-                %{
-                  id: loop.id,
-                  title: loop.title,
-                  story: loop.story,
-                  type: loop.type,
-                  influence_relationships:
-                    Enum.map(loop.influence_relationships, fn rel ->
-                      %{
-                        id: rel.id,
-                        src: %{
-                          id: rel.src_id,
-                          name: rel.src.name
-                        },
-                        dst: %{
-                          id: rel.dst_id,
-                          name: rel.dst.name
-                        },
-                        type: rel.type
-                      }
-                    end)
-                }
-              end)
-            )
-          }
-        >
-        </div>
-        <%= if @selected_edge do %>
-          <.edge_details relationship={@selected_edge} myself={@myself} />
-        <% end %>
-      <% end %>
-      <.loop_wrapper facilitator?={@current_user.facilitator?} loops={@loops}>
         <div class="flex justify-between items-center p-6 gap-2">
           <h3 class="text-2xl font-semibold leading-none tracking-tight flex">
             Loops ({@loop_count})
           </h3>
           <.button
-            :if={@current_user.facilitator?}
             type="button"
             variant="outline"
             size="sm"
@@ -414,29 +354,21 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                     </div>
                   </div>
                 </div>
-                <%!-- <div class="ml-6 mt-3">
-                  <.badge_reinforcing :if={Atom.to_string(loop.type) == "reinforcing"} />
-                  <.badge_balancing :if={Atom.to_string(loop.type) == "balancing"} />
-                </div> --%>
               </button>
               <div id={"loop-detail-facilitator-#{loop.id}"} class="hidden">
-                <.loop_card loop_id={loop.id} loops={@loops} participant_view?={false} />
+                <% matching_loop = Enum.find(@loops, &(&1.id == loop.id)) %>
+                <.card_content class="mx-6">
+                  <div class="flex justify-between flex-col gap-2">
+                    <.card_description>
+                      {matching_loop.story}
+                    </.card_description>
+                  </div>
+                </.card_content>
               </div>
             <% end %>
           </div>
         </nav>
-      </.loop_wrapper>
-      <%= if !@current_user.facilitator? do %>
-        <.button
-          type="button"
-          variant="outline"
-          phx-click={JS.dispatch("unselect-loop")}
-          id="back-button"
-          class="hidden"
-        >
-          Back
-        </.button>
-      <% end %>
+      </aside>
     </div>
     """
   end

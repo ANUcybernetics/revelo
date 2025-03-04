@@ -2,7 +2,6 @@ const LoopToggler = {
   mounted() {
     // Store references to important elements
     this.loopList = document.getElementById("loop-list");
-    this.loopContent = document.getElementById("loop-content");
     this.backButton = document.getElementById("back-button");
 
     // Keep track of currently selected loop
@@ -17,8 +16,9 @@ const LoopToggler = {
     );
     window.addEventListener("unselect-loop", () => this.unselectLoop());
 
-    // Initial check for facilitator view
+    // Determine if this is the facilitator view or participant view
     this.isFacilitator = !!document.getElementById("resizable-sidebar");
+    this.isParticipant = !!document.getElementById("loops-list");
   },
 
   toggleLoop(loopId) {
@@ -30,8 +30,8 @@ const LoopToggler = {
     // Update the selected loop
     this.selectedLoopId = loopId;
 
-    // If we have a facilitator view, update the plot-loops data-selected-loop attribute
-    if (this.isFacilitator && this.plotLoopsEl) {
+    // If we have a plot-loops element, update its data-selected-loop attribute
+    if (this.plotLoopsEl) {
       this.plotLoopsEl.dataset.selectedLoop = loopId;
 
       // Trigger an update in the PlotLoops hook
@@ -42,6 +42,7 @@ const LoopToggler = {
       this.plotLoopsEl.dispatchEvent(event);
     }
 
+    // Handle facilitator view
     if (this.isFacilitator) {
       // For facilitator view, show the loop detail in the sidebar
       const allDetails = document.querySelectorAll(
@@ -55,16 +56,23 @@ const LoopToggler = {
       if (detailToShow) {
         detailToShow.classList.remove("hidden");
       }
-    } else {
-      // For participant view, switch from list to detail view
-      if (this.loopList && this.loopContent) {
-        // Hide the loop list and show the loop content container
-        this.loopList.classList.add("hidden");
-        this.loopContent.classList.remove("hidden");
+    }
 
-        // Hide all loop details first
-        const allDetails = document.querySelectorAll('[id^="loop-detail-"]');
-        allDetails.forEach((detail) => detail.classList.add("hidden"));
+    if (this.isParticipant) {
+      const loopsList = document.getElementById("loops-list");
+      const loopHeader = document.getElementById("loop-header");
+
+      if (loopsList) {
+        // Hide all loop buttons
+        const allLoopButtons = loopsList.querySelectorAll(
+          "button[data-loop-id]",
+        );
+        allLoopButtons.forEach((button) => button.classList.add("hidden"));
+
+        // Hide the header
+        if (loopHeader) {
+          loopHeader.classList.add("hidden");
+        }
 
         // Show the specific loop detail
         const detailToShow = document.getElementById(`loop-detail-${loopId}`);
@@ -84,8 +92,8 @@ const LoopToggler = {
     // Clear the selected loop
     this.selectedLoopId = null;
 
-    // If we have a facilitator view, update the plot-loops data attribute
-    if (this.isFacilitator && this.plotLoopsEl) {
+    // If we have a plot-loops element, update its data attribute
+    if (this.plotLoopsEl) {
       delete this.plotLoopsEl.dataset.selectedLoop;
 
       // Trigger an update in the PlotLoops hook
@@ -94,7 +102,10 @@ const LoopToggler = {
         bubbles: true,
       });
       this.plotLoopsEl.dispatchEvent(event);
+    }
 
+    // Handle facilitator view
+    if (this.isFacilitator) {
       // Hide all facilitator loop details
       const allFacilitatorDetails = document.querySelectorAll(
         '[id^="loop-detail-facilitator-"]',
@@ -102,15 +113,31 @@ const LoopToggler = {
       allFacilitatorDetails.forEach((detail) => detail.classList.add("hidden"));
     }
 
-    // Only relevant for participant view
-    if (!this.isFacilitator && this.loopList && this.loopContent) {
-      // Show the loop list and hide the loop content
-      this.loopList.classList.remove("hidden");
-      this.loopContent.classList.add("hidden");
+    // Handle participant view
+    if (this.isParticipant) {
+      const loopsList = document.getElementById("loops-list");
+      const loopHeader = document.getElementById("loop-header");
 
-      // Hide the back button
-      if (this.backButton) {
-        this.backButton.classList.add("hidden");
+      if (loopsList) {
+        // Show all loop buttons
+        const allLoopButtons = loopsList.querySelectorAll(
+          "button[data-loop-id]",
+        );
+        allLoopButtons.forEach((button) => button.classList.remove("hidden"));
+
+        // Show the header
+        if (loopHeader) {
+          loopHeader.classList.remove("hidden");
+        }
+
+        // Hide all loop details
+        const allDetails = document.querySelectorAll('[id^="loop-detail-"]');
+        allDetails.forEach((detail) => detail.classList.add("hidden"));
+
+        // Hide the back button
+        if (this.backButton) {
+          this.backButton.classList.add("hidden");
+        }
       }
     }
   },

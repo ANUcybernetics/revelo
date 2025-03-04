@@ -122,22 +122,23 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
         <% else %>
           <.card_header class="border-b-[1px] border-gray-300 pb-2 mx-2 px-4">
             <.card_title class="font-bold leading-2 text-xl">
-            Task Completed!
+              Task Completed!
             </.card_title>
-            </.card_header>
+          </.card_header>
 
-            <.card_content class="flex flex-col justify-between py-6 gap-4 items-center">
-            <p class="w-full">Your analysis will be combined with everyone else's to build a fuller picture of these connections and our system.
-    </p>
-              <img src="/images/completed.svg" class="w-32 h-32" alt="Completed" />
-              <p  class="w-full">While waiting, feel free to:</p>
-              <ul class="list-disc pl-8 w-full">
-                <li>Review your responses</li>
-                <li>Reflect on patterns you noticed</li>
-                <li>Discuss uncertain labels with your neighbor</li>
-                <li>View group progress on the main screen</li>
-              </ul>
-              </.card_content>
+          <.card_content class="flex flex-col justify-between py-6 gap-4 items-center">
+            <p class="w-full">
+              Your analysis will be combined with everyone else's to build a fuller picture of these connections and our system.
+            </p>
+            <img src="/images/completed.svg" class="w-32 h-32" alt="Completed" />
+            <p class="w-full">While waiting, feel free to:</p>
+            <ul class="list-disc pl-8 w-full">
+              <li>Review your responses</li>
+              <li>Reflect on patterns you noticed</li>
+              <li>Discuss uncertain labels with your neighbor</li>
+              <li>View group progress on the main screen</li>
+            </ul>
+          </.card_content>
         <% end %>
       </.card>
       <div class="mt-4 flex" id="pagination-container" phx-hook="RelationshipScroll">
@@ -260,8 +261,7 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
               {head, tail}
 
             n ->
-              {List.last(Enum.take(variables, n)),
-               Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
+              {List.last(Enum.take(variables, n)), Enum.drop(variables, n) ++ Enum.take(variables, n - 1)}
           end
 
         %ZipperList{

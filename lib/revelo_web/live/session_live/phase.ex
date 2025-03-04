@@ -7,10 +7,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   @impl true
   def render(assigns) do
     ~H"""
-    <div
-      :if={@current_user.facilitator? and @live_action not in [:analyse]}
-      class="p-6 h-full flex flex-col h-svh overflow-y-auto"
-    >
+    <div :if={@current_user.facilitator?} class="p-6 h-full flex flex-col h-svh overflow-y-auto">
       <div class="grid grid-cols-12 w-full grow gap-6">
         <.live_component
           :if={@live_action in [:prepare, :identify_discuss, :edit]}
@@ -94,6 +91,15 @@ defmodule ReveloWeb.SessionLive.Phase do
           </ol>
         </.instructions>
 
+        <.live_component
+          :if={@live_action == :analyse}
+          module={ReveloWeb.SessionLive.LoopTableComponent}
+          id="loop-table"
+          current_user={@current_user}
+          live_action={@live_action}
+          session={@session}
+        />
+
         <.qr_code_card
           :if={@live_action == :identify_work}
           url={"#{ReveloWeb.Endpoint.url()}/qr/sessions/#{@session.id}/identify/work"}
@@ -111,7 +117,10 @@ defmodule ReveloWeb.SessionLive.Phase do
         />
       </div>
 
-      <div :if={@current_user.facilitator?} class="flex justify-between mt-4">
+      <div
+        :if={@current_user.facilitator? and @live_action != :analyse}
+        class="flex justify-between mt-4"
+      >
         <div>
           <.link
             :if={@live_action not in [:prepare, :edit]}
@@ -264,10 +273,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       </div>
     </div>
 
-    <div
-      :if={!@current_user.facilitator? and @live_action not in [:analyse]}
-      class="h-full flex flex-col items-center justify-center"
-    >
+    <div :if={!@current_user.facilitator?} class="h-full flex flex-col items-center justify-center">
       <div :if={@live_action in [:identify_work]} class="flex flex-col items-center gap-4 grow">
         <.live_component
           module={ReveloWeb.SessionLive.VariableVotingComponent}
@@ -287,6 +293,15 @@ defmodule ReveloWeb.SessionLive.Phase do
           start_index={0}
         />
       </div>
+      <div :if={@live_action in [:analyse]} class="flex flex-col items-center gap-4 grow">
+        <.live_component
+          module={ReveloWeb.SessionLive.LoopParticipantComponent}
+          id="loop-table"
+          current_user={@current_user}
+          live_action={@live_action}
+          session={@session}
+        />
+      </div>
       <div
         :if={@live_action not in [:identify_work, :relate_work, :analyse]}
         class="flex flex-col items-center gap-4"
@@ -294,40 +309,7 @@ defmodule ReveloWeb.SessionLive.Phase do
         <.task_completed completed={elem(@progress, 1)} total={elem(@progress, 1)} />
       </div>
       <div
-        :if={!@current_user.facilitator? and @live_action in [:identify_work, :relate_work]}
-        class="flex justify-end items-start w-full pr-4 mb-2"
-      >
-        <button
-          class="p-2"
-          phx-click={
-            JS.toggle_class("!hidden",
-              to: "#help-modal",
-              time: 200
-            )
-          }
-        >
-          <.icon name="hero-question-mark-circle-solid" class="w-8 h-8" />
-        </button>
-      </div>
-    </div>
-
-    <div
-      :if={@live_action in [:analyse]}
-      class={
-        if @current_user.facilitator?,
-          do: "h-full flex items-center justify-center",
-          else: "h-full flex flex-col items-center justify-center"
-      }
-    >
-      <.live_component
-        module={ReveloWeb.SessionLive.LoopTableComponent}
-        id="loop-table"
-        current_user={@current_user}
-        live_action={@live_action}
-        session={@session}
-      />
-      <div
-        :if={!@current_user.facilitator? and @live_action in [:analyse]}
+        :if={!@current_user.facilitator? and @live_action in [:identify_work, :relate_work, :analyse]}
         class="flex justify-end items-start w-full pr-4 mb-2"
       >
         <button
