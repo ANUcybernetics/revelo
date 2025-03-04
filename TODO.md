@@ -76,3 +76,27 @@ we're building it out & exploring the problem space).
   viewer?
 
 - use inter as the font
+
+- Design the endstate for relationship voting, and maybe adjust the progress bar to match?
+
+- Use a stream for the stories/titles in loops, so they live update
+
+- Allow deleting sessions, variables
+
+- Update instructions
+
+- Decide if conflicting should include clashes between no_relation
+
+- Work on the report
+
+- Refactor the loop table component to be less messy
+
+- Add more UI tests
+
+- Add some more revelo branding to the ui/sidebar?
+
+- Have a way to update the cytoscape positions, so they don't save the no connection position
+
+- Have the tone of the stories be a bit less chatgpt-y. Reframe as hypotheses? Add a devil's advocate, or have chatgpt pose challenges?
+
+- Keep refactoring component state.
