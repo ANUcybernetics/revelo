@@ -8,7 +8,7 @@ defmodule ReveloWeb.SessionLive.Phase do
   def render(assigns) do
     ~H"""
     <div :if={@current_user.facilitator?} class="h-full flex flex-col h-svh overflow-y-auto">
-    <div class={
+      <div class={
       "grid grid-cols-12 w-full grow gap-6 #{if @live_action != :analyse, do: "p-6 pb-3", else: ""}"
     }>
         <.live_component
