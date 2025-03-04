@@ -27,10 +27,6 @@ we're building it out & exploring the problem space).
 - thought: the LLM stuff should either be %Variable{} aware, or no (but
   consistent in both input & output)
 
-- (maybe) use [this](https://docs.rs/graph-cycles/latest/graph_cycles/) for
-  cycle detection (via rustler) but honestly we might just hand-roll something
-  naive
-
 - Removing a vote is kind of gross at the moment, as you need to pass the whole
   vote to the destroy function. This is particularly annoying in the identify
   phase, as we the votes aren't loaded at any point before needing to destroy
@@ -43,17 +39,8 @@ we're building it out & exploring the problem space).
   I tried the latter, but there were server-side events triggering, so it's bit
   of a mess.
 
-- The presence module {complete, total} calculation uses the current phases to
-  swap between the participant being finished count, and the number of votes
-  count - I feel there'd be a better way? Also, we start with the progress value
-  unloaded, so it shows 0% always until someone votes, even if many votes exist.
-
 - There's repetition between the relationship overwrites and the loop
   relationship modal we could refactor
-
-- The search on relationship votes could probably be client side, filtering
-  through the relationship list. Right now it retrieves the list of
-  relationships every search.
 
 - The presence module {complete, total} calculation uses the current phases to
   swap between the participant being finished count, and the number of votes
@@ -75,9 +62,7 @@ we're building it out & exploring the problem space).
 - individual generate buttons on new ones, or a generate new in the loops
   viewer?
 
-- use inter as the font
-
-- Design the endstate for relationship voting, and maybe adjust the progress bar to match?
+- Design the endstate for relationship voting
 
 - Use a stream for the stories/titles in loops, so they live update
 
