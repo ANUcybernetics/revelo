@@ -355,6 +355,7 @@ defmodule ReveloWeb.SessionLive.Phase do
       end
 
     updated_relationship = Revelo.Diagrams.override_relationship_type!(relationship, new_override)
+    Revelo.Diagrams.rescan_loops!(socket.assigns.session.id)
 
     # Send update to the relationship table component if it exists
     if socket.assigns.live_action in [:relate_discuss] do

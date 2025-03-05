@@ -39,8 +39,6 @@ we're building it out & exploring the problem space).
   I tried the latter, but there were server-side events triggering, so it's bit
   of a mess.
 
-- There's repetition between the relationship overwrites and the loop
-  relationship modal we could refactor
 
 - The presence module {complete, total} calculation uses the current phases to
   swap between the participant being finished count, and the number of votes
@@ -56,13 +54,8 @@ we're building it out & exploring the problem space).
 
 - finalise removing the voi from the database (and anywhere else...)
 
-- opening/editing the edge modal becomes out of sync with the the selected loop
-  and loop list in analyse
-
 - individual generate buttons on new ones, or a generate new in the loops
   viewer?
-
-- Design the endstate for relationship voting
 
 - Use a stream for the stories/titles in loops, so they live update
 

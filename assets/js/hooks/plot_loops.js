@@ -260,6 +260,11 @@ export const PlotLoops = {
       const edge = event.target;
       const edgeId = edge.id();
 
+      // Hide all loop details
+      document.querySelectorAll(".loop-detail").forEach((el) => {
+        el.classList.add("hidden");
+      });
+
       // Send the clicked edge ID to the LiveView component
       this.pushEventTo(
         this.el.dataset.target || "#loop-table",
