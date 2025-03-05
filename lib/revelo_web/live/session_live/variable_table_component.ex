@@ -3,15 +3,6 @@ defmodule ReveloWeb.SessionLive.VariableTableComponent do
   use ReveloWeb, :live_component
   use Gettext, backend: ReveloWeb.Gettext
 
-  import ReveloWeb.Component.Button
-  import ReveloWeb.Component.Card
-  import ReveloWeb.Component.Input
-  import ReveloWeb.Component.ScrollArea
-  import ReveloWeb.Component.Table
-  import ReveloWeb.Component.Tooltip
-  import ReveloWeb.CoreComponents
-  import ReveloWeb.CoreComponents, except: [table: 1, button: 1, input: 1]
-
   alias Revelo.Diagrams
   alias Revelo.LLM.VariableList
 

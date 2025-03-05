@@ -2,12 +2,6 @@ defmodule ReveloWeb.SessionLive.VariableVotingComponent do
   @moduledoc false
   use ReveloWeb, :live_component
 
-  import ReveloWeb.Component.Card
-  import ReveloWeb.Component.Checkbox
-  import ReveloWeb.Component.Label
-  import ReveloWeb.Component.ScrollArea
-  import ReveloWeb.UIComponents
-
   alias Revelo.Diagrams
 
   @impl true

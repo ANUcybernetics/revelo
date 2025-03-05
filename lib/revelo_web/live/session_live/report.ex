@@ -2,8 +2,6 @@ defmodule ReveloWeb.SessionLive.Report do
   @moduledoc false
   use ReveloWeb, :live_view
 
-  import ReveloWeb.Components.Tabs
-
   alias Revelo.Sessions.Session
 
   @impl true

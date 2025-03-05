@@ -102,6 +102,8 @@ defmodule ReveloWeb do
       import ReveloWeb.Component.ScrollArea
       import ReveloWeb.Component.Table
       import ReveloWeb.Component.Textarea
+      import ReveloWeb.Component.Tooltip
+      import ReveloWeb.Components.Tabs
       import ReveloWeb.CoreComponents, except: [modal: 1, button: 1, input: 1, table: 1, label: 1]
       import ReveloWeb.UIComponents
 

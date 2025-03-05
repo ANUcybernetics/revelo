@@ -3,9 +3,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   use ReveloWeb, :live_component
   use Gettext, backend: ReveloWeb.Gettext
 
-  import ReveloWeb.Component.DropdownMenu
-  import ReveloWeb.Component.Tooltip
-
   alias Revelo.Diagrams
   alias Revelo.Diagrams.Relationship
 
@@ -109,7 +106,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
        elements: socket.assigns.elements_json
      })}
   end
-
 
   defp create_loops_json(loops) when is_list(loops) do
     Jason.encode!(

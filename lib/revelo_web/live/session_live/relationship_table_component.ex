@@ -7,7 +7,6 @@ defmodule ReveloWeb.SessionLive.RelationshipTableComponent do
   import ReveloWeb.Component.Card
   import ReveloWeb.Component.ScrollArea
   import ReveloWeb.Component.Table
-  import ReveloWeb.Component.Tooltip
   import ReveloWeb.CoreComponents
   import ReveloWeb.CoreComponents, except: [table: 1, button: 1, input: 1]
 

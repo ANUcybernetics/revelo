@@ -343,11 +343,7 @@ defmodule ReveloWeb.SessionLive.Phase do
     {:noreply, socket}
   end
 
-  def handle_event(
-        "relationship_toggle_override",
-        %{"src_id" => src_id, "dst_id" => dst_id, "type" => type, "relationship_id" => relationship_id},
-        socket
-      ) do
+  def handle_event("relationship_toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
     type = String.to_existing_atom(type)
     relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
 
@@ -359,11 +355,6 @@ defmodule ReveloWeb.SessionLive.Phase do
       end
 
     updated_relationship = Revelo.Diagrams.override_relationship_type!(relationship, new_override)
-
-    # Update loops
-    Revelo.Diagrams.rescan_loops!(socket.assigns.session.id)
-    loops = Revelo.Diagrams.list_loops!(socket.assigns.session.id)
-    loop_count = Enum.count(loops)
 
     # Send update to the relationship table component if it exists
     if socket.assigns.live_action in [:relate_discuss] do

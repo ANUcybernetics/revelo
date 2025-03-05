@@ -2,8 +2,6 @@ defmodule ReveloWeb.SessionLive.RelationshipVotingComponent do
   @moduledoc false
   use ReveloWeb, :live_component
 
-  import ReveloWeb.Component.Card
-
   alias Revelo.Diagrams
   alias Revelo.Diagrams.Relationship
 
