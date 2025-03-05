@@ -74,14 +74,10 @@ we're building it out & exploring the problem space).
 
 - Work on the report
 
-- Refactor the loop table component to be less messy - should we just have two different components that call similar sub components? Will be nicer...
-
 - Add more UI tests
 
 - Add some more revelo branding to the ui/sidebar?
 
-- Have a way to update the cytoscape positions, so they don't save the no connection position
-
 - Have the tone of the stories be a bit less chatgpt-y. Reframe as hypotheses? Add a devil's advocate, or have chatgpt pose challenges?
 
-- Keep refactoring component state.
+- Keep refactoring loop table and relationship table - pretty sure the update with Map is not the best way to go about having the relationship override as it's own component.
