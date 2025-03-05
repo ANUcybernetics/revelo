@@ -95,7 +95,7 @@ defmodule ReveloWeb.SessionLive.LoopParticipantComponent do
                   </li>
                 </button>
                 <div id={"loop-detail-#{loop.id}"} class="hidden h-full">
-                  <.card_header class="py-2">
+                  <.card_header class="py-2 mx-6">
                     <.card_title class="flex py-6">
                       {loop.title}
                     </.card_title>
