@@ -6,10 +6,11 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   import ReveloWeb.Component.Tooltip
 
   alias Revelo.Diagrams
+  alias Revelo.Diagrams.Relationship
 
   @impl true
   def mount(socket) do
-    {:ok, socket}
+    {:ok, stream(socket, :loops, [])}
   end
 
   @impl true
@@ -19,34 +20,48 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     relationships = Diagrams.list_actual_relationships!(assigns.session.id)
     loop_count = Enum.count(loops)
 
+    loops_json = create_loops_json(loops)
+    elements_json = create_elements_json(variables, relationships)
+
     socket =
       socket
       |> assign(assigns)
-      |> assign(:loops, loops)
       |> assign(:variables, variables)
       |> assign(:relationships, relationships)
       |> assign(:loop_count, loop_count)
       |> assign(:selected_edge, nil)
+      |> assign(:loops_json, loops_json)
+      |> assign(:elements_json, elements_json)
+      |> stream(:loops, loops, reset: true)
 
     {:ok, socket}
   end
 
   @impl true
   def handle_event("generate_stories", _params, socket) do
+    # Get loops from Diagrams first
+    loops = Diagrams.list_loops!(socket.assigns.session.id)
+
     tasks =
-      Enum.map(socket.assigns.loops, fn loop ->
+      Enum.map(loops, fn loop ->
         Task.async(fn -> Diagrams.generate_loop_story!(loop) end)
       end)
 
     loops = Task.await_many(tasks)
+    loops_json = create_loops_json(loops)
 
-    {:noreply, assign(socket, :loops, loops)}
+    {:noreply,
+     socket
+     |> assign(:loops_json, loops_json)
+     |> stream(:loops, loops, reset: true)}
   end
 
   @impl true
   def handle_event("edge_clicked", %{"id" => id}, socket) do
-    # Find the relationship with the given ID
-    relationship = Enum.find(socket.assigns.relationships, &(&1.id == id))
+    relationship =
+      Ash.get!(Relationship, id, load: [:src, :dst, :direct_votes, :inverse_votes, :no_relationship_votes])
+
+    IO.inspect(relationship, label: "ITSME")
     {:noreply, assign(socket, :selected_edge, relationship)}
   end
 
@@ -60,7 +75,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   def handle_event("toggle_override", %{"src_id" => src_id, "dst_id" => dst_id, "type" => type}, socket) do
     type = String.to_existing_atom(type)
 
-    relationship = Ash.get!(Revelo.Diagrams.Relationship, src_id: src_id, dst_id: dst_id)
+    relationship = Ash.get!(Relationship, src_id: src_id, dst_id: dst_id)
 
     new_override =
       cond do
@@ -82,9 +97,14 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
     loops = Diagrams.list_loops!(socket.assigns.session.id)
     loop_count = Enum.count(loops)
 
+    loops_json = create_loops_json(loops)
+    elements_json = create_elements_json(socket.assigns.variables, relationships)
+
     {:noreply,
      socket
-     |> assign(:loops, loops)
+     |> stream(:loops, loops, reset: true)
+     |> assign(:loops_json, loops_json)
+     |> assign(:elements_json, elements_json)
      |> assign(:loop_count, loop_count)
      |> assign(:relationships, relationships)
      |> assign(:selected_edge, selected_edge)}
@@ -92,19 +112,15 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
 
   @impl true
   def handle_event("regenerate_loop_diagram", _params, socket) do
-    # Rebuild the JSON data for loops and elements
-    loops_json = create_loops_json(socket.assigns.loops)
-    elements_json = create_elements_json(socket.assigns.variables, socket.assigns.relationships)
-
     # Send the updated data to the client
     {:noreply,
      push_event(socket, "update_loop_diagram", %{
-       loops: loops_json,
-       elements: elements_json
+       loops: socket.assigns.loops_json,
+       elements: socket.assigns.elements_json
      })}
   end
 
-  defp create_loops_json(loops) do
+  defp create_loops_json(loops) when is_list(loops) do
     Jason.encode!(
       Enum.map(loops, fn loop ->
         %{
@@ -130,6 +146,11 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         }
       end)
     )
+  end
+
+  defp create_loops_json(streamed_loops) do
+    loops = Enum.map(streamed_loops, fn {_id, loop} -> loop end)
+    create_loops_json(loops)
   end
 
   defp create_elements_json(variables, relationships) do
@@ -292,11 +313,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div
-      id="loop-table-component"
-      phx-hook="LoopToggler"
-      class="flex flex-col gap-4 grow h-full col-span-12"
-    >
+    <div class="flex flex-col gap-4 grow h-full col-span-12">
       <div
         id="plot-loops"
         phx-hook="PlotLoops"
@@ -304,8 +321,8 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         data-target={@myself}
         class="h-full"
         style="width: calc(100% - 400px);"
-        data-elements={create_elements_json(@variables, @relationships)}
-        data-loops={create_loops_json(@loops)}
+        data-elements={@elements_json}
+        data-loops={@loops_json}
       >
       </div>
 
@@ -314,12 +331,15 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
       <% end %>
 
       <aside
-        id="resizable-sidebar"
-        phx-hook="ResizableSidebar"
-        phx-update="ignore"
         class="flex fixed inset-y-0 right-0 z-10 w-[400px] flex-col border-l-[length:var(--border-thickness)] bg-background h-full"
+        id="sidebar-container"
       >
-        <div class="resize-handle absolute inset-y-0 left-0 w-2 cursor-ew-resize hover:bg-primary/10 active:bg-primary/20 z-20">
+        <div
+          id="resizable-handle"
+          phx-hook="ResizableSidebar"
+          phx-update="ignore"
+          class="resize-handle absolute inset-y-0 left-0 w-2 cursor-ew-resize hover:bg-primary/10 active:bg-primary/20 z-20"
+        >
         </div>
         <div class="flex justify-between items-center p-6 gap-2">
           <h3 class="text-2xl font-semibold leading-none tracking-tight flex">
@@ -338,34 +358,37 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         </div>
 
         <nav class="flex flex-col h-2 grow">
-          <div class="h-full overflow-y-auto">
-            <%= for {loop, index} <- Enum.with_index(@loops) do %>
-              <button
-                phx-click={JS.dispatch("toggle-loop", detail: %{loop_id: loop.id})}
-                class="w-full px-6 py-4 text-left border-t-[length:var(--border-thickness)] hover:bg-muted transition-colors"
-                data-loop-id={loop.id}
-              >
-                <div class="flex items-start">
-                  <span class="w-6 shrink-0">{index + 1}.</span>
-                  <div class="flex mr-2 justify-between gap-2 w-full">
-                    <div>{loop.title}</div>
-                    <div class="mt-1">
-                      <.badge_length length={Enum.count(loop.influence_relationships)} />
-                    </div>
+          <div class="h-full overflow-y-auto" id="loop-table-component" phx-hook="LoopToggler">
+            <ol id="loops-list" phx-update="stream" class="list-decimal">
+              <%= for {dom_id, loop} <- @streams.loops do %>
+                <div id={dom_id} data-loop-id={loop.id}>
+                  <button
+                    phx-click={JS.dispatch("toggle-loop", detail: %{loop_id: loop.id})}
+                    class="w-full px-6 py-4 text-left border-t-[length:var(--border-thickness)] hover:bg-muted transition-colors"
+                  >
+                    <li class="relative ml-4">
+                      <div class="flex items-start">
+                        <div class="flex mr-2 justify-between gap-2 w-full">
+                          <div>{loop.title}</div>
+                          <div class="mt-1">
+                            <.badge_length length={Enum.count(loop.influence_relationships)} />
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </button>
+                  <div id={"loop-detail-facilitator-#{loop.id}"} class="hidden">
+                    <.card_content class="mx-6">
+                      <div class="flex justify-between flex-col gap-2">
+                        <.card_description>
+                          {loop.story}
+                        </.card_description>
+                      </div>
+                    </.card_content>
                   </div>
                 </div>
-              </button>
-              <div id={"loop-detail-facilitator-#{loop.id}"} class="hidden">
-                <% matching_loop = Enum.find(@loops, &(&1.id == loop.id)) %>
-                <.card_content class="mx-6">
-                  <div class="flex justify-between flex-col gap-2">
-                    <.card_description>
-                      {matching_loop.story}
-                    </.card_description>
-                  </div>
-                </.card_content>
-              </div>
-            <% end %>
+              <% end %>
+            </ol>
           </div>
         </nav>
       </aside>

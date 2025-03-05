@@ -17,7 +17,7 @@ const LoopToggler = {
     window.addEventListener("unselect-loop", () => this.unselectLoop());
 
     // Determine if this is the facilitator view or participant view
-    this.isFacilitator = !!document.getElementById("resizable-sidebar");
+    this.isFacilitator = !!document.getElementById("resizable-handle");
     this.isParticipant = !!document.getElementById("loops-list");
   },
 

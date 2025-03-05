@@ -1,7 +1,7 @@
 export const ResizableSidebar = {
   mounted() {
-    const sidebar = this.el;
-    const handle = sidebar.querySelector(".resize-handle");
+    const handle = this.el;
+    const sidebar = document.getElementById("sidebar-container");
     const plotContainer = document.getElementById("plot-loops");
     let isResizing = false;
     let initialWidth;
