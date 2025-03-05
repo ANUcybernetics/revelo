@@ -86,6 +86,31 @@ function updateGraphStyles(cy) {
     .update();
 }
 
+function applyDefaultLayout(cy) {
+  cy.layout({
+    name: "cose-bilkent",
+    quality: "proof",
+    animate: false,
+    randomize: true,
+    nodeDimensionsIncludeLabels: true,
+    fit: true,
+    padding: 50,
+    nodeRepulsion: 8000,
+    idealEdgeLength: 200,
+    edgeElasticity: 0.45,
+    nestingFactor: 0.1,
+    gravity: 0.25,
+    numIter: 2500,
+    tile: false,
+    tilingPaddingVertical: 20,
+    tilingPaddingHorizontal: 20,
+    gravityRangeCompound: 1.5,
+    gravityCompound: 1.0,
+    gravityRange: 3.8,
+    initialEnergyOnIncremental: 0.5,
+  }).run();
+}
+
 export const PlotLoops = {
   mounted() {
     const savedPositions = localStorage.getItem("nodePositions");
@@ -206,6 +231,17 @@ export const PlotLoops = {
             initialEnergyOnIncremental: 0.5,
           },
     });
+
+    const resetButton = this.el.querySelector("#reset-positions-button");
+    if (resetButton) {
+      resetButton.addEventListener("click", () => {
+        // Clear saved positions
+        localStorage.removeItem("nodePositions");
+
+        // Apply default layout
+        applyDefaultLayout(this.cy);
+      });
+    }
 
     window.addEventListener("toggle-high-contrast", () => {
       setTimeout(() => updateGraphStyles(this.cy), 0);

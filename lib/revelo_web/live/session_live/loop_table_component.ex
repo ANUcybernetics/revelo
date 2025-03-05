@@ -4,6 +4,8 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
   use Gettext, backend: ReveloWeb.Gettext
 
   import ReveloWeb.Component.Tooltip
+  import ReveloWeb.Component.DropdownMenu
+
 
   alias Revelo.Diagrams
   alias Revelo.Diagrams.Relationship
@@ -319,11 +321,34 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         phx-hook="PlotLoops"
         phx-update="ignore"
         data-target={@myself}
-        class="h-full"
+        class="h-svh"
         style="width: calc(100% - 400px);"
         data-elements={@elements_json}
         data-loops={@loops_json}
       >
+      <div class="absolute top-5 left-5 z-20 pointer-events-auto">
+        <.dropdown_menu>
+          <.dropdown_menu_trigger>
+            <.button
+              variant="outline"
+              size="sm"
+              class="bg-background hover:bg-muted transition-colors shadow-md"
+            >
+              View
+            </.button>
+          </.dropdown_menu_trigger>
+          <.dropdown_menu_content>
+            <.menu class="w-36">
+              <.menu_group>
+                <.menu_item id="reset-positions-button" class="cursor-pointer">
+                  <.icon name="hero-arrow-path" class="h-4 w-4 mr-2" />
+                  <span class="text-xs">Reset Positions</span>
+                </.menu_item>
+              </.menu_group>
+            </.menu>
+          </.dropdown_menu_content>
+        </.dropdown_menu>
+      </div>
       </div>
 
       <%= if @selected_edge do %>
