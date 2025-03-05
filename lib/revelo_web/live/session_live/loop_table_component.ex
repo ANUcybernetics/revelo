@@ -32,7 +32,6 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
 
       {:ok,
        socket
-       |> assign(:loops, loops)
        |> assign(:loop_count, loop_count)
        |> assign(:loops_json, loops_json)
        |> assign(:elements_json, elements_json)
