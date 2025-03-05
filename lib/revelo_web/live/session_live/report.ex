@@ -29,7 +29,7 @@ defmodule ReveloWeb.SessionLive.Report do
           </div>
         </div>
       </header>
-
+      
     <!-- Content Area -->
       <div class="flex-1 overflow-y-auto w-full max-w-full">
         <div class="container p-6 mx-auto">
