@@ -29,7 +29,7 @@ defmodule ReveloWeb.SessionLive.Report do
           </div>
         </div>
       </header>
-      
+
     <!-- Content Area -->
       <div class="flex-1 overflow-y-auto w-full max-w-full">
         <div class="container p-6 mx-auto">
@@ -54,7 +54,6 @@ defmodule ReveloWeb.SessionLive.Report do
                   <.textarea
                     id="prepare-summary"
                     name="prepare_summary"
-                    rows="5"
                     placeholder="Describe the problem that was addressed in this session..."
                     value={@prepare_summary}
                     phx-change="update_prepare_summary"
@@ -73,7 +72,6 @@ defmodule ReveloWeb.SessionLive.Report do
                   <.textarea
                     id="prepare-goals"
                     name="prepare_goals"
-                    rows="5"
                     placeholder="Describe the goals of the session and how it was set up..."
                     value={@prepare_goals}
                     phx-change="update_prepare_goals"
@@ -97,7 +95,6 @@ defmodule ReveloWeb.SessionLive.Report do
                       <.textarea
                         id="identify-included"
                         name="identify_included"
-                        rows="5"
                         placeholder="Describe key included variables and why they matter..."
                         value={@identify_included}
                         phx-change="update_identify_included"
@@ -108,7 +105,6 @@ defmodule ReveloWeb.SessionLive.Report do
                       <.textarea
                         id="identify-excluded"
                         name="identify_excluded"
-                        rows="5"
                         placeholder="Describe key excluded variables and the reasoning..."
                         value={@identify_excluded}
                         phx-change="update_identify_excluded"
@@ -129,7 +125,6 @@ defmodule ReveloWeb.SessionLive.Report do
                   <.textarea
                     id="identify-voting"
                     name="identify_voting"
-                    rows="5"
                     placeholder="Describe the voting patterns and what they reveal about participants' priorities..."
                     value={@identify_voting}
                     phx-change="update_identify_voting"
@@ -150,7 +145,6 @@ defmodule ReveloWeb.SessionLive.Report do
                   <.textarea
                     id="relate-agreement"
                     name="relate_agreement"
-                    rows="5"
                     placeholder="Describe relationships that participants strongly agreed on..."
                     value={@relate_agreement}
                     phx-change="update_relate_agreement"
@@ -169,7 +163,6 @@ defmodule ReveloWeb.SessionLive.Report do
                   <.textarea
                     id="relate-disagreement"
                     name="relate_disagreement"
-                    rows="5"
                     placeholder="Describe relationships with significant disagreement and how these were resolved..."
                     value={@relate_disagreement}
                     phx-change="update_relate_disagreement"
@@ -190,7 +183,6 @@ defmodule ReveloWeb.SessionLive.Report do
                   <.textarea
                     id="analyse-overview"
                     name="analyse_overview"
-                    rows="5"
                     placeholder="Describe the overall system structure and key dynamics identified..."
                     value={@analyse_overview}
                     phx-change="update_analyse_overview"
@@ -225,7 +217,6 @@ defmodule ReveloWeb.SessionLive.Report do
                       <.textarea
                         id={"loop-description-#{id}"}
                         name="loop_description"
-                        rows="3"
                         placeholder="Describe this feedback loop..."
                         value={loop.description}
                         phx-change="update_loop_description"
@@ -237,7 +228,6 @@ defmodule ReveloWeb.SessionLive.Report do
                           <.textarea
                             id={"loop-variables-#{id}"}
                             name="loop_variables"
-                            rows="2"
                             placeholder="Missing variables..."
                             value={loop.variables}
                             phx-change="update_loop_variables"
@@ -249,7 +239,6 @@ defmodule ReveloWeb.SessionLive.Report do
                           <.textarea
                             id={"loop-realism-#{id}"}
                             name="loop_realism"
-                            rows="2"
                             placeholder="Is this dynamic realistic?..."
                             value={loop.realism}
                             phx-change="update_loop_realism"
@@ -261,7 +250,6 @@ defmodule ReveloWeb.SessionLive.Report do
                           <.textarea
                             id={"loop-implications-#{id}"}
                             name="loop_implications"
-                            rows="2"
                             placeholder="Key implications..."
                             value={loop.implications}
                             phx-change="update_loop_implications"
@@ -288,7 +276,6 @@ defmodule ReveloWeb.SessionLive.Report do
                   <.textarea
                     id="analyse-recommendations"
                     name="analyse_recommendations"
-                    rows="5"
                     placeholder="Provide recommendations based on the findings..."
                     value={@analyse_recommendations}
                     phx-change="update_analyse_recommendations"
