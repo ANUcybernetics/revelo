@@ -246,12 +246,26 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
         </div>
 
         <nav class="flex flex-col h-2 grow">
-          <div class="h-full overflow-y-auto" id="loop-table-component" phx-hook="LoopToggler">
+          <div class="h-full overflow-y-auto" id="loop-table-component">
             <ol id="loops-list" phx-update="stream" class="list-decimal">
               <%= for {dom_id, loop} <- @streams.loops do %>
                 <div id={dom_id} data-loop-id={loop.id}>
                   <button
-                    phx-click={JS.dispatch("toggle-loop", detail: %{loop_id: loop.id})}
+                    id={"loop-#{loop.id}"}
+                    phx-click={
+                      JS.add_class("hidden",
+                        to: ".loop-detail:not(#loop-detail-facilitator-#{loop.id})"
+                      )
+                      |> JS.toggle_class("hidden", to: "#loop-detail-facilitator-#{loop.id}")
+                      |> JS.toggle_class("active", to: "#loop-#{loop.id}")
+                      |> JS.dispatch("loop-selected",
+                        to: "#plot-loops",
+                        detail: %{
+                          loopId: loop.id,
+                          toggle: true
+                        }
+                      )
+                    }
                     class="w-full px-6 py-4 text-left border-t-[length:var(--border-thickness)] hover:bg-muted transition-colors"
                   >
                     <li class="relative ml-4">
@@ -265,7 +279,7 @@ defmodule ReveloWeb.SessionLive.LoopTableComponent do
                       </div>
                     </li>
                   </button>
-                  <div id={"loop-detail-facilitator-#{loop.id}"} class="hidden">
+                  <div id={"loop-detail-facilitator-#{loop.id}"} class="hidden loop-detail">
                     <.card_content class="mx-6">
                       <div class="flex justify-between flex-col gap-2">
                         <.card_description>

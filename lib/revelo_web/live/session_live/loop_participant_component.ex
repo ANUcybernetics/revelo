@@ -61,11 +61,7 @@ defmodule ReveloWeb.SessionLive.LoopParticipantComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div
-      id="loop-table-component"
-      phx-hook="LoopToggler"
-      class="flex flex-col gap-4 grow h-full p-5 pb-2"
-    >
+    <div id="loop-table-component" class="flex flex-col gap-4 grow h-full p-5 pb-2">
       <.card class="max-w-5xl w-md min-w-[80svw] h-20 grow flex flex-col overflow-y-auto">
         <div id="loop-list" class="flex flex-col overflow-y-auto grow">
           <div class="flex justify-between items-center p-6 gap-2" id="loop-header">
@@ -74,12 +70,17 @@ defmodule ReveloWeb.SessionLive.LoopParticipantComponent do
             </h3>
           </div>
 
-          <nav class="flex flex-col grow">
+          <nav class="flex flex-col grow" id="loops-nav">
             <ol id="loops-list" phx-update="stream" class="list-decimal h-full overflow-y-auto">
               <%= for {id, loop} <- @streams.loops do %>
                 <button
                   id={id}
-                  phx-click={JS.dispatch("toggle-loop", detail: %{loop_id: loop.id})}
+                  phx-click={
+                    JS.add_class("hidden", to: "#loops-list > button")
+                    |> JS.add_class("hidden", to: "#loop-header")
+                    |> JS.remove_class("hidden", to: "#loop-detail-#{loop.id}")
+                    |> JS.remove_class("hidden", to: "#back-button")
+                  }
                   class="w-full pr-6 py-4 text-left border-t-[length:var(--border-thickness)] hover:bg-muted transition-colors"
                   data-loop-id={loop.id}
                 >
@@ -94,7 +95,7 @@ defmodule ReveloWeb.SessionLive.LoopParticipantComponent do
                     </div>
                   </li>
                 </button>
-                <div id={"loop-detail-#{loop.id}"} class="hidden h-full">
+                <div id={"loop-detail-#{loop.id}"} class="hidden h-full loop-detail">
                   <.card_header class="py-2 mx-6">
                     <.card_title class="flex py-6">
                       {loop.title}
@@ -119,9 +120,14 @@ defmodule ReveloWeb.SessionLive.LoopParticipantComponent do
       <.button
         type="button"
         variant="outline"
-        phx-click={JS.dispatch("unselect-loop")}
         id="back-button"
         class="hidden"
+        phx-click={
+          JS.remove_class("hidden", to: "#loops-list > button")
+          |> JS.remove_class("hidden", to: "#loop-header")
+          |> JS.add_class("hidden", to: ".loop-detail")
+          |> JS.add_class("hidden", to: "#back-button")
+        }
       >
         Back
       </.button>

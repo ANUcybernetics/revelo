@@ -272,17 +272,29 @@ export const PlotLoops = {
 
     this.el.addEventListener("loop-selected", (event) => {
       const loopId = event.detail.loopId;
-      this.el.dataset.selectedLoop = loopId || "";
+      const shouldToggle = event.detail.toggle;
 
-      const loops = JSON.parse(this.el.dataset.loops || "[]");
-      const elements = JSON.parse(this.el.dataset.elements || "[]");
+      // Toggle behavior - if the same loop is clicked again, clear the selection
+      if (shouldToggle && this.el.dataset.selectedLoop === loopId) {
+        this.el.dataset.selectedLoop = "";
 
-      updateNodeStyles(
-        loopId,
-        loops,
-        this.cy,
-        elements.filter((ele) => ele.group === "edges"),
-      );
+        // Reset all nodes and edges to be visible
+        this.cy.elements().style({
+          opacity: 1,
+        });
+      } else {
+        this.el.dataset.selectedLoop = loopId || "";
+
+        const loops = JSON.parse(this.el.dataset.loops || "[]");
+        const elements = JSON.parse(this.el.dataset.elements || "[]");
+
+        updateNodeStyles(
+          loopId,
+          loops,
+          this.cy,
+          elements.filter((ele) => ele.group === "edges"),
+        );
+      }
     });
   },
 
